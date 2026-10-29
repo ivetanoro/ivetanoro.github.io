@@ -35,7 +35,7 @@ window.EINES = [
 
 window.AVIAT = [
   { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
-    llista: { text: "apunta’t", url: "https://tally.so/r/bZ5NyE?origen=paradeta" } },
+    llista: { text: "apunta’t", kit: "10115030" } },
   { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
   { titol: "el mandala", frase: "un objectiu, vuit pilars i seixanta-quatre accions: el teu pla per créixer, en una graella." },
 ];
