@@ -105,6 +105,16 @@
   .soon .visual h3 { font-family:var(--display); font-weight:400; font-size:clamp(22px, 6vw, 32px); line-height:.9; margin:0; }
   .soon .barra { background:var(--butter); }
   .eina.soon .visual { aspect-ratio:3/2; }
+  /* apuntar-se a una d'«aviat»: el correu va a un formulari de Kit (llista.kit), que envia la confirmació i porta les baixes */
+  .apunta { display:grid; gap:8px; margin-top:auto; padding-top:12px; }
+  .apunta input { width:100%; min-width:0; min-height:44px; padding:10px 12px; border:var(--vora); border-radius:6px; background:var(--paper);
+                  color:var(--esp); font:16px/1.3 var(--sans); }
+  .apunta input::placeholder { color:rgba(47,27,17,.65); }
+  .apunta input:focus-visible { outline:2px solid var(--esp); outline-offset:2px; }
+  .apunta .avis, .apunta .resposta { margin:0; font-size:12px; line-height:1.35; color:var(--muted); }
+  .apunta .resposta { color:var(--esp); }
+  .apunta .resposta:empty { display:none; }
+  .vh { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 
   /* bústia */
   .bustia { display:grid; gap:18px; }
@@ -263,13 +273,38 @@ document.getElementById("eines").innerHTML = EINES.map((e, i) => `
 
 // sense res a «aviat», la secció no surt (ni el títol)
 document.getElementById("titol-aviat").hidden = document.getElementById("aviat").hidden = !AVIAT.length;
+// «apunta't»: amb llista.kit, un camp de correu que apunta la gent a la llista de Kit; sense, un enllaç (llista.url)
+const KIT = id => `https://app.kit.com/forms/${encodeURIComponent(id)}/subscriptions`;
+const apunta = (l, i) => l.kit ? `
+      <form class="apunta" data-kit="${esc(l.kit)}" novalidate>
+        <label class="vh" for="correu-${i}">el teu correu</label>
+        <input type="email" id="correu-${i}" name="email_address" required autocomplete="email" placeholder="el teu correu">
+        <button class="btn clar" type="submit"><span>${esc(l.text)}</span>${fletxa}</button>
+        <p class="avis">t’aviso quan surti, i prou.</p>
+        <p class="resposta" role="status" aria-live="polite"></p>
+      </form>` : `<div class="accions"><a class="btn clar" href="${esc(l.url)}"><span>${esc(l.text)}</span>${fletxa}</a></div>`;
+document.getElementById("aviat").addEventListener("submit", async ev => {
+  const f = ev.target;
+  if (!f.matches(".apunta")) return;
+  ev.preventDefault();
+  const r = f.querySelector(".resposta"), b = f.querySelector("button"), correu = f.email_address.value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correu)) { r.textContent = "escriu el teu correu, sisplau."; f.email_address.focus(); return; }
+  b.disabled = true; r.textContent = "";
+  try {
+    const res = await fetch(KIT(f.dataset.kit), { method:"POST", headers:{ Accept:"application/json" }, body:new URLSearchParams({ email_address:correu }) });
+    if (!res.ok) throw new Error(res.status);
+    f.reset();
+    r.textContent = "fet! t’he enviat un correu: obre’l i confirma-ho.";
+  } catch { r.textContent = "no s’ha pogut apuntar. torna-ho a provar d’aquí a una estona."; }
+  b.disabled = false;
+});
 document.getElementById("aviat").innerHTML = AVIAT.map((a, i) => `
   <article class="eina soon reveal" style="--i:${i}">
     ${barra("aviat")}
     <div class="visual"><h3 class="boira">${esc(a.titol)}</h3></div>
     <div class="cos">
       <p class="frase boira">${esc(a.frase)}</p>
-      ${a.llista ? `<div class="accions"><a class="btn clar" href="${esc(a.llista.url)}"><span>${esc(a.llista.text)}</span>${fletxa}</a></div>` : ""}
+      ${a.llista ? apunta(a.llista, i) : ""}
     </div>
   </article>`).join("");
 
