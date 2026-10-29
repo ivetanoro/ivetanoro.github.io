@@ -6,7 +6,7 @@
 <title>la paradeta · ivetanoro</title>
 <meta name="description" content="Les eines que fa l’Ivet Anoro (@ivetanoro), perquè les provis.">
 <meta property="og:title" content="la paradeta · ivetanoro">
-<meta property="og:description" content="Les eines que faig, perquè les provis. De moment, totes gratis.">
+<meta property="og:description" content="Les eines que faig, perquè les provis.">
 <meta property="og:image" content="https://ivetanoro.github.io/img/equilibri.jpg">
 <meta name="theme-color" content="#FBF6D1">
 <link rel="preload" href="fonts/BitroadMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -22,6 +22,7 @@
     --vora:1.5px solid var(--esp); --ombra:3px 3px 0 var(--esp);
   }
   * { box-sizing:border-box; }
+  [hidden] { display:none !important; }   /* que .graella o .sec no el desfacin */
   html { -webkit-text-size-adjust:100%; }
   body { margin:0; background:var(--butter); color:var(--esp); font-family:var(--sans); font-size:16px; line-height:1.5; }
   a { color:inherit; -webkit-tap-highlight-color:transparent; }
@@ -185,7 +186,7 @@
   <h2 class="sec"><span>eines</span><span id="rang"></span></h2>
   <div class="graella" id="eines"></div>
 
-  <h2 class="sec"><span>aviat</span><span>a punt de sortir</span></h2>
+  <h2 class="sec" id="titol-aviat"><span>aviat</span><span>a punt de sortir</span></h2>
   <div class="graella" id="aviat"></div>
 
   <div id="seccio-bustia" hidden>
@@ -222,7 +223,7 @@ const fletxa = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria
 const paraules = P.nom.split(" "), darrera = paraules.pop();
 document.getElementById("nom").innerHTML = `${esc(paraules.join(" "))} <span class="sel">${esc(darrera)}`
   + `<svg class="cursor" viewBox="0 0 24 34" aria-hidden="true"><path d="M2 2v26l7-6 5 10 5-2-5-10h9z" fill="#FFFDF2" stroke="#2F1B11" stroke-width="2" stroke-linejoin="round"/></svg>`
-  + `<span class="tooltip" aria-hidden="true">${n2(EINES.length)} eines · ${n2(AVIAT.length)} aviat</span></span>`;
+  + `<span class="tooltip" aria-hidden="true">${n2(EINES.length)} eines${AVIAT.length ? ` · ${n2(AVIAT.length)} aviat` : ""}</span></span>`;
 document.getElementById("lema").textContent = P.lema;
 document.getElementById("compte").textContent = `${n2(EINES.length)} eines`;
 document.getElementById("data").textContent = P.actualitzat;
@@ -260,6 +261,8 @@ document.getElementById("eines").innerHTML = EINES.map((e, i) => `
     </div>
   </article>`).join("");
 
+// sense res a «aviat», la secció no surt (ni el títol)
+document.getElementById("titol-aviat").hidden = document.getElementById("aviat").hidden = !AVIAT.length;
 document.getElementById("aviat").innerHTML = AVIAT.map((a, i) => `
   <article class="eina soon reveal" style="--i:${i}">
     ${barra("aviat")}

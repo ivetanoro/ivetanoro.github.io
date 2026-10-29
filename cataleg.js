@@ -8,7 +8,7 @@
 
 window.PARADETA = {
   nom: "la paradeta",
-  lema: "les eines que faig, perquè les provis. de moment, totes gratis.",
+  lema: "les eines que faig, perquè les provis.",
   actualitzat: "29.10",
   instagram: "https://www.instagram.com/ivetanoro/",
   bustia: { clau: "" },
