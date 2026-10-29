@@ -11,7 +11,7 @@ window.PARADETA = {
   lema: "les eines que faig, perquè les provis.",
   actualitzat: "29.10",
   instagram: "https://www.instagram.com/ivetanoro/",
-  bustia: { clau: "" },
+  bustia: { clau: "2d063f5c-0977-426c-98f8-42de75fbe5a1" },   // clau pública de Web3Forms (envia a l’Ivet; no ensenya el correu)
 };
 
 // EINES i AVIAT surten del panell de la paradeta (amb /paradeta). Si els canvies a mà, la passada següent ho recull.
