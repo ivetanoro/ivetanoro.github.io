@@ -40,4 +40,5 @@ window.AVIAT = [
   { titol: "massa idees", frase: "el teu tauler d’idees al mòbil: les dius i s’ordenen soles." },
   { titol: "s’hauria de dir més", frase: "paraules catalanes que s’haurien de dir més, i les votes." },
   { titol: "filtre beauty", frase: "el filtre de pell per als reels, sense passar per CapCut." },
+  { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
 ];
