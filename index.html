@@ -114,6 +114,7 @@
   .apunta .avis, .apunta .resposta { margin:0; font-size:12px; line-height:1.35; color:var(--muted); }
   .apunta .resposta { color:var(--esp); }
   .apunta .resposta:empty { display:none; }
+  .apunta .resposta a { color:var(--ox); font-weight:700; text-underline-offset:2px; }
   .vh { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
 
   /* bústia */
@@ -292,9 +293,14 @@ document.getElementById("aviat").addEventListener("submit", async ev => {
   b.disabled = true; r.textContent = "";
   try {
     const res = await fetch(KIT(f.dataset.kit), { method:"POST", headers:{ Accept:"application/json" }, body:new URLSearchParams({ email_address:correu }) });
-    if (!res.ok) throw new Error(res.status);
-    f.reset();
-    r.textContent = "fet! t’he enviat un correu: obre’l i confirma-ho.";
+    const j = res.ok ? await res.json() : {};
+    if (j.status === "success") {
+      f.reset();
+      r.textContent = "fet! t’he enviat un correu: obre’l i confirma-ho.";
+    } else if (j.status === "quarantined" && /^https:\/\/app\.kit\.com\//.test(j.url || "")) {
+      // Kit demana un control antirobots: la persona l'ha de fer a la seva pàgina (com amb el formulari oficial de Kit)
+      r.innerHTML = `falta un pas: <a href="${esc(j.url)}" target="_blank" rel="noopener">confirma que no ets un robot</a> i t’arribarà el correu.`;
+    } else throw new Error(j.status || res.status);
   } catch { r.textContent = "no s’ha pogut apuntar. torna-ho a provar d’aquí a una estona."; }
   b.disabled = false;
 });
