@@ -296,10 +296,10 @@ document.getElementById("aviat").addEventListener("submit", async ev => {
     const j = res.ok ? await res.json() : {};
     if (j.status === "success") {
       f.reset();
-      r.textContent = "fet! t’he enviat un correu: obre’l i confirma-ho.";
+      r.textContent = "fet! t’he enviat un correu per confirmar-ho. si no el veus, mira al correu brossa.";
     } else if (j.status === "quarantined" && /^https:\/\/app\.kit\.com\//.test(j.url || "")) {
       // Kit demana un control antirobots: la persona l'ha de fer a la seva pàgina (com amb el formulari oficial de Kit)
-      r.innerHTML = `falta un pas: <a href="${esc(j.url)}" target="_blank" rel="noopener">confirma que no ets un robot</a> i t’arribarà el correu.`;
+      r.innerHTML = `falta un pas: <a href="${esc(j.url)}" target="_blank" rel="noopener">confirma que no ets un robot</a> i t’arribarà el correu (mira també al correu brossa).`;
     } else throw new Error(j.status || res.status);
   } catch { r.textContent = "no s’ha pogut apuntar. torna-ho a provar d’aquí a una estona."; }
   b.disabled = false;
