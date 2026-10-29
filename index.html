@@ -119,16 +119,11 @@
   .paper .btn { margin-top:14px; }
   .hp { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
   .estat { min-height:1.4em; margin:10px 0 0; font-size:14px; }
-  .escena { position:relative; height:215px; display:flex; align-items:flex-end; justify-content:center; }
-  .escena .clip { position:absolute; left:0; right:0; top:0; height:var(--ranura, 132px); overflow:hidden; pointer-events:none; z-index:2; }
-  .papereta { position:absolute; left:50%; top:0; width:92px; height:58px; margin-left:-46px; opacity:0; background:var(--paper); border:var(--vora); border-radius:3px;
-              background-image:linear-gradient(135deg, transparent 49%, rgba(47,27,17,.35) 50%, transparent 51%); }
-  .papereta::after { content:""; position:absolute; left:10px; right:10px; top:14px; height:14px;
-                     background:repeating-linear-gradient(var(--blue) 0 2px, transparent 2px 7px); }
-  .caixa { position:relative; width:200px; transform-origin:50% 100%; }
-  .caixa svg { display:block; width:100%; height:auto; overflow:visible; }
-  .bandereta { transform-box:view-box; transform-origin:180px 94px; transform:rotate(90deg); transition:transform .5s cubic-bezier(.34,1.56,.64,1) .1s; }
-  .rebuda .bandereta { transform:rotate(0deg); }
+  /* la bústia és una figura de Hairline (hairline/): línies espresso, i l'únic ressaltat en oxblood */
+  .figura { background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
+  .figura #lectura { margin-left:auto; font-variant-numeric:tabular-nums; }
+  #bustia-figura { --hairline-plate:var(--paper); --hairline-hi:var(--ox); --hairline-edge:#786A60; --hairline-mid:#A89E94; --hairline-lo:#D6D0C5;
+                   --hairline-stroke:1.15; }
 
   footer { max-width:1180px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-left, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));
            border-top:2px solid var(--esp); display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; text-transform:uppercase; }
@@ -136,7 +131,9 @@
 
   @media (min-width: 640px) {
     .graella { grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px; }
-    .bustia { grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr); align-items:end; }
+    .bustia { grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr); }
+    .figura { display:flex; flex-direction:column; }
+    #bustia-figura { flex:1; aspect-ratio:auto; min-height:240px; }   /* tan alta com el full del costat */
   }
   @media (min-width: 760px) {
     .wrap { padding-left:32px; padding-right:32px; }
@@ -149,7 +146,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .capa, .bandereta, .btn { transition:none !important; }
+    .capa, .btn { transition:none !important; }
     .eina:hover .capa, .visual:active .capa { transform:none !important; }
   }
 
@@ -190,18 +187,9 @@
         <button class="btn" type="submit"><span>tira-la a la bústia</span><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 3v11M4.5 10 9 14.5 13.5 10" stroke="currentColor" stroke-width="2"/></svg></button>
         <p class="estat" id="estat" role="status" aria-live="polite"></p>
       </form>
-      <div class="escena" aria-hidden="true">
-        <div class="clip"><div class="papereta" id="papereta"></div></div>
-        <div class="caixa" id="caixa">
-          <svg viewBox="0 0 200 170" fill="none">
-            <rect x="18" y="104" width="10" height="64" fill="#2F1B11"/><rect x="152" y="104" width="10" height="64" fill="#2F1B11"/>
-            <rect x="8" y="22" width="168" height="98" rx="16" fill="#4C050C" stroke="#2F1B11" stroke-width="3"/>
-            <rect x="46" y="36" width="92" height="12" rx="6" fill="#2F1B11"/>
-            <rect x="40" y="66" width="104" height="34" rx="4" fill="#FBF6D1" stroke="#2F1B11" stroke-width="2"/>
-            <text x="92" y="88" text-anchor="middle" font-family="BitroadMono, monospace" font-size="13" fill="#2F1B11">PETICIONS</text>
-            <g class="bandereta"><rect x="178" y="46" width="4" height="50" fill="#2F1B11"/><rect x="182" y="46" width="20" height="14" fill="#ACCAE6" stroke="#2F1B11" stroke-width="2"/></g>
-          </svg>
-        </div>
+      <div class="figura" aria-hidden="true">
+        <div class="barra"><span class="punts"><i></i><i></i><i></i></span><span id="lectura">en repòs</span></div>
+        <div id="bustia-figura"></div>
       </div>
     </div>
   </div>
@@ -216,7 +204,6 @@ const P = window.PARADETA, EINES = window.EINES, AVIAT = window.AVIAT;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const n2 = i => String(i).padStart(2, "0");
 const fletxa = `<svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 9h11M10 4.5 14.5 9 10 13.5" stroke="currentColor" stroke-width="2"/></svg>`;
-const quiet = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // capçalera: l'última paraula del nom, seleccionada amb el cursor a sobre
 const paraules = P.nom.split(" "), darrera = paraules.pop();
@@ -281,30 +268,30 @@ const LOCAL = /^(127\.0\.0\.1|localhost)$/.test(location.hostname);
 if (CLAU || LOCAL) {
   document.getElementById("seccio-bustia").hidden = false;
   const form = document.getElementById("peticio"), estat = document.getElementById("estat");
-  const papereta = document.getElementById("papereta"), caixa = document.getElementById("caixa"), escena = caixa.parentElement;
   const boto = form.querySelector("button");
 
-  const tiraLa = async () => {
-    if (quiet || !papereta.animate) return;
-    // la ranura és a 42/170 de l'alçada de la bústia: la papereta s'hi amaga
-    const cr = caixa.getBoundingClientRect(), er = escena.getBoundingClientRect();
-    const ranura = cr.top - er.top + cr.height * 42 / 170;
-    escena.style.setProperty("--ranura", `${ranura}px`);
-    await papereta.animate([
-      { opacity:0, transform:"translateY(-10px) rotate(-14deg) scale(1.5)" },
-      { opacity:1, transform:"translateY(0) rotate(-4deg) scale(1)" },
-    ], { duration:380, easing:"cubic-bezier(.16,1,.3,1)", fill:"forwards" }).finished;
-    await papereta.animate([
-      { opacity:1, transform:"translateY(0) rotate(-4deg)" },
-      { opacity:1, transform:`translateY(${ranura - 6}px) rotate(0deg)`, offset:.55 },
-      { opacity:1, transform:`translateY(${ranura + 70}px) rotate(0deg)` },
-    ], { duration:620, easing:"cubic-bezier(.55,0,.75,.4)", fill:"forwards" }).finished;
-    papereta.style.opacity = 0;
-    caixa.animate([
-      { transform:"scale(1,1)" }, { transform:"scale(1.06,.94)" }, { transform:"scale(.98,1.03)" }, { transform:"scale(1,1)" },
-    ], { duration:420, easing:"ease-out" });
-    escena.classList.add("rebuda");
+  // La bústia: una figura de Hairline (@lucasmarkes/hairline, MIT). El nucli és hairline/kernel.js i la figura, hairline/bustia.js:
+  // la porta s'obre quan hi acostes el dit (o mentre escrius), i en enviar-la hi entra la papereta i puja la banderola.
+  let figura = null;
+  const lectura = document.getElementById("lectura"), DIU = { rest:"en repòs" };
+  window.hairline = fig => {
+    const stage = document.getElementById("bustia-figura");
+    HL.inject(document);
+    stage.setAttribute("data-hairline", fig.name);
+    const svg = HL.mk("svg", { viewBox:"0 0 400 320", "aria-hidden":"true" }, stage);
+    let text = "";
+    const read = { get textContent() { return text; }, set textContent(t) { text = String(t ?? ""); lectura.textContent = DIU[text] || text; } };
+    figura = fig.mount({ stage, svg, read }, fig.range[1]);
   };
+  const nucli = document.createElement("script");
+  nucli.src = "hairline/kernel.js";
+  nucli.onload = () => { const f = document.createElement("script"); f.type = "module"; f.src = "hairline/bustia.js"; document.body.append(f); };
+  document.body.append(nucli);
+
+  form.idea.addEventListener("focus", () => figura && figura.atent(true));
+  form.idea.addEventListener("blur", () => figura && figura.atent(false));
+  form.idea.addEventListener("input", () => figura && figura.torna());
+  const tiraLa = () => (figura ? figura.envia() : Promise.resolve());
 
   form.addEventListener("submit", async ev => {
     ev.preventDefault();
@@ -312,7 +299,7 @@ if (CLAU || LOCAL) {
     if (!idea) { estat.textContent = "escriu quina eina t’aniria bé."; form.idea.focus(); return; }
     if (form.botcheck.checked) return;
     boto.disabled = true; estat.textContent = "";
-    escena.classList.remove("rebuda");
+    if (figura) figura.torna();
     const enviament = CLAU
       ? fetch("https://api.web3forms.com/submit", {
           method:"POST", headers:{ "Content-Type":"application/json", Accept:"application/json" },
@@ -326,7 +313,7 @@ if (CLAU || LOCAL) {
       form.reset();
       estat.textContent = res.value === "prova" ? "a la bústia! (prova en local: no s’ha enviat)" : "a la bústia! la llegiré jo mateixa.";
     } else {
-      escena.classList.remove("rebuda");
+      if (figura) figura.torna();
       estat.textContent = "no s’ha pogut enviar. torna-ho a provar d’aquí a una estona.";
     }
   });
