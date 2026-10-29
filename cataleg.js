@@ -34,11 +34,4 @@ window.EINES = [
 ];
 
 window.AVIAT = [
-  { titol: "prova d’animacions", frase: "puges el teu vídeo i Claude et proposa animacions just quan dius cada cosa." },
-  { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
-    llista: { text: "apunta’t", url: "https://tally.so/r/bZ5NyE?origen=paradeta" } },
-  { titol: "massa idees", frase: "el teu tauler d’idees al mòbil: les dius i s’ordenen soles." },
-  { titol: "s’hauria de dir més", frase: "paraules catalanes que s’haurien de dir més, i les votes." },
-  { titol: "filtre beauty", frase: "el filtre de pell per als reels, sense passar per CapCut." },
-  { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
 ];
