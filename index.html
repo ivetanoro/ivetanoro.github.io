@@ -107,23 +107,36 @@
 
   /* bústia */
   .bustia { display:grid; gap:18px; }
-  .paper { position:relative; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); padding:18px 16px 16px;
-           background-image:repeating-linear-gradient(transparent 0 31px, rgba(172,202,230,.55) 31px 32px); background-position:0 62px; }
-  .paper label { display:block; font-weight:700; }
-  .paper .q { font-size:22px; letter-spacing:-.02em; line-height:1.15; margin-bottom:10px; }
-  .paper .petit { font-size:14px; margin:14px 0 6px; }
-  .paper .petit span { font-weight:400; color:var(--muted); }
-  .paper textarea, .paper input[type=text] { display:block; width:100%; font:16px/1.5 var(--sans); color:var(--esp); background:rgba(255,255,255,.6);
-           border:var(--vora); border-radius:6px; padding:10px 12px; }
-  .paper textarea { resize:vertical; min-height:112px; }
-  .paper .btn { margin-top:14px; }
+  .sobre { position:relative; margin-top:46px; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); padding:16px 14px 14px; }
+  /* la solapa oberta, a sobre del sobre; quan s'envia es tanca (.tancat) */
+  .solapa { position:absolute; left:-1.5px; width:calc(100% + 3px); bottom:calc(100% - 1.5px); height:46px; overflow:visible; z-index:2;
+            transform-origin:50% 100%; transition:transform .45s cubic-bezier(.32,.72,0,1); }
+  .solapa path { fill:var(--blue-soft); stroke:var(--esp); stroke-width:1.5; vector-effect:non-scaling-stroke; stroke-linejoin:round; }
+  .tancat .solapa { transform:scaleY(-1); }
+  .segell { position:absolute; top:14px; right:14px; width:52px; height:62px; background:var(--blue); border:var(--vora); border-radius:2px;
+            outline:1.5px dashed var(--esp); outline-offset:3px; display:grid; place-items:center;
+            font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.06em; writing-mode:vertical-rl; }
+  .mata { position:absolute; top:44px; right:44px; width:42px; height:42px; border:1.2px solid rgba(47,27,17,.45); border-radius:50%;
+          display:grid; place-items:center; font-family:var(--mono); font-size:9px; color:rgba(47,27,17,.65); transform:rotate(-14deg); }
+  .sobre .q { display:block; min-height:68px; font-weight:700; font-size:24px; letter-spacing:-.02em; line-height:1.12; margin:0 84px 10px 0; }   /* el segell no tapa mai la primera línia */
+  .sobre textarea { display:block; width:100%; min-height:96px; padding:0; border:0; border-radius:0; resize:vertical; color:var(--esp); font:16px/32px var(--sans);
+                    background:repeating-linear-gradient(transparent 0 31px, rgba(47,27,17,.28) 31px 32px); background-attachment:local; }
+  .sobre .de { display:flex; align-items:baseline; gap:8px; margin-top:6px; }
+  .sobre .de label { flex:none; font-weight:700; font-size:14px; }
+  .sobre input[type=text] { flex:1; min-width:0; min-height:44px; padding:8px 0 4px; border:0; border-bottom:1px solid rgba(47,27,17,.28); border-radius:0;
+                            background:transparent; color:var(--esp); font:16px/1.4 var(--sans); }
+  .sobre textarea:focus-visible, .sobre input:focus-visible { outline:2px solid var(--esp); outline-offset:4px; border-radius:3px; }
+  .sobre ::placeholder { color:rgba(47,27,17,.65); }
+  .sobre .btn { margin-top:14px; }
   .hp { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; }
   .estat { min-height:1.4em; margin:10px 0 0; font-size:14px; }
-  /* la bústia és una figura de Hairline (hairline/): línies espresso, i l'únic ressaltat en oxblood */
-  .figura { background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
-  .figura #lectura { margin-left:auto; font-variant-numeric:tabular-nums; }
-  #bustia-figura { --hairline-plate:var(--paper); --hairline-hi:var(--ox); --hairline-edge:#786A60; --hairline-mid:#A89E94; --hairline-lo:#D6D0C5;
-                   --hairline-stroke:1.15; }
+  /* la bústia és una figura de Hairline (hairline/): el traç gruixut de les targetes, la caixa blava i la banderola oxblood */
+  #bustia-figura { --hairline-plate:var(--paper); --hairline-hi:var(--ox); --hairline-edge:var(--esp); --hairline-mid:var(--esp); --hairline-lo:#A3968A;
+                   --hairline-stroke:1.7; }
+  #bustia-figura .caixa .sil { fill:var(--blue); }
+  #bustia-figura .porta { fill:var(--blue-soft); }
+  #bustia-figura .banderola { fill:var(--ox); }
+  #bustia-figura .base .sil { fill:var(--butter); }
 
   footer { max-width:1180px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-left, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));
            border-top:2px solid var(--esp); display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; text-transform:uppercase; }
@@ -146,7 +159,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .capa, .btn { transition:none !important; }
+    .capa, .btn, .solapa { transition:none !important; }
     .eina:hover .capa, .visual:active .capa { transform:none !important; }
   }
 
@@ -178,17 +191,17 @@
   <div id="seccio-bustia" hidden>
     <h2 class="sec"><span>bústia</span><span>demana una eina</span></h2>
     <div class="bustia">
-      <form class="paper" id="peticio" novalidate>
+      <form class="sobre" id="peticio" novalidate>
+        <svg class="solapa" viewBox="0 0 100 46" preserveAspectRatio="none" aria-hidden="true"><path d="M0 46 L45 5 Q50 1 55 5 L100 46"/></svg>
+        <div class="segell" aria-hidden="true">@ivetanoro</div><div class="mata" id="mata" aria-hidden="true"></div>
         <label class="q" for="idea">quina eina t’aniria bé?</label>
-        <textarea id="idea" name="idea" maxlength="1000" required placeholder="una que em digui…"></textarea>
-        <label class="petit" for="qui">el teu @ o el teu nom <span>(si vols que et respongui)</span></label>
-        <input type="text" id="qui" name="qui" maxlength="80" autocomplete="off">
+        <textarea id="idea" name="idea" maxlength="1000" required rows="3" placeholder="una que em digui…"></textarea>
+        <div class="de"><label for="qui">de part de</label><input type="text" id="qui" name="qui" maxlength="80" autocomplete="off" placeholder="el teu @, si vols resposta"></div>
         <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
         <button class="btn" type="submit"><span>tira-la a la bústia</span><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 3v11M4.5 10 9 14.5 13.5 10" stroke="currentColor" stroke-width="2"/></svg></button>
         <p class="estat" id="estat" role="status" aria-live="polite"></p>
       </form>
       <div class="figura" aria-hidden="true">
-        <div class="barra"><span class="punts"><i></i><i></i><i></i></span><span id="lectura">en repòs</span></div>
         <div id="bustia-figura"></div>
       </div>
     </div>
@@ -271,17 +284,16 @@ if (CLAU || LOCAL) {
   const boto = form.querySelector("button");
 
   // La bústia: una figura de Hairline (@lucasmarkes/hairline, MIT). El nucli és hairline/kernel.js i la figura, hairline/bustia.js:
-  // la porta s'obre quan hi acostes el dit (o mentre escrius), i en enviar-la hi entra la papereta i puja la banderola.
+  // la porta s'obre quan hi acostes el dit (o mentre escrius), i en enviar-la hi entra el sobre i puja la banderola.
   let figura = null;
-  const lectura = document.getElementById("lectura"), DIU = { rest:"en repòs" };
+  const quiet = matchMedia("(prefers-reduced-motion: reduce)").matches, avui = new Date();
+  document.getElementById("mata").textContent = `${n2(avui.getDate())}·${n2(avui.getMonth() + 1)}`;
   window.hairline = fig => {
     const stage = document.getElementById("bustia-figura");
     HL.inject(document);
     stage.setAttribute("data-hairline", fig.name);
     const svg = HL.mk("svg", { viewBox:"0 0 400 320", "aria-hidden":"true" }, stage);
-    let text = "";
-    const read = { get textContent() { return text; }, set textContent(t) { text = String(t ?? ""); lectura.textContent = DIU[text] || text; } };
-    figura = fig.mount({ stage, svg, read }, fig.range[1]);
+    figura = fig.mount({ stage, svg, read:{ textContent:"" } }, fig.range[1]);
   };
   const nucli = document.createElement("script");
   nucli.src = "hairline/kernel.js";
@@ -291,7 +303,12 @@ if (CLAU || LOCAL) {
   form.idea.addEventListener("focus", () => figura && figura.atent(true));
   form.idea.addEventListener("blur", () => figura && figura.atent(false));
   form.idea.addEventListener("input", () => figura && figura.torna());
-  const tiraLa = () => (figura ? figura.envia() : Promise.resolve());
+  // en enviar: la solapa es tanca, i el sobre (ara dibuixat) entra a la bústia
+  const tiraLa = async () => {
+    form.classList.add("tancat");
+    await new Promise(r => setTimeout(r, quiet ? 0 : 450));
+    if (figura) await figura.envia();
+  };
 
   form.addEventListener("submit", async ev => {
     ev.preventDefault();
@@ -309,6 +326,7 @@ if (CLAU || LOCAL) {
       : Promise.resolve("prova");
     const [res] = await Promise.allSettled([enviament, tiraLa()]);
     boto.disabled = false;
+    form.classList.remove("tancat");
     if (res.status === "fulfilled") {
       form.reset();
       estat.textContent = res.value === "prova" ? "a la bústia! (prova en local: no s’ha enviat)" : "a la bústia! la llegiré jo mateixa.";

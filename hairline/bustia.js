@@ -2,7 +2,7 @@
  * Bústia: a country mailbox on a post: a box with a round roof, a door on its
  * near end that drops open, a flag on its side. The pointer is projected onto
  * a plane at the door's height; the nearer it is to the door, the further the
- * door drops, on one spring. envia() slides a slip in through the door and
+ * door drops, on one spring. envia() slides an envelope in through the door and
  * raises the flag, which takes the bright stroke; torna() lowers it again;
  * atent(on) holds the door ajar while someone writes. The slider is the reach.
  *
@@ -18,7 +18,7 @@ const L = 60, W = 30, ZB = 50, HW = 15, B = 1.6;        // the box: length, widt
 const ZH = ZB + B, DH = HW + W / 2 - 2 * B, FT = 1.2;   // the door: hinge height, height, thickness
 const REST = 8, OPEN = 96, WAIT = 40, TURN = 51;        // door angles; past TURN its inside faces us
 const FY = W + 1.5, PX = 9, PZ = ZB + 11;               // the flag's plane and its pivot
-const SL = 24, SY0 = 7, SY1 = 23, SZ = ZB + 5.5;        // the slip, lying flat
+const SL = 24, SY0 = 7, SY1 = 23, SZ = ZB + 5.5;        // the envelope, lying flat
 const FLAG = [[-3, -1.6], [34, -1.6], [34, 12], [20, 12], [20, 1.6], [-3, 1.6]];
 
 const ease = (s) => s * s * (3 - 2 * s);
@@ -41,25 +41,29 @@ function mount({ stage, svg, read }, value) {
   const P = proj(C), front = facing(C);
   const at = (x) => (p) => P(x, p[0], p[1]);
   const g = mk("g", {}, svg);
-  const block = (x0, y0, x1, y1, r, b, z0, z1) => {
-    const [ring, inner] = rings(x0, y0, x1, y1, r, b);
-    put(solid(g), prism(P, front, ring, inner, z0, z1));
+  // Each part carries a class naming it, so the page can colour it: the figure itself sets no colour.
+  const block = (name, x0, y0, x1, y1, r, b, z0, z1) => {
+    const [ring, inner] = rings(x0, y0, x1, y1, r, b), s = solid(g);
+    s.g.classList.add(name);
+    put(s, prism(P, front, ring, inner, z0, z1));
   };
 
   // Back to front: the base, the post, the box (its silhouette, and its open end as the crease), two rolled ribs.
-  block(16, 1, 44, 29, 8, 2, -5, 0);
-  block(25, 10, 35, 20, 2, 0.8, 0, ZB + 2);
+  block("base", 16, 1, 44, 29, 8, 2, -5, 0);
+  block("pal", 25, 10, 35, 20, 2, 0.8, 0, ZB + 2);
   const end = arch(0), mouth = arch(B);
-  put(solid(g), { sil: poly(hull(end.map(at(0)).concat(end.map(at(L))))), crease: poly(mouth.map(at(L))) });
+  const box = solid(g);
+  box.g.classList.add("caixa");
+  put(box, { sil: poly(hull(end.map(at(0)).concat(end.map(at(L))))), crease: poly(mouth.map(at(L))) });
   const seen = run(end, (p) => (p[0] - W / 2) * 0.61 + (p[1] - ZB - HW) * 0.5 > 0);
   for (const x of [5, L - 5]) mk("path", { d: open(seen.map(at(x))), class: "nf lo" }, g);
 
-  // The door, then the slip over it, then the flag on the near side.
-  const doorBack = mk("path", { class: "lo" }, g), doorFace = mk("path", { class: "sil" }, g);
+  // The door, then the envelope over it, then the flag on the near side.
+  const doorBack = mk("path", { class: "lo porta" }, g), doorFace = mk("path", { class: "sil porta" }, g);
   const knob = mk("circle", { r: 1.1, class: "dot m" }, g);
   const slipBack = mk("path", { class: "lo" }, g), slipFace = mk("path", { class: "sil" }, g);
-  const slipRule = mk("path", { class: "nf lo" }, g);
-  const flagBack = mk("path", { class: "lo" }, g), flagFace = mk("path", { class: "sil" }, g);
+  const slipFold = mk("path", { class: "nf" }, g);
+  const flagBack = mk("path", { class: "lo banderola" }, g), flagFace = mk("path", { class: "sil banderola" }, g);
   place(mk("circle", { r: 1.2, class: "dot m" }, g), P(PX, FY + FT + 0.1, PZ));
 
   /** The door dropped d degrees about its hinge; off lifts a point off its inside, along its normal. */
@@ -73,16 +77,16 @@ function mount({ stage, svg, read }, value) {
     doorFace.setAttribute("d", d < TURN ? out : inn);
     place(knob, onDoor(d, FT + 0.1)([W / 2, ZH + DH - 4]));
   }
-  /** The slip with its back edge at x; whatever has gone past the door is inside the box, so it is not drawn. */
+  /** The envelope with its back edge at x, its flap a V at the trailing end; what has gone past the door is inside, so it is not drawn. */
   function drawSlip(x) {
-    const x0 = Math.max(L, x), els = [slipBack, slipFace, slipRule];
+    const x0 = Math.max(L, x), els = [slipBack, slipFace, slipFold];
     if (x + SL - x0 < 0.6) { els.forEach((el) => el.setAttribute("d", "")); return; }
     const r = x0 > x ? 0 : 1.2, pts = fillet([[x0, SY0], [x + SL, SY0], [x + SL, SY1], [x0, SY1]], [r, 1.2, 1.2, r]);
     const on = (z) => (p) => P(p[0], p[1], z);
     slipBack.setAttribute("d", poly(pts.map(on(SZ - 0.8))));
     slipFace.setAttribute("d", poly(pts.map(on(SZ))));
-    slipRule.setAttribute("d", [SY0 + 4, SY0 + 8, SY0 + 12].filter(() => x + SL - 4 > x0 + 1)
-      .map((y) => seg(P(Math.max(x0, x + 4), y, SZ), P(x + SL - 4, y, SZ))).join(""));
+    const tip = [x + SL - 10, (SY0 + SY1) / 2];
+    slipFold.setAttribute("d", tip[0] > x0 ? seg(P(x + SL, SY0, SZ), P(...tip, SZ)) + seg(P(...tip, SZ), P(x + SL, SY1, SZ)) : "");
   }
   const flagShape = fillet(FLAG, [1.5, 1.2, 1.2, 1.2, 0.8, 1.5]);
   /** The flag turned ph degrees about its pivot: 0 lies along the box, 90 stands up. */
