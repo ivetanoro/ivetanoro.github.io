@@ -86,7 +86,6 @@
   .fitxa > div { display:flex; gap:8px; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--esp); }
   .fitxa dt { flex:none; width:2.6em; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
   .fitxa dd { margin:0; font-size:13px; font-weight:700; line-height:1.25; min-width:0; }
-  .fitxa .preu { background:var(--blue-soft); padding:1px 5px; border-radius:3px; }
   .accions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-top:auto; padding-top:12px; }
   .btn { display:inline-flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; width:100%;
          background:var(--ox); color:var(--butter); text-decoration:none; font:700 15px/1.1 var(--sans); border:0;
@@ -256,7 +255,7 @@ document.getElementById("eines").innerHTML = EINES.map((e, i) => `
     <div class="cos">
       <h3>${esc(e.titol)}</h3>
       <p class="frase">${esc(e.frase)}</p>
-      <dl class="fitxa">${(e.fitxa || []).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}<div><dt>preu</dt><dd><span class="preu">${esc(e.preu || "gratis")}</span></dd></div></dl>
+      <dl class="fitxa">${(e.fitxa || []).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}<div><dt>preu</dt><dd>${esc(e.preu || "gratis")}</dd></div></dl>
       ${accions(e)}
     </div>
   </article>`).join("");
