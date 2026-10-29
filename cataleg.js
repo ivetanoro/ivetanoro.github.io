@@ -28,7 +28,6 @@ window.EINES = [
     frase: "l’editor de reels en català. talles el vídeo tocant les paraules, com si fos un text.",
     fitxa: [["cal", "Claude o Codex"], ["on", "Mac o Windows"]],
     boto: { text: "instal·la’l", url: "https://ivetanoro.github.io/guia-tallat/" },
-    enllac2: { text: "el codi", url: "https://github.com/ivetanoro/tallat" },
     visual: { fons: "img/tallat-cafe.jpg", logo: "img/tallat-wordmark.png" },
   },
   {

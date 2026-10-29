@@ -61,15 +61,16 @@
   .punts i:nth-child(2) { background:var(--blue); }
   .barra .preu { margin-left:auto; }
   .visual { position:relative; display:block; aspect-ratio:1; overflow:hidden; border-bottom:var(--vora); background:var(--butter); }
-  .visual > img.foto { display:block; width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.16,1,.3,1); }
-  .eina:hover .visual > img.foto { transform:scale(1.03); }
-  .visual.fons { background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; }
-  .visual.fons img { width:74%; height:auto; }
+  .capa { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:transform .5s cubic-bezier(.16,1,.3,1); }
+  .capa > img.foto { display:block; width:100%; height:100%; object-fit:cover; }
+  @media (hover:hover) { .eina:not(.soon):hover .capa { transform:scale(1.04); } }
+  .capa.fons { background-size:cover; background-position:center; }
+  .capa.fons img { width:74%; height:auto; }
   .adhesiu { position:absolute; top:38px; right:-4px; z-index:1; transform:rotate(6deg); background:var(--ox); color:var(--butter);
              font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:5px 12px 5px 9px; border:var(--vora); }
 
   /* la prova d'animacions, dibuixada com la seva interfície */
-  .visual.timeline { background:var(--esp); display:flex; flex-direction:column; justify-content:center; gap:12%; padding:12%; }
+  .capa.timeline { background:var(--esp); flex-direction:column; align-items:stretch; gap:12%; padding:12%; }
   .tl-pantalla { position:relative; aspect-ratio:16/10; border:1.5px solid rgba(251,246,209,.4); border-radius:6px; }
   .tl-sub { position:absolute; left:50%; bottom:14%; transform:translateX(-50%); background:var(--blue-soft); color:var(--esp);
             font-weight:700; font-size:clamp(10px, 2.6vw, 15px); padding:2px 7px; border-radius:3px; white-space:nowrap; }
@@ -224,12 +225,12 @@ document.getElementById("rang").textContent = `01–${n2(EINES.length)}`;
 
 const barra = (num, dreta) => `<div class="barra"><span class="punts"><i></i><i></i><i></i></span><span>${esc(num)}</span><span class="preu">${esc(dreta)}</span></div>`;
 const visual = (v, url) => {
-  const a = inner => `<a class="visual${inner.cls}" href="${esc(url)}" tabindex="-1" aria-hidden="true"${inner.style || ""}>${inner.html}</a>`;
-  if (v.imatge) return a({ cls:"", html:`<img class="foto" src="${esc(v.imatge)}" alt="" loading="lazy" width="900" height="900">` });
-  if (v.fons) return a({ cls:" fons", style:` style="background-image:url('${esc(v.fons)}')"`, html: v.logo ? `<img src="${esc(v.logo)}" alt="">` : "" });
-  if (v.ui === "timeline") return a({ cls:" timeline", html:
-    `<div class="tl-pantalla"><span class="tl-sub">i aquí, un zoom</span></div><div class="tl-pista"><i style="left:14%"></i><i style="left:41%"></i><b style="left:58%"></b><i style="left:79%"></i></div>` });
-  return a({ cls:"", html:"" });
+  let capa = "";
+  if (v.imatge) capa = `<div class="capa"><img class="foto" src="${esc(v.imatge)}" alt="" loading="lazy" width="900" height="900"></div>`;
+  else if (v.fons) capa = `<div class="capa fons" style="background-image:url('${esc(v.fons)}')">${v.logo ? `<img src="${esc(v.logo)}" alt="">` : ""}</div>`;
+  else if (v.ui === "timeline") capa = `<div class="capa timeline"><div class="tl-pantalla"><span class="tl-sub">i aquí, un zoom</span></div>`
+    + `<div class="tl-pista"><i style="left:14%"></i><i style="left:41%"></i><b style="left:58%"></b><i style="left:79%"></i></div></div>`;
+  return `<a class="visual" href="${esc(url)}" tabindex="-1" aria-hidden="true">${capa}</a>`;
 };
 const accions = e => {
   const b = [];
