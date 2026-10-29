@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>intentant trobar l’equilibri · la paradeta</title>
+<style>
+  /* brand Helvetica (official from 27.10.2026; Helvetica Now before that) */
+  /* versió pública: la Helvetica del sistema, sense penjar-ne el fitxer */
+  :root { --butter:#FBF6D1; --oxblood:#4C050C; --espresso:#2F1B11; }
+  html, body { margin:0; height:100%; background:#d9d4b4; overflow:hidden; }
+  body { display:flex; flex-direction:row; align-items:center; justify-content:center; gap:20px;
+         font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; color:var(--espresso); }
+  #stage { height:min(calc(100vh - 32px), calc((100vw - 320px) * 1.25)); width:auto; aspect-ratio:4/5;
+           touch-action:none; cursor:default; box-shadow:0 10px 40px rgba(47,27,17,.15); }
+  #stage.over { cursor:grab; } #stage.grabbing { cursor:grabbing; } #stage.btn { cursor:pointer; }
+  #stage.drawn, #stage.drawn.over, #stage.drawn.btn, #stage.drawn.grabbing { cursor:none; }   /* the mouse is drawn on the canvas */
+  #panel { width:260px; max-height:calc(100vh - 32px); overflow:auto; font-size:12px; }
+  #panel.hidden { display:none; }
+  #panel h3 { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin:14px 0 6px; }
+  #panel label { display:block; margin:7px 0; }
+  #panel .row { display:flex; justify-content:space-between; }
+  #panel .row b { font-weight:700; font-variant-numeric:tabular-nums; }
+  #panel input[type=range] { width:100%; accent-color:var(--espresso); margin:3px 0 0; }
+  #panel .chk { display:flex; gap:6px; align-items:center; }
+  #panel button { font:inherit; font-size:12px; padding:6px 10px; border:1px solid var(--espresso);
+                  background:transparent; color:var(--espresso); cursor:pointer; margin:10px 6px 0 0; }
+  #hud { font-size:11px; opacity:.7; line-height:1.7; margin-top:14px; }
+  #rec { display:none; position:fixed; top:12px; left:14px; color:var(--oxblood); font-weight:700; font-size:13px; }
+  #rec.on { display:block; }
+  #saving { display:none; position:fixed; inset:0; align-items:center; justify-content:center;
+            background:rgba(251,246,209,.88); font-weight:700; font-size:22px; }
+  #saving.on { display:flex; }
+  #glc { display:none; }
+  /* ?portada: just the slide, full window, for the studio thumbnail */
+  .portada #panel { display:none; }
+  .portada #stage { height:100vh; box-shadow:none; }
+  /* ?reel: 9:16 canvas for Instagram */
+  .reel #stage { aspect-ratio:9/16; height:min(calc(100vh - 32px), calc((100vw - 320px) * 16 / 9)); }
+  .portada.reel #stage { height:100vh; }
+</style>
+<style>
+  /* versió pública (la paradeta): sense panell, amb una barra a dalt i una a baix */
+  body { flex-direction:column; gap:10px; }
+  #stage { height:min(calc(100vh - 128px), calc((100vw - 24px) * 1.25));
+           height:min(calc(100dvh - 128px), calc((100vw - 24px) * 1.25)); }
+  .pub { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:14px;
+         width:min(calc(100vw - 24px), calc((100vh - 128px) * .8)); width:min(calc(100vw - 24px), calc((100dvh - 128px) * .8)); }
+  .pub a { color:inherit; text-decoration:none; }
+  .pub a:hover { text-decoration:underline; text-underline-offset:3px; }
+  .foto { font-weight:700; font-size:15px; border:1.5px solid var(--espresso); border-radius:6px; padding:11px 14px; cursor:pointer; }
+  .foto:active { transform:scale(.98); }
+  .foto:focus-within { outline:2px solid var(--oxblood); outline-offset:3px; }
+  .pista { font-size:12px; opacity:.75; text-align:right; }
+</style>
+</head>
+<body>
+<nav class="pub"><a href="../">← la paradeta</a><a href="https://www.instagram.com/ivetanoro/">@ivetanoro</a></nav>
+<canvas id="stage"></canvas>
+<canvas id="glc"></canvas>
+<div class="pub"><label class="foto">posa-hi la teva cara<input id="foto" type="file" accept="image/*" hidden></label><span class="pista">millor una foto amb fons blanc</span></div>
+<div id="panel" class="hidden">
+  <div id="sliders"></div>
+  <button id="reset">restablir</button><button id="copy">copiar valors</button>
+  <div id="hud">
+    R gravar / parar (en parar, es desa el vídeo)<br>C dit · G guies · A el botó crida l’atenció<br><span id="mic"></span>P amagar aquest panell<br>arrossega un PNG per canviar la cara
+  </div>
+</div>
+<div id="rec">● GRAVANT</div>
+<div id="saving"></div>
+<script>
+const PORTADA = new URLSearchParams(location.search).has("portada");
+if (PORTADA) document.documentElement.classList.add("portada");
+
+// ---------- layout (authored at 1080×1350, rendered at ×S) ----------
+// ?escala=1 draws at 1080 wide instead of 2160 (quick review takes)
+const S = +(new URLSearchParams(location.search).get("escala")) || (Math.min(innerWidth, innerHeight) < 700 ? 1 : 2), W = 1080, H = 1350;   // the slide, in its own units
+const REEL = new URLSearchParams(location.search).has("reel");
+if (REEL) document.documentElement.classList.add("reel");
+// where the slide sits on the stage: reel = 1080×1920, slide at 92% (1000×1250), centred, top at y=230
+const SW = W, SH = REEL ? 1920 : H;
+const K = REEL ? 1000 / 1080 : 1, OX = REEL ? (SW - W * K) / 2 : 0, OY = REEL ? 230 : 0;
+const HOOK = "o m’agrada o em paguen", HOOK_SECS = 3;
+// «i si ho tingués tot?»: the three go to 100 and the face is itself again, for a moment… then the 404
+const TOT = {
+  button: "i si ho tingués tot?", lines: ["m’agrada. em paga. em deixa viure.", "un moment. això existeix?"],
+  eyebrow: "ERROR", code: "404", message: "equilibri no trobat.", retry: "torna-ho a intentar",
+  footer: "jo adaptant-me al mercat laboral.", tries: "INTENTS D’EQUILIBRI",
+};
+// seconds from the press: the two lines come in, hard cut to the 404 (T.cut, on the panel), then the retry button;
+// settle = the face after retrying
+const AT = { line1: .35, get line2(){ return T.cut * .5; }, get cut(){ return T.cut; }, get retry(){ return T.cut + 1.2; }, settle: .6 };
+// where «torna-ho a intentar» leaves the chart: never balanced, always 150 in total (vocació, vida, sou)
+const UNBALANCED = [[.95, .3, .25], [.2, .35, .95], [.3, .95, .25]];
+// how much the face is stretched along each axis when it touches the handles at 100 (vocació, vida, sou)
+const TOUCH = [2.26, 3, 3];
+// buttons, centred, in slide units
+const BTN = { y: 1198, h: 64, px: 28, wt: 700, pad: 38 }, RETRY = { y: 1085, h: 52, px: 22, wt: 400, pad: 28 };
+const C = { x: 540, y: 735 };
+const R = 360;
+const COL = { butter:"#FBF6D1", oxblood:"#4C050C", espresso:"#2F1B11" };
+
+const deg = d => d * Math.PI / 180;
+const AXES = [
+  { tag:"vocació", phrase:["m’agrada el que faig"],              ang: deg(-90) },
+  { tag:"vida",    phrase:["em queda energia", "per existir"],   ang: deg(150) },
+  { tag:"sou",     phrase:["em dona per viure"],                 ang: deg(30)  },
+].map(a => ({ ...a, u: { x: Math.cos(a.ang), y: Math.sin(a.ang) } }));
+
+// tria’n dos: the three always add up to the same total, so one can only go up if the others pay for it.
+// when an axis goes up, this is how the cost is split between the other two (and the gain, when it goes down)
+// 0 vocació, 1 vida, 2 sou
+const SHARES = {
+  0: { 2: .7, 1: .3 },   // si m’agrada el que faig → el sou cau, i una mica l’energia
+  1: { 0: .5, 2: .5 },   // si em queda vida → a mitges entre vocació i sou
+  2: { 1: .7, 0: .3 },   // si em dona per viure → em podreixo per dins, i una mica deixa d’agradar-me
+};
+
+// ---------- tunables ----------
+const PARAMS = [
+  { group:"cara" },
+  { key:"faceSize", label:"mida de la cara",              min:80,  max:260, step:1,   def:145 },
+  { key:"faceY",    label:"centre de la cara (amunt/avall)", min:-.4, max:.4, step:.01, def:.1 },
+  { group:"deformació" },
+  { key:"gain",     label:"intensitat",                   min:.3,  max:3,   step:.01, def:1 },
+  { key:"soft",     label:"suavitat entre eixos (menys = més suau)", min:.5, max:12, step:.1, def:3 },
+  { key:"min",      label:"mínim de cada eix",            min:0,   max:.4,  step:.01, def:.05 },
+  { group:"elàstic" },
+  { key:"stiff",    label:"força de la goma",             min:15,  max:400, step:1,   def:160 },
+  { key:"damp",     label:"frenada (menys = més rebots)", min:.5,  max:30,  step:.1,  def:7 },
+  { group:"final" },
+  { key:"cut",      label:"segons fins al 404",           min:1,   max:4,   step:.1,  def:2.1 },
+  { group:"mostrar" },
+  { key:"hook",     label:"reel: «o m’agrada o em paguen» els primers 3 s", type:"bool", def:true },
+  { key:"handles",  label:"handles",                      type:"bool", def:true },
+  { key:"numbers",  label:"punts a cada eix",             type:"bool", def:true },
+  { key:"cursor",   label:"ratolí dibuixat (surt a la presa)", type:"bool", def:true },
+];
+const T = { start: .5 };   // every axis starts at 50, so the total is always 150
+PARAMS.forEach(p => { if (p.key) T[p.key] = p.def; });
+try { Object.assign(T, JSON.parse(localStorage.getItem("equilibri-tres") || "{}")); } catch (e) {}
+
+// ---------- canvases ----------
+const stage = document.getElementById("stage");
+stage.width = SW * S; stage.height = SH * S;
+const ctx = stage.getContext("2d");
+const glc = document.getElementById("glc");
+glc.width = W * S; glc.height = H * S;
+const gl = glc.getContext("webgl", { premultipliedAlpha: true, alpha: true, preserveDrawingBuffer: true, antialias: true });
+
+// ---------- face warp: every direction is scaled by its handles, the face keeps its own silhouette ----------
+const VS = `attribute vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }`;
+const FS = `
+precision highp float;
+uniform sampler2D tex;
+uniform vec2 center;           // GL pixel coords
+uniform float fh, aspect, faceY, soft;
+uniform float r0, r1, r2;   // scale per axis
+uniform float a0, a1, a2;   // axis angles
+const float PI = 3.14159265;
+float wgt(float th, float a){ return exp(soft * (cos(th - a) - 1.0)); }
+void main(){
+  vec2 d = vec2(gl_FragCoord.x - center.x, center.y - gl_FragCoord.y);   // y down
+  float th = atan(d.y, d.x);
+  float w0 = wgt(th,a0), w1 = wgt(th,a1), w2 = wgt(th,a2);
+  float sc = (w0*r0 + w1*r1 + w2*r2) / (w0+w1+w2);
+  vec2 q = d / sc / fh;          // undo the stretch along this direction
+  q.y += faceY;
+  vec2 uv = vec2(q.x / aspect * 0.5 + 0.5, q.y * 0.5 + 0.5);
+  if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) { gl_FragColor = vec4(0.); return; }
+  gl_FragColor = texture2D(tex, uv);
+}`;
+function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+const prog = gl.createProgram();
+gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+gl.linkProgram(prog); gl.useProgram(prog);
+const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+const aP = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(aP);
+gl.vertexAttribPointer(aP, 2, gl.FLOAT, false, 0, 0);
+const U = n => gl.getUniformLocation(prog, n);
+const tex = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+let aspect = 0.8;
+function setFace(img){
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+  aspect = (img.naturalWidth || img.width) / (img.naturalHeight || img.height);
+}
+
+// strip the sticker's white outline (brand: no white borders on cut-outs) and crop to the face
+function cleanSticker(img){
+  const w = img.naturalWidth, h = img.naturalHeight;
+  const c = document.createElement("canvas"); c.width = w; c.height = h;
+  const x = c.getContext("2d"); x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, w, h), px = d.data;
+  const whiteish = i => { const r = px[i], g = px[i+1], b = px[i+2];
+    return Math.min(r, g, b) > 214 && Math.max(r, g, b) - Math.min(r, g, b) < 30; };
+  const seen = new Uint8Array(w * h), q = [];
+  for (let i = 0; i < w * h; i++) if (px[i*4+3] < 128) { seen[i] = 1; q.push(i); }
+  while (q.length) {
+    const i = q.pop(), ix = i % w, iy = (i / w) | 0;
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]) {
+      const nx = ix + dx, ny = iy + dy; if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+      const n = ny * w + nx; if (seen[n]) continue;
+      if (whiteish(n * 4)) { seen[n] = 1; q.push(n); }
+    }
+  }
+  const kill = seen.slice();
+  for (let y = 1; y < h - 1; y++) for (let xx = 1; xx < w - 1; xx++) {
+    const i = y * w + xx; if (seen[i]) continue;
+    if (seen[i-1] || seen[i+1] || seen[i-w] || seen[i+w]) kill[i] = 1;
+  }
+  let x0 = w, y0 = h, x1 = 0, y1 = 0;
+  for (let i = 0; i < w * h; i++) {
+    if (kill[i]) { px[i*4+3] = 0; continue; }
+    const ix = i % w, iy = (i / w) | 0;
+    if (ix < x0) x0 = ix; if (ix > x1) x1 = ix; if (iy < y0) y0 = iy; if (iy > y1) y1 = iy;
+  }
+  x.putImageData(d, 0, 0);
+  const out = document.createElement("canvas"); out.width = x1 - x0 + 1; out.height = y1 - y0 + 1;
+  out.getContext("2d").drawImage(c, -x0, -y0);
+  return out;
+}
+const real = new Image();
+real.onload = () => { try { setFace(cleanSticker(real)); } catch (e) { console.warn("obre-ho amb el servidor local per carregar la cara", e); } };
+real.src = "cara-original.webp";
+addEventListener("dragover", e => e.preventDefault());
+addEventListener("drop", e => {
+  e.preventDefault();
+  const f = e.dataTransfer.files[0]; if (!f) return;
+  const img = new Image(); img.onload = () => setFace(cleanSticker(img)); img.src = URL.createObjectURL(f);
+});
+// versió pública: la foto també es pot triar (al mòbil no es pot arrossegar). Les del mòbil fan 12 MP: primer s'encongeixen.
+document.getElementById("foto").addEventListener("change", e => {
+  const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  const big = new Image();
+  big.onload = () => {
+    const k = Math.min(1, 1000 / Math.max(big.naturalWidth, big.naturalHeight));
+    const c = document.createElement("canvas"); c.width = Math.round(big.naturalWidth * k); c.height = Math.round(big.naturalHeight * k);
+    c.getContext("2d").drawImage(big, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(big.src);
+    const img = new Image(); img.onload = () => setFace(cleanSticker(img)); img.src = c.toDataURL("image/png");
+  };
+  big.src = URL.createObjectURL(f);
+});
+
+// ---------- state: target value per axis + elastic displayed value ----------
+const target = AXES.map(() => T.start), shown = AXES.map(() => T.start), vel = AXES.map(() => 0);
+let grabbed = -1, pointer = null, pointerDown = false, showFinger = true, showGuides = false;
+let clock = 0;                 // simulation seconds: the same live and in the replay of a take
+let seq = null, back = null;   // seq = the «tot» moment ({ t0 }); back = the snap back to the chart after the 404
+let tries = 0;
+let attn = null, clickAt = null, clickP = null;   // the button calling for attention; the last click (for its ring)
+const seqT = () => seq ? clock - seq.t0 : -1;
+const ease = x => { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+// how much of the overall size to take out of the face: all of it during «tot» (all three at 100 = her own face,
+// not a bigger one), fading out after «torna-ho a intentar», none the rest of the time
+const sizeOut = () => seq ? 1 : back ? 1 - ease((clock - back.t0) / AT.settle) : 0;
+
+function notice(){ if (!seq) attn = { t0: clock }; }
+function haveItAll(){
+  tries++; seq = { t0: clock }; back = null; attn = null;
+  AXES.forEach((a, i) => { target[i] = 1; });   // past the 150: all three at 100
+}
+function retry(){
+  seq = null; back = { t0: clock };
+  UNBALANCED[Math.max(0, tries - 1) % UNBALANCED.length].forEach((v, i) => { target[i] = v; });
+}
+
+function setAxis(i, v){
+  const lo = T.min, hi = 1, clamp = x => Math.min(hi, Math.max(lo, x));
+  const total = T.start * AXES.length;
+  const others = AXES.map((a, j) => j).filter(j => j !== i);
+  // the others can't go below the minimum or above 100, so that bounds how far this one can move
+  v = clamp(v);
+  v = Math.min(v, total - others.length * lo);
+  v = Math.max(v, total - others.length * hi);
+  target[i] = v;
+  let need = (total - v) - others.reduce((s, j) => s + target[j], 0);
+  let pool = others;
+  for (let pass = 0; pass < 3 && Math.abs(need) > 1e-6 && pool.length; pass++) {
+    const wsum = pool.reduce((s, j) => s + SHARES[i][j], 0);
+    let left = 0; const free = [];
+    for (const j of pool) {
+      const want = target[j] + need * SHARES[i][j] / wsum, got = clamp(want);
+      left += want - got; target[j] = got;
+      if (got === want) free.push(j);
+    }
+    need = left; pool = free;   // whatever a clamped axis couldn't take goes to the other one
+  }
+}
+
+function step(dt){
+  clock += dt;
+  for (let i = 0; i < AXES.length; i++) {
+    vel[i] += (T.stiff * (target[i] - shown[i]) - T.damp * vel[i]) * dt;
+    shown[i] += vel[i] * dt;
+  }
+}
+
+// ---------- input ----------
+function toCanvas(e){
+  const b = stage.getBoundingClientRect();
+  const x = (e.clientX - b.left) / b.width * SW, y = (e.clientY - b.top) / b.height * SH;
+  return { x: (x - OX) / K, y: (y - OY) / K };   // into slide units
+}
+// a bounce past 100 stops at 110, so the handle never runs into the label
+const vertex = i => { const r = R * Math.min(1.1, shown[i]); return { x: C.x + AXES[i].u.x * r, y: C.y + AXES[i].u.y * r }; };
+function pick(p){
+  // nearest handle within reach, otherwise the axis closest in angle
+  let best = -1, bd = 70;
+  AXES.forEach((a, i) => { const v = vertex(i), d = Math.hypot(v.x - p.x, v.y - p.y); if (d < bd) { bd = d; best = i; } });
+  if (best >= 0) return best;
+  const dx = p.x - C.x, dy = p.y - C.y, r = Math.hypot(dx, dy);
+  if (r > R * 1.25 || r < 20) return -1;
+  let bc = -2; AXES.forEach((a, i) => { const c = (dx * a.u.x + dy * a.u.y) / r; if (c > bc) { bc = c; best = i; } });
+  return bc > .8 ? best : -1;
+}
+const along = (i, p) => ((p.x - C.x) * AXES[i].u.x + (p.y - C.y) * AXES[i].u.y) / R;
+function btnRect(b, text){
+  ctx.font = F(b.px, b.wt); ctx.letterSpacing = "0px";
+  const w = ctx.measureText(text).width / S + b.pad * 2;
+  return { x: 540 - w / 2, y: b.y - b.h / 2, w, h: b.h };
+}
+const inside = (p, r, m = 10) => p.x > r.x - m && p.x < r.x + r.w + m && p.y > r.y - m && p.y < r.y + r.h + m;
+function hit(p){   // which button is under p: "tot", "retry" or ""
+  if (!seq) return inside(p, btnRect(BTN, TOT.button)) ? "tot" : "";
+  return seqT() >= AT.retry && inside(p, btnRect(RETRY, TOT.retry)) ? "retry" : "";
+}
+// press / drag / release are shared by the live pointer and the replay of a take.
+// a press returns what it did ("tot", "retry" or ""); the replay passes back the one that was logged
+function press(p, g, act){
+  pointer = { x: p.x, y: p.y }; pointerDown = true; grabbed = -1; clickAt = clock; clickP = { x: p.x, y: p.y };
+  act = act ?? hit(pointer);
+  if (act === "tot") haveItAll();
+  else if (act === "retry") retry();
+  else if (!seq) { grabbed = g ?? pick(pointer); if (grabbed >= 0) setAxis(grabbed, along(grabbed, pointer)); }
+  return act;
+}
+function drag(p){ pointer = { x: p.x, y: p.y }; if (grabbed >= 0) setAxis(grabbed, along(grabbed, pointer)); }
+function release(){ grabbed = -1; pointerDown = false; }
+stage.addEventListener("pointerdown", e => {
+  if (saving) return;
+  const act = press(toCanvas(e)); log("d", e, { g: grabbed, a: act });
+  if (grabbed >= 0) { stage.setPointerCapture(e.pointerId); stage.classList.add("grabbing"); }
+});
+stage.addEventListener("pointermove", e => {
+  if (saving) return;
+  const all = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+  (all.length ? all : [e]).forEach(c => log("m", c));
+  drag(toCanvas(e));
+  if (grabbed < 0) { const b = !!hit(pointer);
+    stage.classList.toggle("btn", b); stage.classList.toggle("over", !b && !seq && pick(pointer) >= 0); }
+});
+const up = e => { if (saving) return; release(); log("u", e); stage.classList.remove("grabbing"); };
+stage.addEventListener("pointerup", up); stage.addEventListener("pointercancel", up);
+
+// ---------- drawing ----------
+function drawFace(){
+  gl.viewport(0, 0, glc.width, glc.height);
+  gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.uniform2f(U("center"), C.x * S, (H - C.y) * S);
+  gl.uniform1f(U("fh"), T.faceSize * S);
+  gl.uniform1f(U("aspect"), aspect);
+  gl.uniform1f(U("faceY"), T.faceY);
+  gl.uniform1f(U("soft"), T.soft);
+  AXES.forEach((a, i) => gl.uniform1f(U("a" + i), a.ang));
+  // leave only how uneven the three are (see sizeOut); during «tot» the face then blows up like a balloon
+  // until it touches the three handles at 100, just before the cut to the 404
+  const rs = shown.map(v => Math.pow(Math.max(.05, v) / T.start, T.gain));
+  const k = 1 + (rs.length / rs.reduce((s, r) => s + r, 0) - 1) * sizeOut();
+  const u = seq ? ease(seqT() / (AT.cut * .92)) : 0;
+  rs.forEach((r, i) => gl.uniform1f(U("r" + i), r * k + (TOUCH[i] - r * k) * u));
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+function dottedCircle(r, gap){
+  ctx.beginPath(); ctx.setLineDash([1.5 * S, gap * S]); ctx.lineCap = "round";
+  ctx.arc(C.x * S, C.y * S, r * S, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+}
+const F = (px, wt = 400) => `${wt} ${px*S}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+
+const MAXW = REEL ? 770 : 940;   // reel: inside the safe zone (left 120, right 180)
+function fitText(text, px, y){   // bold, centred, shrunk if it would leave the safe zone
+  ctx.font = F(px, 700); ctx.letterSpacing = `${-.02*px*S}px`;
+  const w = ctx.measureText(text).width / S;
+  if (w > MAXW) { px *= MAXW / w; ctx.font = F(px, 700); ctx.letterSpacing = `${-.02*px*S}px`; }
+  ctx.fillText(text, 540*S, y*S); ctx.letterSpacing = "0px";
+}
+function pill(r, fill, stroke = COL.espresso){
+  ctx.beginPath(); ctx.roundRect(r.x*S, r.y*S, r.w*S, r.h*S, r.h/2*S);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); } else { ctx.lineWidth = 1.5*S; ctx.strokeStyle = stroke; ctx.stroke(); }
+}
+function label(b, text, color){
+  ctx.fillStyle = color; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.font = F(b.px, b.wt); ctx.letterSpacing = "0px"; ctx.fillText(text, 540*S, (b.y + 1)*S);
+  ctx.textBaseline = "alphabetic"; ctx.fillStyle = COL.espresso;
+}
+
+function render(){
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = COL.butter; ctx.fillRect(0, 0, SW*S, SH*S);
+  ctx.setTransform(K, 0, 0, K, OX * S, OY * S);   // draw the slide in its own units from here on
+  ctx.fillStyle = COL.espresso; ctx.strokeStyle = COL.espresso;
+  const t = seqT();
+  if (t >= AT.cut) draw404(t); else drawChart(t);
+  drawFooter();
+
+  if (T.cursor && pointer) drawCursor();
+  else if (showFinger && pointerDown && pointer) {
+    ctx.fillStyle = "rgba(47,27,17,.14)";
+    ctx.beginPath(); ctx.arc(pointer.x * S, pointer.y * S, 24 * S, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (showGuides && !saving) {
+    ctx.fillStyle = "rgba(76,5,12,.18)";
+    if (REEL) {   // brand safe zone at 1080×1920 (top 250, bottom 420, left 120, right 180) + instagram's icons (right 193 under y 860)
+      const Z = { t: 250, b: 420, l: 120, r: 180, rLow: 193, yLow: 860 };
+      ctx.fillRect(0, 0, SW * S, Z.t * S); ctx.fillRect(0, (SH - Z.b) * S, SW * S, Z.b * S);
+      ctx.fillRect(0, Z.t * S, Z.l * S, (SH - Z.t - Z.b) * S);
+      ctx.fillRect((SW - Z.r) * S, Z.t * S, Z.r * S, (Z.yLow - Z.t) * S);
+      ctx.fillRect((SW - Z.rLow) * S, Z.yLow * S, Z.rLow * S, (SH - Z.b - Z.yLow) * S);
+    } else {
+      const cw = H * 3 / 4, off = (W - cw) / 2;
+      ctx.fillRect(0, 0, off * S, H * S); ctx.fillRect((W - off) * S, 0, off * S, H * S);
+    }
+  }
+}
+
+// the 404: face, chart and button gone (hard cut), only the error. after a moment, a quiet way back
+function draw404(t){
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = COL.espresso;
+  const ep = REEL ? 24 : 20;
+  ctx.font = F(ep); ctx.letterSpacing = `${.3*ep*S}px`; ctx.globalAlpha = .75;
+  ctx.fillText(TOT.eyebrow, 540*S, 560*S);
+  ctx.globalAlpha = 1;
+  ctx.font = F(380, 700); ctx.letterSpacing = `${-.04*380*S}px`;
+  ctx.fillText(TOT.code, 540*S, 880*S);
+  fitText(TOT.message, 48, 975);
+  if (t >= AT.retry) { pill(btnRect(RETRY, TOT.retry)); label(RETRY, TOT.retry, COL.espresso); }
+}
+
+// footer, on every screen: the line, and under it how many times she's tried
+function drawFooter(){
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = COL.espresso;
+  ctx.font = F(30, 700); ctx.letterSpacing = `${-.4*S}px`;
+  ctx.fillText(TOT.footer, 540*S, 1284*S);
+  const px = REEL ? 20 : 16, ls = `${.12*px*S}px`;
+  const pieces = [{ t: `${TOT.tries}:  `, font: F(px), a: .75 }, { t: String(tries).padStart(2, "0"), font: F(px, 700), a: 1 }];
+  ctx.letterSpacing = ls;
+  const width = pieces.reduce((w, p) => { ctx.font = p.font; return w + ctx.measureText(p.t).width; }, 0);
+  let x = 540*S - width / 2; ctx.textAlign = "left";
+  pieces.forEach(p => { ctx.font = p.font; ctx.globalAlpha = p.a; ctx.fillText(p.t, x, 1320*S); x += ctx.measureText(p.t).width; });
+  ctx.globalAlpha = 1; ctx.letterSpacing = "0px"; ctx.textAlign = "center";
+}
+
+function drawChart(t){
+  ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+  if (t >= 0) {   // during «tot» the title band (the hook's, in the reel) is for the two lines
+    if (t >= AT.line1) fitText(TOT.lines[0], 38, 96);
+    if (t >= AT.line2) fitText(TOT.lines[1], 56, 168);
+  } else if (!REEL) {
+    ctx.font = F(60, 700); ctx.letterSpacing = `${-1.2*S}px`;
+    ctx.fillText("intentant trobar l’equilibri", 540*S, 150*S);
+    ctx.font = F(25, 700); ctx.letterSpacing = `${-.2*S}px`;
+    ctx.fillText("una feina que m’agradi i que estigui ben pagada.", 540*S, 196*S);
+    ctx.letterSpacing = "0px";
+  } else if (T.hook && (takeTime === null || takeTime < HOOK_SECS)) {
+    // the title band is the text track: hook for the first 3 s of the take, then free for subtitles
+    ctx.font = F(64, 700); ctx.letterSpacing = `${-1.3*S}px`;
+    ctx.fillText(HOOK, 540*S, 168*S);
+    ctx.letterSpacing = "0px";
+  }
+
+  ctx.lineWidth = 1.2 * S; ctx.lineCap = "butt";
+  AXES.forEach(a => {
+    ctx.beginPath(); ctx.moveTo(C.x * S, C.y * S);
+    ctx.lineTo((C.x + a.u.x * R * 1.13) * S, (C.y + a.u.y * R * 1.13) * S); ctx.stroke();
+  });
+  ctx.beginPath(); ctx.arc(C.x*S, C.y*S, R*S, 0, Math.PI*2); ctx.stroke();
+  ctx.lineWidth = 1.6 * S; dottedCircle(R * .76, 4.5); dottedCircle(R * .5, 4.5);
+
+  drawFace();
+  ctx.drawImage(glc, 0, 0);
+
+  // labels: a first-person phrase, and under it the axis name + its points (drawn over the face)
+  AXES.forEach((a, i) => {
+    const ex = C.x + a.u.x * R * 1.13, ey = C.y + a.u.y * R * 1.13;
+    const top = a.u.y < -.5;
+    const align = top ? "center" : a.u.x < 0 ? "left" : "right";
+    // reel: inside the brand safe zone (left 120) and clear of instagram's icon column (right 193 under y 860)
+    const x = top ? ex : a.u.x < 0 ? (REEL ? 88 : 64) : (REEL ? 914 : 1016);
+    const tagPx = REEL ? 22 : 18, numPx = REEL ? 44 : 18;
+    const yTag = top ? ey - 26 : 1135;
+    const gap = REEL ? 52 : 34;
+    ctx.textAlign = align;
+    ctx.font = F(27, i === grabbed ? 700 : 400);
+    a.phrase.forEach((t, k) => ctx.fillText(t, x * S, (yTag - gap - (a.phrase.length - 1 - k) * 32) * S));
+    // tag line, drawn piece by piece so the number can be bigger than the word
+    const pieces = [
+      { t: a.tag.toUpperCase(), font: F(tagPx, 400), ls: .12 * tagPx },
+      ...(T.numbers ? [{ t: "  ·  ", font: F(tagPx, 400), ls: 0 },
+                       { t: `${Math.round(Math.max(0, Math.min(1, shown[i])) * 100)}%`, font: F(numPx, 700), ls: 0 }] : []),
+    ];
+    const width = pieces.reduce((w, p) => { ctx.font = p.font; ctx.letterSpacing = `${p.ls*S}px`; return w + ctx.measureText(p.t).width; }, 0);
+    let px = align === "center" ? x * S - width / 2 : align === "right" ? x * S - width : x * S;
+    ctx.textAlign = "left"; ctx.globalAlpha = .75;
+    pieces.forEach(p => {
+      ctx.font = p.font; ctx.letterSpacing = `${p.ls*S}px`;
+      ctx.globalAlpha = p.font.startsWith("700") ? 1 : .75;
+      ctx.fillText(p.t, px, yTag * S); px += ctx.measureText(p.t).width;
+    });
+    ctx.globalAlpha = 1; ctx.letterSpacing = "0px";
+  });
+
+
+  if (T.handles) {
+    AXES.forEach((a, i) => {
+      const v = vertex(i);
+      ctx.beginPath(); ctx.arc(v.x * S, v.y * S, (i === grabbed ? 11 : 8) * S, 0, Math.PI * 2);
+      ctx.fillStyle = COL.butter; ctx.fill();
+      ctx.lineWidth = 2 * S; ctx.strokeStyle = COL.espresso; ctx.stroke();
+    });
+  }
+
+  drawButton(t);
+}
+
+// the one main button: oxblood while «tot» plays. when it's noticed (A, or the take's "n") it pulses: it grows a little,
+// blinks oxblood and sends out a ring, ATTN.n times
+const ATTN = { pulse: .8, n: 2 };
+function drawButton(t){
+  const r = btnRect(BTN, TOT.button);
+  let k = 1, fill = t >= 0 ? COL.oxblood : COL.espresso;
+  const a = attn && !seq ? (clock - attn.t0) / ATTN.pulse : -1;
+  if (a >= 0 && a < ATTN.n) {
+    const u = a % 1, b = Math.sin(Math.PI * u), g = 6 + 30 * ease(u);
+    k = 1 + .07 * b;
+    if (b > .6) fill = COL.oxblood;
+    ctx.globalAlpha = .55 * (1 - u);
+    pill({ x: r.x - g, y: r.y - g, w: r.w + 2 * g, h: r.h + 2 * g }, null, COL.oxblood);
+    ctx.globalAlpha = 1;
+  }
+  ctx.save();
+  ctx.translate(540 * S, BTN.y * S); ctx.scale(k, k); ctx.translate(-540 * S, -BTN.y * S);
+  pill(r, fill); label(BTN, TOT.button, COL.butter);
+  ctx.restore();
+}
+
+// the mouse, drawn so it shows in the take: an espresso arrow with a butter edge, a bit smaller while pressed, and a ring where it clicks
+const ARROW = [[0, 0], [0, 25], [6, 19.5], [10.5, 29], [14.5, 27.3], [10, 18], [17.5, 18]], ARROW_K = 1.8;
+function drawCursor(){
+  const u = clickAt === null ? 1 : (clock - clickAt) / .4;
+  if (clickP && u >= 0 && u < 1) {
+    ctx.beginPath(); ctx.arc(clickP.x * S, clickP.y * S, (8 + 26 * ease(u)) * S, 0, Math.PI * 2);
+    ctx.globalAlpha = .45 * (1 - u); ctx.lineWidth = 2 * S; ctx.strokeStyle = COL.espresso; ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  const k = ARROW_K * (pointerDown ? .88 : 1);
+  ctx.beginPath();
+  ARROW.forEach(([x, y], i) => ctx[i ? "lineTo" : "moveTo"]((pointer.x + x * k) * S, (pointer.y + y * k) * S));
+  ctx.closePath(); ctx.lineJoin = "round";
+  ctx.lineWidth = 2.6 * S; ctx.strokeStyle = COL.butter; ctx.stroke();
+  ctx.fillStyle = COL.espresso; ctx.fill();
+}
+
+let last = performance.now(), acc = 0;
+function frame(now){
+  if (!saving) {   // while saving, the replay owns the state and the canvas
+    // up to 1/4 s per frame, so the live clock keeps real time even when 4K frames are slow (the replay always does)
+    acc += Math.min(.25, (now - last) / 1000);
+    const h = 1 / 240;
+    while (acc >= h) { step(h); acc -= h; }
+    takeTime = take ? (now - take.t0) / 1000 : null;
+    stage.classList.toggle("drawn", !!T.cursor);
+    render();
+  }
+  last = now;
+  requestAnimationFrame(frame);
+}
+
+// ---------- takes: performed live, saved frame by frame ----------
+// this Mac can't encode the 4K canvas in real time (the 8/10 take came out at 13 fps), so a take keeps what you do
+// (pointer + voice) and, when it stops, replays it at exactly 30 fps into a .mov with the voice already in sync
+let take = null, saving = false, takeTime = null, starting = false;
+let withMic = true, mic = null;   // M switches the voice off
+const showMic = () => document.getElementById("mic").innerHTML = `M veu a la presa: <b>${withMic ? "sí" : "no"}</b><br>`;
+const busy = t => { const s = document.getElementById("saving"); s.textContent = t || ""; s.classList.toggle("on", !!t); };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+function log(k, e, extra){
+  if (!take) return;
+  take.events.push({ t: Math.max(0, (e.timeStamp - take.t0) / 1000), k, ...(k === "u" ? {} : toCanvas(e)), ...extra });
+}
+
+async function openMic(){
+  if (mic) return;
+  const ac = new AudioContext();   // made before the await, while the key press still counts as a gesture
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
+  const node = ac.createScriptProcessor(1024, 1, 1);
+  ac.createMediaStreamSource(stream).connect(node); node.connect(ac.destination);   // its output stays silent
+  node.onaudioprocess = e => { if (take && take.pcm) take.pcm.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
+  await ac.resume();
+  mic = { ac, rate: ac.sampleRate };
+}
+
+async function toggleRec(){
+  if (saving || starting) return;
+  if (take) {
+    const tk = take; take = null; tk.dur = (performance.now() - tk.t0) / 1000;
+    document.getElementById("rec").classList.remove("on");
+    return saveTake(tk);
+  }
+  starting = true;
+  if (withMic) try { await openMic(); }
+    catch (e) { console.warn("sense micròfon: la presa es grava sense veu", e); withMic = false; showMic(); }
+  starting = false;
+  take = { t0: performance.now(), events: [], pcm: withMic ? [] : null, rate: mic && mic.rate,
+           from: { target: [...target], shown: [...shown], vel: [...vel], grabbed, pointer, pointerDown, showFinger, T: { ...T },
+                   clock, seq: seq && { ...seq }, back: back && { ...back }, tries, attn: attn && { ...attn }, clickAt, clickP } };
+  document.getElementById("rec").classList.add("on");
+}
+
+async function videoConfig(){
+  const base = { width: stage.width, height: stage.height, bitrate: 40e6, framerate: 30, avc: { format: "avc" } };
+  for (const codec of ["avc1.640033", "avc1.4d0033", "avc1.420033"]) {   // high, main, baseline · level 5.1 (4K)
+    const c = { ...base, codec };
+    try { if ((await VideoEncoder.isConfigSupported(c)).supported) return c; } catch (e) {}
+  }
+  throw new Error("aquest navegador no pot fer vídeo H.264 a aquesta mida");
+}
+
+async function saveTake(tk){
+  if (!window.VideoEncoder) { alert("per desar el vídeo, obre l’eina amb Chrome"); return; }
+  saving = true; busy("desant el vídeo… 0%");
+  const keep = { T: { ...T }, showFinger };
+  try {
+    const fps = 30, n = Math.max(1, Math.round(tk.dur * fps));
+    const samples = []; let avcC = null, err = null;
+    const enc = new VideoEncoder({
+      output: (c, meta) => {
+        const d = meta && meta.decoderConfig && meta.decoderConfig.description;
+        if (d) avcC = ArrayBuffer.isView(d) ? new Uint8Array(d.buffer, d.byteOffset, d.byteLength).slice() : new Uint8Array(d.slice(0));
+        const b = new Uint8Array(c.byteLength); c.copyTo(b); samples.push({ b, key: c.type === "key" });
+      },
+      error: e => err = e,
+    });
+    enc.configure(await videoConfig());
+    // back to how everything was when the take started, then play it again, one frame every 1/30 s
+    const f0 = tk.from;
+    AXES.forEach((a, i) => { target[i] = f0.target[i]; shown[i] = f0.shown[i]; vel[i] = f0.vel[i]; });
+    grabbed = f0.grabbed; pointer = f0.pointer; pointerDown = f0.pointerDown; showFinger = f0.showFinger;
+    Object.assign(T, f0.T);
+    clock = f0.clock; seq = f0.seq && { ...f0.seq }; back = f0.back && { ...f0.back }; tries = f0.tries;
+    attn = f0.attn ? { ...f0.attn } : null; clickAt = f0.clickAt ?? null; clickP = f0.clickP ?? null;
+    const h = 1 / 240; let sim = 0, ev = 0;
+    const apply = upto => {
+      for (; ev < tk.events.length && tk.events[ev].t <= upto; ev++) {
+        const e = tk.events[ev];
+        if (e.k === "d") press(e, e.g, e.a); else if (e.k === "m") drag(e); else if (e.k === "u") release(); else if (e.k === "i") restart(); else if (e.k === "n") notice();
+      }
+    };
+    for (let f = 0; f < n; f++) {
+      if (err) throw err;
+      const tf = f / fps;
+      while (sim + h <= tf + 1e-9) { apply(sim); step(h); sim += h; }
+      apply(tf);
+      takeTime = tf; render();
+      const vf = new VideoFrame(stage, { timestamp: Math.round(f * 1e6 / fps), duration: Math.round(1e6 / fps) });
+      enc.encode(vf, { keyFrame: f % fps === 0 }); vf.close();
+      while (enc.encodeQueueSize > 2) await wait(4);
+      if (f % 5 === 0) { busy(`desant el vídeo… ${Math.round(f / n * 100)}%`); await wait(0); }
+    }
+    await enc.flush(); enc.close();
+    if (err) throw err;
+    if (!avcC) throw new Error("falta la configuració del vídeo");
+    const pcm = tk.pcm && pcm16(tk.pcm, Math.round(n / fps * tk.rate));
+    download(mov({ w: stage.width, h: stage.height, fps, samples, avcC, pcm, rate: tk.rate }), takeName());
+    busy("desat ✓ és a Baixades"); await wait(1400);
+  } catch (e) {
+    console.error(e); alert("no s’ha pogut desar el vídeo: " + (e && e.message));
+  } finally {
+    Object.assign(T, keep.T); showFinger = keep.showFinger;
+    release(); takeTime = null; saving = false; busy(null);
+  }
+}
+
+function pcm16(chunks, len){   // float chunks → 16-bit little-endian, cut or padded to the video's length
+  const out = new DataView(new ArrayBuffer(len * 2)); let i = 0;
+  for (const c of chunks) for (let k = 0; k < c.length && i < len; k++, i++)
+    out.setInt16(i * 2, Math.max(-1, Math.min(1, c[k])) * 32767, true);
+  return new Uint8Array(out.buffer);
+}
+const takeName = () => { const d = new Date(), p = x => String(x).padStart(2, "0");
+  return `equilibri-${REEL ? "reel" : "post"}-${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}.mov`; };
+function download(blob, name){
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 60e3);
+}
+
+// ---------- .mov writer: H.264 + 16-bit PCM, so the take goes straight into Premiere ----------
+function mov({ w, h, fps, samples, avcC, pcm, rate }){
+  const be = (v, bytes) => { const a = []; for (let i = bytes - 1; i >= 0; i--) a.push(Math.floor(v / 2 ** (8 * i)) & 255); return a; };
+  const u16 = v => be(v, 2), u32 = v => be(v, 4), zeros = k => new Array(k).fill(0);
+  const str = s => [...s].map(c => c.charCodeAt(0));
+  const cat = parts => { const out = new Uint8Array(parts.reduce((s, p) => s + p.length, 0)); let o = 0;
+    for (const p of parts) { out.set(p, o); o += p.length; } return out; };
+  const box = (type, ...parts) => { const body = cat(parts.map(p => p instanceof Uint8Array ? p : Uint8Array.from(p)));
+    return cat([Uint8Array.from([...u32(8 + body.length), ...str(type)]), body]); };
+  const full = (type, version, flags, ...parts) => box(type, [version, ...be(flags, 3)], ...parts);
+  const matrix = [0x10000, 0, 0, 0, 0x10000, 0, 0, 0, 0x40000000].flatMap(u32);
+  const hdlr = (kind, sub) => full("hdlr", 0, 0, str(kind), str(sub), u32(0), u32(0), u32(0), [0]);
+  const dinf = box("dinf", full("dref", 0, 0, u32(1), full("alis", 0, 1)));
+  const tkhd = (id, dur, audio) => full("tkhd", 0, 3, u32(0), u32(0), u32(id), u32(0), u32(dur), zeros(8),
+    u16(0), u16(0), u16(audio ? 0x100 : 0), u16(0), matrix, u32(audio ? 0 : w * 65536), u32(audio ? 0 : h * 65536));
+
+  const n = samples.length, ms = Math.round(n / fps * 1000), vBytes = samples.reduce((s, x) => s + x.b.length, 0);
+  const ftyp = box("ftyp", str("qt  "), u32(0x200), str("qt  "));
+  const vOff = ftyp.length + 8, aOff = vOff + vBytes;
+  const keys = samples.flatMap((s, i) => s.key ? u32(i + 1) : []);
+  const avc1 = box("avc1", zeros(6), u16(1), zeros(16), u16(w), u16(h), u32(0x480000), u32(0x480000), u32(0), u16(1),
+    zeros(32), u16(24), u16(0xffff), box("avcC", avcC));
+  const video = box("trak", tkhd(1, ms, false),
+    box("mdia", full("mdhd", 0, 0, u32(0), u32(0), u32(fps * 1000), u32(n * 1000), u16(0), u16(0)), hdlr("mhlr", "vide"),
+      box("minf", full("vmhd", 0, 1, zeros(8)), hdlr("dhlr", "alis"), dinf,
+        box("stbl", full("stsd", 0, 0, u32(1), avc1),
+          full("stts", 0, 0, u32(1), u32(n), u32(1000)),
+          full("stss", 0, 0, u32(keys.length / 4), keys),
+          full("stsc", 0, 0, u32(1), u32(1), u32(n), u32(1)),
+          full("stsz", 0, 0, u32(0), u32(n), samples.flatMap(s => u32(s.b.length))),
+          full("stco", 0, 0, u32(1), u32(vOff))))));
+  const tracks = [video];
+  if (pcm) {
+    const N = pcm.length / 2;
+    const sowt = box("sowt", zeros(6), u16(1), u16(0), u16(0), u32(0), u16(1), u16(16), u16(0), u16(0), u32(rate * 65536));
+    tracks.push(box("trak", tkhd(2, ms, true),
+      box("mdia", full("mdhd", 0, 0, u32(0), u32(0), u32(rate), u32(N), u16(0), u16(0)), hdlr("mhlr", "soun"),
+        box("minf", full("smhd", 0, 0, zeros(4)), hdlr("dhlr", "alis"), dinf,
+          box("stbl", full("stsd", 0, 0, u32(1), sowt),
+            full("stts", 0, 0, u32(1), u32(N), u32(1)),
+            full("stsc", 0, 0, u32(1), u32(1), u32(N), u32(1)),
+            full("stsz", 0, 0, u32(2), u32(N)),
+            full("stco", 0, 0, u32(1), u32(aOff)))))));
+  }
+  const mvhd = full("mvhd", 0, 0, u32(0), u32(0), u32(1000), u32(ms), u32(0x10000), u16(0x100), zeros(10), matrix,
+    zeros(24), u32(tracks.length + 1));
+  const mdat = Uint8Array.from([...u32(8 + vBytes + (pcm ? pcm.length : 0)), ...str("mdat")]);
+  return new Blob([ftyp, mdat, ...samples.map(s => s.b), ...(pcm ? [pcm] : []), box("moov", mvhd, ...tracks)],
+    { type: "video/quicktime" });
+}
+
+// ---------- panel ----------
+const sliders = document.getElementById("sliders"), inputs = {};
+const save = () => { try { localStorage.setItem("equilibri-tres", JSON.stringify(T)); } catch (e) {} };
+// back to the start: all at 50, no «tot», intents at 00
+const restart = () => { back = seq ? { t0: clock } : null; seq = null; tries = 0; attn = null; AXES.forEach((a, i) => { target[i] = T.start; }); };
+PARAMS.forEach(p => {
+  if (p.group) { const h = document.createElement("h3"); h.textContent = p.group; sliders.append(h); return; }
+  const l = document.createElement("label");
+  if (p.type === "bool") {
+    l.className = "chk";
+    l.innerHTML = `<input type="checkbox"> ${p.label}`;
+    const i = l.querySelector("input"); i.checked = T[p.key];
+    i.onchange = () => { T[p.key] = i.checked; save(); };
+    inputs[p.key] = { set: v => i.checked = v };
+  } else {
+    l.innerHTML = `<div class="row"><span>${p.label}</span><b></b></div><input type="range" min="${p.min}" max="${p.max}" step="${p.step}">`;
+    const i = l.querySelector("input"), b = l.querySelector("b");
+    const show = () => b.textContent = (+T[p.key]).toFixed(p.step >= 1 ? 0 : 2);
+    i.value = T[p.key]; show();
+    i.oninput = () => { T[p.key] = +i.value; show(); save(); if (p.key === "start") restart(); };
+    inputs[p.key] = { set: v => { i.value = v; show(); } };
+  }
+  sliders.append(l);
+});
+const resetBtn = document.getElementById("reset");
+resetBtn.textContent = "restablir valors";
+const again = document.createElement("button"); again.textContent = "tornar a l’inici";
+again.onclick = () => {   // logged, so a take that starts from here replays the same
+  restart(); if (take) take.events.push({ t: (performance.now() - take.t0) / 1000, k: "i" });
+};
+resetBtn.after(again);
+resetBtn.onclick = () => {
+  PARAMS.forEach(p => { if (p.key) { T[p.key] = p.def; inputs[p.key].set(p.def); } }); save(); restart();
+};
+document.getElementById("copy").onclick = e => {
+  navigator.clipboard.writeText(JSON.stringify(T, null, 1)).then(() => {
+    e.target.textContent = "copiat ✓"; setTimeout(() => e.target.textContent = "copiar valors", 1200);
+  });
+};
+
+addEventListener("keydown", e => {
+  if (e.key === "c" || e.key === "C") showFinger = !showFinger;
+  if (e.key === "g" || e.key === "G") showGuides = !showGuides;
+  if ((e.key === "a" || e.key === "A") && !saving) {   // logged, so the take replays it
+    notice(); if (take) take.events.push({ t: (performance.now() - take.t0) / 1000, k: "n" });
+  }
+});
+showMic();
+
+if (PORTADA) { setAxis(0, .95); T.handles = true; T.numbers = true; }
+Promise.all([document.fonts.load(F(60, 700)), document.fonts.load(F(24, 400))])
+  .finally(() => requestAnimationFrame(frame));
+</script>
+</body>
+</html>
