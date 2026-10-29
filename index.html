@@ -24,14 +24,15 @@
   * { box-sizing:border-box; }
   html { -webkit-text-size-adjust:100%; }
   body { margin:0; background:var(--butter); color:var(--esp); font-family:var(--sans); font-size:16px; line-height:1.5; }
-  a { color:inherit; }
+  a { color:inherit; -webkit-tap-highlight-color:transparent; }
+  button { -webkit-tap-highlight-color:transparent; }
   a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline:2px solid var(--ox); outline-offset:3px; }
   .mono { font-family:var(--mono); text-transform:uppercase; letter-spacing:.03em; }
 
   /* barra de dalt */
   .bar { display:grid; grid-template-columns:1.3fr 1fr 1fr; border-bottom:2px solid var(--esp);
          font-family:var(--mono); font-size:11px; letter-spacing:.02em; text-transform:uppercase; padding-top:env(safe-area-inset-top, 0px); }
-  .bar > * { padding:12px 16px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar > * { padding:12px 16px; min-height:44px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar > :last-child { border-right:0; text-align:right; }
 
   .wrap { max-width:1180px; margin:0 auto; padding:0 max(16px, env(safe-area-inset-left, 0px)) 48px; }
@@ -54,16 +55,16 @@
   .graella { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 12px; }
   .eina { position:relative; display:flex; flex-direction:column; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
   .barra { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--blue-soft); border-bottom:var(--vora);
-           font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.03em; }
+           font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
   .punts { display:flex; gap:4px; }
   .punts i { width:8px; height:8px; border-radius:50%; border:1.2px solid var(--esp); background:var(--butter); }
   .punts i:first-child { background:var(--ox); }
   .punts i:nth-child(2) { background:var(--blue); }
-  .barra .preu { margin-left:auto; }
   .visual { position:relative; display:block; aspect-ratio:1; overflow:hidden; border-bottom:var(--vora); background:var(--butter); }
   .capa { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; transition:transform .5s cubic-bezier(.16,1,.3,1); }
   .capa > img.foto { display:block; width:100%; height:100%; object-fit:cover; }
   @media (hover:hover) { .eina:not(.soon):hover .capa { transform:scale(1.04); } }
+  .visual:active .capa { transform:scale(.98); transition-duration:.1s; }
   .capa.fons { background-size:cover; background-position:center; }
   .capa.fons img { width:74%; height:auto; }
   .adhesiu { position:absolute; top:38px; right:-4px; z-index:1; transform:rotate(6deg); background:var(--ox); color:var(--butter);
@@ -73,7 +74,7 @@
   .capa.timeline { background:var(--esp); flex-direction:column; align-items:stretch; gap:12%; padding:12%; }
   .tl-pantalla { position:relative; aspect-ratio:16/10; border:1.5px solid rgba(251,246,209,.4); border-radius:6px; }
   .tl-sub { position:absolute; left:50%; bottom:14%; transform:translateX(-50%); background:var(--blue-soft); color:var(--esp);
-            font-weight:700; font-size:clamp(10px, 2.6vw, 15px); padding:2px 7px; border-radius:3px; white-space:nowrap; }
+            font-weight:700; font-size:clamp(11px, 2.6vw, 15px); padding:2px 7px; border-radius:3px; white-space:nowrap; }
   .tl-pista { position:relative; height:2px; background:rgba(251,246,209,.5); }
   .tl-pista i { position:absolute; top:50%; width:10px; height:10px; margin:-5px 0 0 -5px; transform:rotate(45deg); background:var(--blue); border:1.2px solid var(--butter); }
   .tl-pista b { position:absolute; top:-9px; bottom:-9px; width:2px; background:var(--butter); }
@@ -83,8 +84,9 @@
   .frase { margin:0; font-size:13.5px; line-height:1.4; color:var(--muted); }
   .fitxa { margin:10px 0 0; border-top:1px solid var(--esp); }
   .fitxa > div { display:flex; gap:8px; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--esp); }
-  .fitxa dt { flex:none; width:2.4em; font-family:var(--mono); font-size:10px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .fitxa dt { flex:none; width:2.6em; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
   .fitxa dd { margin:0; font-size:13px; font-weight:700; line-height:1.25; min-width:0; }
+  .fitxa .preu { background:var(--blue-soft); padding:1px 5px; border-radius:3px; }
   .accions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-top:auto; padding-top:12px; }
   .btn { display:inline-flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; width:100%;
          background:var(--ox); color:var(--butter); text-decoration:none; font:700 15px/1.1 var(--sans); border:0;
@@ -131,7 +133,7 @@
 
   footer { max-width:1180px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-left, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));
            border-top:2px solid var(--esp); display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; text-transform:uppercase; }
-  footer a { text-decoration:none; }
+  footer a { text-decoration:none; display:inline-flex; align-items:center; min-height:44px; margin:-14px 0; }
 
   @media (min-width: 640px) {
     .graella { grid-template-columns:repeat(3, minmax(0, 1fr)); gap:18px; }
@@ -145,6 +147,11 @@
   }
   @media (min-width: 980px) {
     .graella { grid-template-columns:repeat(4, minmax(0, 1fr)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .capa, .bandereta, .btn { transition:none !important; }
+    .eina:hover .capa, .visual:active .capa { transform:none !important; }
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -205,6 +212,7 @@
 <script src="cataleg.js"></script>
 <script>
 document.documentElement.classList.add("js");
+document.addEventListener("touchstart", () => {}, { passive:true });   // perquè :active (el feedback en prémer) funcioni a iOS
 const P = window.PARADETA, EINES = window.EINES, AVIAT = window.AVIAT;
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const n2 = i => String(i).padStart(2, "0");
@@ -215,7 +223,7 @@ const quiet = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const paraules = P.nom.split(" "), darrera = paraules.pop();
 document.getElementById("nom").innerHTML = `${esc(paraules.join(" "))} <span class="sel">${esc(darrera)}`
   + `<svg class="cursor" viewBox="0 0 24 34" aria-hidden="true"><path d="M2 2v26l7-6 5 10 5-2-5-10h9z" fill="#FFFDF2" stroke="#2F1B11" stroke-width="2" stroke-linejoin="round"/></svg>`
-  + `<span class="tooltip">${n2(EINES.length)} eines · ${n2(AVIAT.length)} aviat</span></span>`;
+  + `<span class="tooltip" aria-hidden="true">${n2(EINES.length)} eines · ${n2(AVIAT.length)} aviat</span></span>`;
 document.getElementById("lema").textContent = P.lema;
 document.getElementById("compte").textContent = `${n2(EINES.length)} eines`;
 document.getElementById("data").textContent = P.actualitzat;
@@ -223,7 +231,7 @@ document.getElementById("peu").textContent = `${P.nom} · ${new Date().getFullYe
 for (const id of ["insta", "insta2"]) document.getElementById(id).href = P.instagram;
 document.getElementById("rang").textContent = `01–${n2(EINES.length)}`;
 
-const barra = (num, dreta) => `<div class="barra"><span class="punts"><i></i><i></i><i></i></span><span>${esc(num)}</span><span class="preu">${esc(dreta)}</span></div>`;
+const barra = num => `<div class="barra"><span class="punts"><i></i><i></i><i></i></span><span>${esc(num)}</span></div>`;
 const visual = (v, url) => {
   let capa = "";
   if (v.imatge) capa = `<div class="capa"><img class="foto" src="${esc(v.imatge)}" alt="" loading="lazy" width="900" height="900"></div>`;
@@ -242,20 +250,20 @@ const accions = e => {
 
 document.getElementById("eines").innerHTML = EINES.map((e, i) => `
   <article class="eina reveal" style="--i:${i}">
-    ${barra(n2(i + 1), e.preu || "gratis")}
+    ${barra(n2(i + 1))}
     ${visual(e.visual || {}, e.boto.url)}
     ${e.etiqueta ? `<span class="adhesiu">${esc(e.etiqueta)}</span>` : ""}
     <div class="cos">
       <h3>${esc(e.titol)}</h3>
       <p class="frase">${esc(e.frase)}</p>
-      <dl class="fitxa">${(e.fitxa || []).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}</dl>
+      <dl class="fitxa">${(e.fitxa || []).map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join("")}<div><dt>preu</dt><dd><span class="preu">${esc(e.preu || "gratis")}</span></dd></div></dl>
       ${accions(e)}
     </div>
   </article>`).join("");
 
 document.getElementById("aviat").innerHTML = AVIAT.map((a, i) => `
   <article class="eina soon reveal" style="--i:${i}">
-    ${barra("aviat", "")}
+    ${barra("aviat")}
     <div class="visual"><h3 class="boira">${esc(a.titol)}</h3></div>
     <div class="cos">
       <p class="frase boira">${esc(a.frase)}</p>
