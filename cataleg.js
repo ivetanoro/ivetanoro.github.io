@@ -9,7 +9,7 @@
 window.PARADETA = {
   nom: "la paradeta",
   lema: "les eines que faig, perquè les provis.",
-  actualitzat: "29.10",
+  actualitzat: "12.11",
   instagram: "https://www.instagram.com/ivetanoro/",
   bustia: { clau: "2d063f5c-0977-426c-98f8-42de75fbe5a1" },   // clau pública de Web3Forms (envia a l’Ivet; no ensenya el correu)
 };
@@ -23,6 +23,14 @@ window.EINES = [
     fitxa: [["cal", "res"], ["on", "mòbil o ordinador"]],
     boto: { text: "prova-la", url: "equilibri/" },
     visual: { imatge: "img/equilibri.jpg" },
+  },
+  {
+    etiqueta: "nova",
+    titol: "el segon cervell",
+    frase: "el cervell és per tenir idees, no per guardar-les. la guia pas a pas per muntar el teu, i el text per començar.",
+    fitxa: [["cal", "una IA i un núvol"], ["on", "qualsevol mòbil i ordinador"]],
+    boto: { text: "llegeix la guia", url: "https://ivetanoro.github.io/segon-cervell/" },
+    visual: { imatge: "https://ivetanoro.github.io/segon-cervell/paradeta.jpg" },
   },
   {
     titol: "tallat",
