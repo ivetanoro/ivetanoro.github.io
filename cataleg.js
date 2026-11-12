@@ -18,19 +18,18 @@ window.PARADETA = {
 window.EINES = [
   {
     etiqueta: "nova",
+    titol: "el segon cervell",
+    frase: "el cervell és per tenir idees, no per guardar-les. la guia pas a pas per muntar el teu, i el text per començar.",
+    fitxa: [["cal", "una IA i un núvol"], ["on", "qualsevol mòbil i ordinador"]],
+    boto: { text: "llegeix la guia", url: "https://ivetanoro.github.io/segon-cervell/" },
+    visual: { imatge: "https://ivetanoro.github.io/segon-cervell/paradeta-graf.jpg" },
+  },
+  {
     titol: "intentant trobar l’equilibri",
     frase: "vocació, vida i sou: tria’n dos i mira què li passa a la cara. hi pots posar la teva.",
     fitxa: [["cal", "res"], ["on", "mòbil o ordinador"]],
     boto: { text: "prova-la", url: "equilibri/" },
     visual: { imatge: "img/equilibri.jpg" },
-  },
-  {
-    etiqueta: "nova",
-    titol: "el segon cervell",
-    frase: "el cervell és per tenir idees, no per guardar-les. la guia pas a pas per muntar el teu, i el text per començar.",
-    fitxa: [["cal", "una IA i un núvol"], ["on", "qualsevol mòbil i ordinador"]],
-    boto: { text: "llegeix la guia", url: "https://ivetanoro.github.io/segon-cervell/" },
-    visual: { imatge: "https://ivetanoro.github.io/segon-cervell/paradeta.jpg" },
   },
   {
     titol: "tallat",
