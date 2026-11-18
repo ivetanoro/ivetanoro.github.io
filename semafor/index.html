@@ -31,13 +31,16 @@
   .bar > :last-child { border-right:0; text-align:right; }
 
   .wrap { max-width:860px; margin:0 auto; padding:0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px)); }
-  .hero { padding:28px 0 24px; }
+  .hero { padding:28px 0 26px; }
   h1 { font-weight:700; font-size:clamp(40px, 11vw, 76px); line-height:.92; letter-spacing:-.045em; margin:0; text-wrap:balance; }
   .sel { position:relative; display:inline-block; background:var(--blue); padding:.04em .06em .1em; margin:-.04em -.02em -.1em; }
   .sel::before, .sel::after { content:""; position:absolute; width:2px; background:var(--esp); top:-.04em; bottom:-.04em; }
   .sel::before { left:-1px; } .sel::after { right:-1px; }
   .lema { margin:16px 0 0; font-size:16px; line-height:1.4; color:var(--muted); max-width:34ch; }
 
+  .opcions { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:0 0 16px; padding-bottom:8px; border-bottom:2px solid var(--esp);
+             font:700 clamp(24px, 6.6vw, 34px)/1.05 var(--sans); letter-spacing:-.035em; }
+  .opcions span { font:400 12px/1 var(--mono); text-transform:uppercase; letter-spacing:.03em; }
   .dos { display:grid; gap:16px; align-items:start; }
   .eina { display:flex; flex-direction:column; min-width:0; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
   .barra { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--blue-soft); border-bottom:var(--vora);
@@ -47,7 +50,7 @@
   .punts i:first-child { background:var(--ox); }
   .punts i:nth-child(2) { background:var(--blue); }
   .cos { display:flex; flex-direction:column; padding:14px 12px 12px; }
-  .cos h2 { font-size:20px; line-height:1.12; letter-spacing:-.02em; margin:0 0 6px; text-wrap:balance; }
+  .cos h3 { font-size:20px; line-height:1.12; letter-spacing:-.02em; margin:0 0 6px; text-wrap:balance; }
   .frase { margin:0 0 14px; font-size:14.5px; line-height:1.4; color:var(--muted); }
   .btn { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:48px; width:100%;
          background:var(--ox); color:var(--butter); text-decoration:none; font:700 16px/1.1 var(--sans); border:0;
@@ -85,11 +88,13 @@
     <p class="lema">hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini.</p>
   </header>
 
+  <h2 class="opcions">tens dues opcions <span aria-hidden="true">01–02</span></h2>
+
   <div class="dos">
     <article class="eina">
       <div class="barra"><span class="punts" aria-hidden="true"><i></i><i></i><i></i></span><span>01 · tal qual</span></div>
       <div class="cos">
-        <h2>obre’l al teu navegador</h2>
+        <h3>obre’l al teu navegador</h3>
         <p class="frase">ja hi pots apuntar factures. es queden al teu mòbil.</p>
         <a class="btn" href="eina/">obre el semàfor <span aria-hidden="true">→</span></a>
       </div>
@@ -98,7 +103,7 @@
     <article class="eina">
       <div class="barra"><span class="punts" aria-hidden="true"><i></i><i></i><i></i></span><span>02 · a la teva manera</span></div>
       <div class="cos">
-        <h2>crea-te’n una còpia a la teva IA</h2>
+        <h3>crea-te’n una còpia a la teva IA</h3>
         <p class="frase">baixa la plantilla, dona-la a claude o a chatgpt i personalitza-la.</p>
         <a class="btn clar" href="semafor-de-cobraments.zip" download>baixa el zip amb l’html <span aria-hidden="true">↓</span></a>
         <div class="ins">
