@@ -9,7 +9,7 @@
 window.PARADETA = {
   nom: "la paradeta",
   lema: "les eines que faig, perquè les provis.",
-  actualitzat: "12.11",
+  actualitzat: "18.11",
   instagram: "https://www.instagram.com/ivetanoro/",
   bustia: { clau: "2d063f5c-0977-426c-98f8-42de75fbe5a1" },   // clau pública de Web3Forms (envia a l’Ivet; no ensenya el correu)
 };
@@ -18,6 +18,13 @@ window.PARADETA = {
 window.EINES = [
   {
     etiqueta: "nova",
+    titol: "el semàfor de cobraments",
+    frase: "hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini. també t’escriu el recordatori.",
+    fitxa: [["cal", "res"], ["on", "mòbil o ordinador"]],
+    boto: { text: "prova’l", url: "semafor/" },
+    visual: { imatge: "img/semafor.jpg" },
+  },
+  {
     titol: "el segon cervell",
     frase: "el cervell és per tenir idees, no per guardar-les. la guia pas a pas per muntar el teu, i el text per començar.",
     fitxa: [["cal", "una IA i un núvol"], ["on", "qualsevol mòbil i ordinador"]],
@@ -42,7 +49,7 @@ window.EINES = [
 
 window.AVIAT = [
   { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
-    llista: { text: "apunta’t", kit: "10115030" } },
+    llista: { kit: "10115030", text: "apunta’t" } },
   { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
   { titol: "el mandala", frase: "un objectiu, vuit pilars i seixanta-quatre accions: el teu pla per créixer, en una graella." },
 ];
