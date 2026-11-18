@@ -418,5 +418,42 @@ $('btn-copy').addEventListener('click',function(){
 render();
 })();
 </script>
+<section class="teu" id="teu" aria-labelledby="teu-t">
+ <h2 id="teu-t">Fes-te’l teu</h2>
+ <p>Baixa el zip, adjunta l’HTML a Claude o a ChatGPT i enganxa-hi aquestes instruccions.</p>
+ <p><a class="teu-btn" href="semafor-de-cobraments.zip" download>Baixa el zip amb l’HTML</a></p>
+ <div class="teu-box">
+  <div class="teu-cap"><h3>Instruccions per a Claude</h3><button class="teu-copia" type="button" data-copia="teu-claude">Copia</button></div>
+  <p class="teu-txt" id="teu-claude">T'adjunto un fitxer HTML. Crea un artifact HTML amb aquest codi exactament igual, sense canviar, resumir ni millorar res. No hi afegeixis cap explicació.</p>
+ </div>
+ <div class="teu-box">
+  <div class="teu-cap"><h3>Instruccions per a ChatGPT</h3><button class="teu-copia" type="button" data-copia="teu-gpt">Copia</button></div>
+  <p class="teu-txt" id="teu-gpt">T'adjunto un fitxer HTML. Obre'l al canvas i mostra'n la previsualització. No canviïs, resumeixis ni milloris res del codi.</p>
+ </div>
+</section>
+<style>
+.teu{max-width:760px;margin:-28px auto 0;padding:0 16px 64px;display:flex;flex-direction:column;gap:12px}
+.teu h2{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0;padding:0 4px}
+.teu>p{margin:0;padding:0 4px;color:var(--muted);font-size:15px}
+.teu-btn{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:980px;padding:10px 20px;font-size:15px;font-weight:600;text-decoration:none}
+.teu-box{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.teu-cap{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.teu-cap h3{margin:0;font-size:15px;font-weight:600}
+.teu-copia{border:0;background:var(--fill);color:var(--accent);border-radius:980px;padding:6px 13px;font:500 14px var(--body);cursor:pointer;flex:none}
+.teu-txt{margin:0;font-size:15px;line-height:1.4;color:var(--ink);overflow-wrap:anywhere;-webkit-user-select:all;user-select:all}
+</style>
+<script>
+(function(){
+  var bs=document.querySelectorAll('[data-copia]');
+  for(var i=0;i<bs.length;i++)(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.getAttribute('data-copia')),t=el.textContent;
+      function fet(){b.textContent='Copiat';setTimeout(function(){b.textContent='Copia'},1600)}
+      function ama(){try{var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);if(document.execCommand('copy'))fet()}catch(e){}}
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(fet,ama);else ama();
+    });
+  })(bs[i]);
+})();
+</script>
 </body>
 </html>
