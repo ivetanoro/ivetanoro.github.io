@@ -2,453 +2,125 @@
 <html lang="ca">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Semàfor de cobraments</title>
-<meta name="description" content="Apunta les factures i el dia que vencen i mira qui et deu diners: en verd, en groc o en vermell. Gratis, sense compte, i les dades no surten del teu navegador.">
-<style id="css">
-/* Layout: títol gran, targetes de resum, control segmentat i una llista agrupada amb una fila per factura. */
-:root{
-  --bg:#f2f2f7; --surface:#ffffff; --ink:#1c1c1e; --muted:#6c6c72; --line:#e1e1e6; --accent:#0071e3;
-  --ok:#248a3d; --warn:#b25000; --bad:#d70015;
-  --fill:rgba(118,118,128,.12); --seg:#ffffff; --on-accent:#ffffff;
-  --display:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Helvetica,Arial,sans-serif;
-  --body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
-  color-scheme:light;
-}
-@media (prefers-color-scheme:dark){
-  :root:not([data-theme="light"]){
-    --bg:#000000; --surface:#1c1c1e; --ink:#f5f5f7; --muted:#98989f; --line:#38383a; --accent:#0a84ff;
-    --ok:#30d158; --warn:#ff9f0a; --bad:#ff453a;
-    --fill:rgba(118,118,128,.24); --seg:#636366; --on-accent:#ffffff; color-scheme:dark;
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>el semàfor de cobraments · la paradeta</title>
+<meta name="description" content="Hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini. Obre’l al teu navegador o crea-te’n una còpia a la teva IA.">
+<meta property="og:title" content="el semàfor de cobraments · la paradeta">
+<meta property="og:description" content="Hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini.">
+<meta property="og:image" content="https://ivetanoro.github.io/img/semafor.jpg">
+<meta name="theme-color" content="#FBF6D1">
+<style>
+  @font-face { font-family:"BitroadMono"; src:url("../fonts/BitroadMono-Regular.woff2") format("woff2"); font-display:swap; }
+  :root {
+    --butter:#FBF6D1; --paper:#FFFDF2; --blue:#ACCAE6; --blue-soft:#CFE0F0; --ox:#4C050C; --esp:#2F1B11;
+    --muted:rgba(47,27,17,.74);
+    --sans:"Helvetica Neue", Helvetica, Arial, sans-serif;
+    --mono:"BitroadMono", "SF Mono", ui-monospace, monospace;
+    --vora:1.5px solid var(--esp); --ombra:3px 3px 0 var(--esp);
   }
-}
-:root[data-theme="dark"]{
-  --bg:#000000; --surface:#1c1c1e; --ink:#f5f5f7; --muted:#98989f; --line:#38383a; --accent:#0a84ff;
-  --ok:#30d158; --warn:#ff9f0a; --bad:#ff453a;
-  --fill:rgba(118,118,128,.24); --seg:#636366; --on-accent:#ffffff; color-scheme:dark;
-}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.4;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
-.wrap{max-width:760px;margin:0 auto;padding:32px 16px 64px;display:flex;flex-direction:column;gap:22px}
-button,input,textarea{font:inherit;color:inherit;letter-spacing:inherit}
-button{cursor:pointer;transition:opacity .15s,transform .15s}
-button:active{opacity:.6;transform:scale(.98)}
-:focus-visible{outline:3px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+  * { box-sizing:border-box; }
+  html { -webkit-text-size-adjust:100%; }
+  body { margin:0; background:var(--butter); color:var(--esp); font-family:var(--sans); font-size:16px; line-height:1.5; }
+  a { color:inherit; -webkit-tap-highlight-color:transparent; }
+  button { -webkit-tap-highlight-color:transparent; }
+  a:focus-visible, button:focus-visible { outline:2px solid var(--ox); outline-offset:3px; }
 
-.head{display:flex;align-items:center;gap:16px}
-.lamp{flex:none;display:flex;flex-direction:column;gap:5px;padding:7px;border-radius:16px;background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-.lamp i{display:block;width:13px;height:13px;border-radius:50%;background:var(--fill)}
-.lamp[data-state="bad"] i:nth-child(1){background:var(--bad)}
-.lamp[data-state="warn"] i:nth-child(2){background:#ff9f0a}
-.lamp[data-state="ok"] i:nth-child(3){background:#30d158}
-.head h1{font-family:var(--display);font-weight:700;font-size:clamp(28px,6vw,34px);line-height:1.1;letter-spacing:-.022em;margin:0;text-wrap:balance}
-.head p{margin:3px 0 0;color:var(--muted);font-size:15px}
+  .bar { display:grid; grid-template-columns:1.3fr 1fr 1fr; border-bottom:2px solid var(--esp);
+         font-family:var(--mono); font-size:11px; letter-spacing:.02em; text-transform:uppercase; padding-top:env(safe-area-inset-top, 0px); }
+  .bar > * { padding:12px 16px; min-height:44px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bar > :last-child { border-right:0; text-align:right; }
 
-.banner{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:12px 16px;background:var(--surface);border-radius:14px;color:var(--muted);font-size:15px}
-.banner strong{color:var(--ink);font-weight:600}
+  .wrap { max-width:860px; margin:0 auto; padding:0 max(16px, env(safe-area-inset-right, 0px)) 56px max(16px, env(safe-area-inset-left, 0px)); }
+  .hero { padding:28px 0 24px; }
+  h1 { font-weight:700; font-size:clamp(40px, 11vw, 76px); line-height:.92; letter-spacing:-.045em; margin:0; text-wrap:balance; }
+  .sel { position:relative; display:inline-block; background:var(--blue); padding:.04em .06em .1em; margin:-.04em -.02em -.1em; }
+  .sel::before, .sel::after { content:""; position:absolute; width:2px; background:var(--esp); top:-.04em; bottom:-.04em; }
+  .sel::before { left:-1px; } .sel::after { right:-1px; }
+  .lema { margin:16px 0 0; font-size:16px; line-height:1.4; color:var(--muted); max-width:34ch; }
 
-.sum{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.tile{--c:var(--muted);background:var(--surface);border-radius:18px;padding:16px;min-width:0}
-.tile.warn{--c:var(--warn)} .tile.bad{--c:var(--bad)} .tile.ok{--c:var(--ok)}
-.tile .lab{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);font-weight:500}
-.tile .lab::before{content:"";flex:none;width:9px;height:9px;border-radius:50%;background:var(--c)}
-.tile .num{font-family:var(--display);font-weight:700;font-size:clamp(21px,4.6vw,28px);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15;margin-top:6px;overflow-wrap:anywhere}
-.tile .sub{font-size:13px;color:var(--muted);margin-top:2px}
+  .dos { display:grid; gap:16px; align-items:start; }
+  .eina { display:flex; flex-direction:column; min-width:0; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
+  .barra { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--blue-soft); border-bottom:var(--vora);
+           font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+  .punts { display:flex; gap:4px; }
+  .punts i { width:8px; height:8px; border-radius:50%; border:1.2px solid var(--esp); background:var(--butter); }
+  .punts i:first-child { background:var(--ox); }
+  .punts i:nth-child(2) { background:var(--blue); }
+  .cos { display:flex; flex-direction:column; padding:14px 12px 12px; }
+  .cos h2 { font-size:20px; line-height:1.12; letter-spacing:-.02em; margin:0 0 6px; text-wrap:balance; }
+  .frase { margin:0 0 14px; font-size:14.5px; line-height:1.4; color:var(--muted); }
+  .btn { display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:48px; width:100%;
+         background:var(--ox); color:var(--butter); text-decoration:none; font:700 16px/1.1 var(--sans); border:0;
+         padding:10px 14px; border-radius:6px; cursor:pointer; transition:background .2s, transform .1s; }
+  .btn:hover { background:#6a0a14; }
+  .btn:active { transform:scale(.98); }
+  .btn.clar { background:var(--paper); color:var(--esp); border:var(--vora); }
+  .btn.clar:hover { background:var(--blue-soft); }
 
-.bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
-.chips{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;flex:1 1 300px;background:var(--fill);border-radius:10px;padding:2px;min-width:0}
-.chip{border:0;background:transparent;border-radius:8px;padding:6px 4px;font-size:13px;font-weight:500;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chip[aria-pressed="true"]{background:var(--seg);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,.12),0 0 0 .5px rgba(0,0,0,.04)}
-.chip span{font-variant-numeric:tabular-nums;color:var(--muted);margin-left:4px;font-weight:500}
-.btn{border:0;background:var(--fill);color:var(--accent);border-radius:980px;padding:9px 18px;font-size:15px;font-weight:600}
-.btn.primary{background:var(--accent);color:var(--on-accent)}
-.btn.small{padding:6px 13px;font-size:14px;font-weight:500}
-.btn.ghost{background:transparent}
-.btn.small.ghost{padding:6px 8px}
-.btn.danger{color:var(--bad)}
+  .ins { margin-top:14px; border-top:1px solid var(--esp); padding-top:10px; }
+  .ins-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .ins-cap span { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .copia { flex:none; min-height:32px; padding:4px 12px; background:var(--butter); color:var(--esp); border:var(--vora); border-radius:6px;
+           font:700 13px/1 var(--sans); cursor:pointer; }
+  .copia:hover { background:var(--blue-soft); }
+  .ins p { margin:8px 0 0; font-size:14px; line-height:1.4; overflow-wrap:anywhere; }
 
-.list{list-style:none;margin:0;padding:0;background:var(--surface);border-radius:18px;overflow:hidden}
-.row{--c:var(--warn);padding:14px 16px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main amount" "status status" "actions actions";gap:8px 14px;align-items:start}
-.row + .row{border-top:1px solid var(--line)}
-.row.s-ok{--c:var(--ok)} .row.s-bad{--c:var(--bad)}
-.main{grid-area:main;min-width:0}
-.client{font-weight:600;font-size:17px;overflow-wrap:anywhere}
-.tag{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);background:var(--fill);border-radius:5px;padding:2px 6px;margin-left:7px;vertical-align:2px}
-.meta{font-size:15px;color:var(--muted);overflow-wrap:anywhere}
-.amount{grid-area:amount;font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:-.015em;font-variant-numeric:tabular-nums;white-space:nowrap}
-.status{grid-area:status;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:14px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--c);background:color-mix(in srgb,var(--c) 13%,transparent);border-radius:980px;padding:3px 10px 3px 8px}
-.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--c)}
-.when{color:var(--muted)}
-.when b{color:var(--ink);font-weight:600}
-.actions{grid-area:actions;display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
-.empty{padding:32px 16px;text-align:center;color:var(--muted);font-size:15px}
-
-.foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 14px;color:var(--muted);font-size:13px;padding:0 4px}
-.foot p{margin:0;max-width:60ch}
-
-dialog{border:0;border-radius:22px;background:var(--surface);color:var(--ink);padding:0;width:min(440px,calc(100vw - 32px));max-height:calc(100% - 32px);box-shadow:0 24px 60px rgba(0,0,0,.25)}
-dialog::backdrop{background:rgba(0,0,0,.4);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-.dlg{padding:22px;display:flex;flex-direction:column;gap:14px}
-.dlg h2{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0}
-.dlg .chips{flex:none}
-.field{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:500;color:var(--muted);min-width:0}
-.field input,.dlg textarea{border:0;background:var(--fill);color:var(--ink);border-radius:11px;padding:10px 12px;font-size:17px;width:100%;font-weight:400}
-.dlg textarea{min-height:180px;resize:vertical;line-height:1.4}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.dlg .end{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:2px}
-.err{color:var(--bad);font-size:14px;min-height:1.2em;margin:0}
-.hint{color:var(--muted);font-size:13px;margin:0}
-
-@media (min-width:700px){
-  .row{grid-template-columns:minmax(0,1.2fr) minmax(0,1.3fr) auto;grid-template-areas:"main status amount" "actions actions actions";align-items:center}
-  .status{flex-direction:column;align-items:flex-start;gap:3px}
-}
-@media (max-width:520px){
-  .sum{grid-template-columns:1fr 1fr}
-  .sum .tile:first-child{grid-column:1 / -1}
-  .two{grid-template-columns:1fr}
-  .bar .btn.primary{flex:1 1 100%}
-}
-.btn.done{background:var(--ok);color:var(--bg)}
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:15px;font-weight:600;padding:10px 18px;border-radius:980px;box-shadow:0 8px 24px rgba(0,0,0,.25);z-index:10;white-space:nowrap;animation:toast .25s ease-out}
-@keyframes toast{from{opacity:0;transform:translate(-50%,8px)}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+  @media (min-width:720px) {
+    .hero { padding:44px 0 34px; }
+    .dos { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:20px; }
+  }
+  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="application/json" id="state">{"v":1,"updated":0,"invoices":null}</script>
-<script id="app">
-(function(){
-'use strict';
-var DAY=86400000, LS='semafor-cobraments-v1';
-var $=function(id){return document.getElementById(id)};
+<nav class="bar" aria-label="la paradeta">
+  <a href="https://www.instagram.com/ivetanoro/">@ivetanoro</a>
+  <a href="../">la paradeta</a>
+  <span>18.11</span>
+</nav>
 
-/* ---------- dates i formats ---------- */
-function pad(n){return n<10?'0'+n:''+n}
-function toISO(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
-function parse(iso){var p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2],12)}
-function addDays(iso,n){var d=parse(iso);d.setDate(d.getDate()+n);return toISO(d)}
-function diff(a,b){return Math.round((parse(a)-parse(b))/DAY)}
-var TODAY=toISO(new Date());
-var eur=new Intl.NumberFormat('ca-ES',{style:'currency',currency:'EUR'});
-function fmtDate(iso){
-  var d=parse(iso),o={day:'numeric',month:'short'};
-  if(d.getFullYear()!==parse(TODAY).getFullYear())o.year='numeric';
-  return new Intl.DateTimeFormat('ca-ES',o).format(d);
-}
-function dies(n){return n===1?'1 dia':n+' dies'}
-function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+<main class="wrap">
+  <header class="hero">
+    <h1>el <span class="sel">semàfor</span> de cobraments</h1>
+    <p class="lema">hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini.</p>
+  </header>
 
-/* ---------- estat ---------- */
-function exemples(){
-  function f(client,concepte,num,imp,emesa,venc,cobrada){
-    return {id:uid(),client:client,concepte:concepte,num:num,import:imp,emesa:addDays(TODAY,emesa),venciment:addDays(TODAY,venc),cobrada:cobrada==null?null:addDays(TODAY,cobrada),exemple:true};
-  }
-  return [
-    f('Estudi Vela','Disseny de cartell','F-014',484,-45,-15,null),
-    f('Forn Mirall','Vídeo per a xarxes','F-015',726,-36,-6,null),
-    f('Llibreria Ona','Guió i locució','F-016',363,-25,5,null),
-    f('Cooperativa Brot','Sessió de fotos','F-017',907.5,-8,22,null),
-    f('Taller Nit','Animació de logotip','F-013',1089,-60,-30,-28)
-  ];
-}
-var embedded={v:1,updated:0,invoices:null};
-try{embedded=JSON.parse($('state').textContent)}catch(e){}
-var state=embedded, unsaved=false;
-try{
-  var raw=localStorage.getItem(LS);
-  if(raw){var loc=JSON.parse(raw);if(loc&&loc.updated>(embedded.updated||0)){state=loc;unsaved=true}}
-}catch(e){}
-if(!state.invoices)state={v:1,updated:state.updated||0,invoices:exemples()};
+  <div class="dos">
+    <article class="eina">
+      <div class="barra"><span class="punts" aria-hidden="true"><i></i><i></i><i></i></span><span>01 · tal qual</span></div>
+      <div class="cos">
+        <h2>obre’l al teu navegador</h2>
+        <p class="frase">ja hi pots apuntar factures. es queden al teu mòbil.</p>
+        <a class="btn" href="eina/">obre el semàfor <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
 
-var filter='totes';
-try{filter=sessionStorage.getItem(LS+'-f')||'totes'}catch(e){}
-var artifactNS=null, nsReady=false, saveMsg='', pubTimer=null, editingId=null, msgId=null;
+    <article class="eina">
+      <div class="barra"><span class="punts" aria-hidden="true"><i></i><i></i><i></i></span><span>02 · a la teva manera</span></div>
+      <div class="cos">
+        <h2>crea-te’n una còpia a la teva IA</h2>
+        <p class="frase">baixa la plantilla, dona-la a claude o a chatgpt i personalitza-la.</p>
+        <a class="btn clar" href="semafor-de-cobraments.zip" download>baixa el zip amb l’html <span aria-hidden="true">↓</span></a>
+        <div class="ins">
+          <div class="ins-cap"><span>instruccions per a claude</span><button class="copia" type="button" data-copia="i-claude">copia</button></div>
+          <p id="i-claude">T'adjunto un fitxer HTML. Crea un artifact HTML amb aquest codi exactament igual, sense canviar, resumir ni millorar res. No hi afegeixis cap explicació.</p>
+        </div>
+        <div class="ins">
+          <div class="ins-cap"><span>instruccions per a chatgpt</span><button class="copia" type="button" data-copia="i-gpt">copia</button></div>
+          <p id="i-gpt">T'adjunto un fitxer HTML. Obre'l al canvas i mostra'n la previsualització. No canviïs, resumeixis ni milloris res del codi.</p>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
 
-function info(f){
-  if(f.cobrada)return{k:'ok',cls:'s-ok',pill:'Cobrada',when:'cobrada el <b>'+esc(fmtDate(f.cobrada))+'</b>',late:0};
-  var d=diff(f.venciment,TODAY);
-  if(d<0)return{k:'bad',cls:'s-bad',pill:'Vençuda',when:'<b>'+dies(-d)+' de retard</b> · vencia el '+esc(fmtDate(f.venciment)),late:-d};
-  if(d===0)return{k:'warn',cls:'',pill:'Venç avui',when:'<b>venç avui</b>',late:0};
-  if(d<=7)return{k:'warn',cls:'',pill:'Venç aviat',when:'venç en <b>'+dies(d)+'</b> · '+esc(fmtDate(f.venciment)),late:0};
-  return{k:'warn',cls:'',pill:'En termini',when:'venç el <b>'+esc(fmtDate(f.venciment))+'</b> · falten '+dies(d),late:0};
-}
-
-/* ---------- desar ---------- */
-function buildDoc(){
-  var json=JSON.stringify(state).replace(/</g,'\\u003c');
-  return '<!DOCTYPE html>\n<html lang="ca">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>Semàfor de cobraments</title>\n<style id="css">'+$('css').textContent+'</style>\n</head>\n<body>\n<div id="root"></div>\n<script type="application/json" id="state">'+json+'<\/script>\n<script id="app">'+$('app').textContent+'<\/script>\n</body>\n</html>\n';
-}
-function setSave(t){saveMsg=t;var el=$('savenote');if(el)el.textContent=t}
-function dialogOpen(){return ($('dlg-form')&&$('dlg-form').open)||($('dlg-msg')&&$('dlg-msg').open)}
-function commit(){
-  state.updated=Date.now();unsaved=true;
-  try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){}
-  render();
-  setSave('Canvis pendents de desar…');
-  clearTimeout(pubTimer);pubTimer=setTimeout(publish,1400);
-}
-function publish(){
-  clearTimeout(pubTimer);
-  if(dialogOpen()){pubTimer=setTimeout(publish,1200);return}
-  if(!artifactNS){
-    setSave(nsReady?'Desat només en aquest navegador.':'Canvis pendents de desar…');
-    if(!nsReady)pubTimer=setTimeout(publish,1500);
-    return;
-  }
-  setSave('Desant…');
-  artifactNS.publish(buildDoc()).then(function(){unsaved=false;setSave('Desat.')},function(err){
-    var c=err&&(err.code||err.message)||'';
-    if(/not_granted|not_writer/.test(c))setSave('Només lectura: els canvis es queden en aquest navegador.');
-    else if(/conflict/.test(c))setSave('Algú altre ha desat abans. Es recarrega la versió nova.');
-    else setSave('No s\'ha pogut desar. Els canvis es queden en aquest navegador.');
-  });
-}
-if(window.claude&&typeof window.claude.use==='function'){
-  window.claude.use('artifact').then(function(ns){artifactNS=ns;nsReady=true},function(){nsReady=true});
-}else{nsReady=true}
-
-/* ---------- pantalla ---------- */
-$('root').innerHTML=
-'<div class="wrap">'+
- '<header class="head"><div class="lamp" id="lamp" aria-hidden="true"><i></i><i></i><i></i></div>'+
- '<div><h1>Semàfor de cobraments</h1><p id="headline"></p></div></header>'+
- '<div id="banner"></div>'+
- '<section class="sum" id="sum" aria-label="Resum"></section>'+
- '<div class="bar"><div class="chips" id="chips" role="group" aria-label="Filtra per estat"></div>'+
- '<button class="btn primary" id="btn-new" type="button">Nova factura</button></div>'+
- '<ul class="list" id="list"></ul>'+
- '<footer class="foot"><p>Eina de control intern: no emet factures ni substitueix la comptabilitat. Les dades no surten d\'aquest navegador.</p>'+
- '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span id="savenote" role="status"></span>'+
- '<button class="btn small ghost" id="btn-copy" type="button">Copia la taula</button></div></footer>'+
-'</div>'+
-'<dialog id="dlg-form" aria-labelledby="form-title"><form class="dlg" id="form" novalidate>'+
- '<h2 id="form-title">Nova factura</h2>'+
- '<label class="field" for="f-client">Client<input id="f-client" autocomplete="off" required></label>'+
- '<label class="field" for="f-concepte">Concepte<input id="f-concepte" autocomplete="off"></label>'+
- '<div class="two"><label class="field" for="f-num">Número<input id="f-num" autocomplete="off" placeholder="F-018"></label>'+
- '<label class="field" for="f-import">Import total (€)<input id="f-import" inputmode="decimal" autocomplete="off" required placeholder="605,00"></label></div>'+
- '<div class="two"><label class="field" for="f-emesa">Data d\'emissió<input id="f-emesa" type="date" required></label>'+
- '<label class="field" for="f-termini">Termini de pagament (dies)<input id="f-termini" inputmode="numeric" autocomplete="off"></label></div>'+
- '<label class="field" for="f-venciment">Venciment<input id="f-venciment" type="date" required></label>'+
- '<p class="err" id="f-err" role="alert"></p>'+
- '<div class="end"><button class="btn ghost" type="button" id="f-cancel">Cancel·la</button><button class="btn primary" type="submit">Desa la factura</button></div>'+
-'</form></dialog>'+
-'<dialog id="dlg-msg" aria-labelledby="msg-title"><div class="dlg">'+
- '<h2 id="msg-title">Recordatori de pagament</h2>'+
- '<div class="chips" id="msg-tones" role="group" aria-label="To del missatge"></div>'+
- '<label class="field" for="msg-text">Missatge<textarea id="msg-text"></textarea></label>'+
- '<p class="hint" id="msg-hint">Pots retocar el text abans de copiar-lo.</p>'+
- '<div class="end"><button class="btn ghost" type="button" id="msg-close">Tanca</button><button class="btn primary" type="button" id="msg-copy">Copia el missatge</button></div>'+
-'</div></dialog>';
-
-var ORDER={bad:0,warn:1,ok:2};
-function sorted(){
-  return state.invoices.slice().sort(function(a,b){
-    var ia=info(a),ib=info(b);
-    if(ia.k!==ib.k)return ORDER[ia.k]-ORDER[ib.k];
-    if(ia.k==='bad')return ib.late-ia.late;
-    if(ia.k==='warn')return diff(a.venciment,b.venciment);
-    return diff(b.cobrada,a.cobrada);
-  });
-}
-function render(){
-  var inv=state.invoices,pend=0,venc=0,nV=0,nP=0,cob=0,nC=0,any=parse(TODAY).getFullYear();
-  inv.forEach(function(f){
-    var i=info(f);
-    if(i.k==='ok'){nC++;if(parse(f.cobrada).getFullYear()===any)cob+=f.import}
-    else{pend+=f.import;if(i.k==='bad'){venc+=f.import;nV++}else nP++}
-  });
-  var worst=nV?'bad':(nP?'warn':'ok');
-  $('lamp').setAttribute('data-state',inv.length?worst:'ok');
-  $('headline').textContent=!inv.length?'Encara no hi ha cap factura.':
-    nV?(nV===1?'1 factura vençuda':nV+' factures vençudes')+' per reclamar.':
-    nP?'Res vençut. '+(nP===1?'1 factura pendent':nP+' factures pendents')+' dins de termini.':'Tot cobrat.';
-  $('sum').innerHTML=
-    '<div class="tile warn"><div class="lab">Pendent de cobrar</div><div class="num">'+esc(eur.format(pend))+'</div><div class="sub">'+(nV+nP)+' sense cobrar</div></div>'+
-    '<div class="tile bad"><div class="lab">Vençut</div><div class="num">'+esc(eur.format(venc))+'</div><div class="sub">'+nV+(nV===1?' factura':' factures')+'</div></div>'+
-    '<div class="tile ok"><div class="lab">Cobrat el '+any+'</div><div class="num">'+esc(eur.format(cob))+'</div><div class="sub">'+nC+(nC===1?' cobrada':' cobrades')+' en total</div></div>';
-  var defs=[['totes','Totes',inv.length],['bad','Vençudes',nV],['warn','Pendents',nP],['ok','Cobrades',nC]];
-  $('chips').innerHTML=defs.map(function(d){
-    return '<button class="chip" type="button" data-filter="'+d[0]+'" aria-pressed="'+(filter===d[0])+'">'+d[1]+'<span>'+d[2]+'</span></button>';
-  }).join('');
-  var hasEx=inv.some(function(f){return f.exemple});
-  $('banner').innerHTML=hasEx?'<div class="banner"><span><strong>Factures d\'exemple.</strong> Serveixen per veure com funciona.</span><button class="btn small" type="button" id="btn-clear">Treu els exemples</button></div>':'';
-  var rows=sorted().filter(function(f){return filter==='totes'||info(f).k===filter});
-  $('list').innerHTML=rows.length?rows.map(function(f){
-    var i=info(f),meta=[f.num,f.concepte].filter(Boolean).map(esc).join(' · ');
-    return '<li class="row '+i.cls+'" data-id="'+esc(f.id)+'">'+
-      '<div class="main"><div class="client">'+esc(f.client)+(f.exemple?'<span class="tag">exemple</span>':'')+'</div>'+
-      '<div class="meta">'+(meta||'Emesa el '+esc(fmtDate(f.emesa)))+'</div></div>'+
-      '<div class="amount">'+esc(eur.format(f.import))+'</div>'+
-      '<div class="status"><span class="pill">'+i.pill+'</span><span class="when">'+i.when+'</span></div>'+
-      '<div class="actions">'+
-        (f.cobrada?'<button class="btn small" type="button" data-act="unpay">Torna a pendent</button>'
-                  :'<button class="btn small" type="button" data-act="pay">Marca com a cobrada</button><button class="btn small" type="button" data-act="msg">Recordatori</button>')+
-        '<button class="btn small ghost" type="button" data-act="edit">Edita</button>'+
-        '<button class="btn small ghost danger" type="button" data-act="del">Esborra</button>'+
-      '</div></li>';
-  }).join(''):'<li class="empty">'+(inv.length?'Cap factura en aquest estat.':'Afegeix la primera amb el botó «Nova factura».')+'</li>';
-  setSave(saveMsg||(unsaved?'Les teves factures es desen només en aquest navegador.':''));
-}
-function find(id){for(var i=0;i<state.invoices.length;i++)if(state.invoices[i].id===id)return state.invoices[i];return null}
-
-/* ---------- accions de la llista ---------- */
-$('chips').addEventListener('click',function(e){
-  var b=e.target.closest('[data-filter]');if(!b)return;
-  filter=b.getAttribute('data-filter');try{sessionStorage.setItem(LS+'-f',filter)}catch(x){}
-  render();
-});
-$('banner').addEventListener('click',function(e){
-  if(!e.target.closest('#btn-clear'))return;
-  state.invoices=state.invoices.filter(function(f){return !f.exemple});commit();
-});
-$('list').addEventListener('click',function(e){
-  var b=e.target.closest('[data-act]');if(!b)return;
-  var id=b.closest('.row').getAttribute('data-id'),f=find(id),act=b.getAttribute('data-act');
-  if(!f)return;
-  if(act==='pay'){f.cobrada=TODAY;commit()}
-  else if(act==='unpay'){f.cobrada=null;commit()}
-  else if(act==='edit'){openForm(f)}
-  else if(act==='msg'){openMsg(f)}
-  else if(act==='del'){
-    if(b.getAttribute('data-sure')){state.invoices=state.invoices.filter(function(x){return x.id!==id});commit()}
-    else{b.setAttribute('data-sure','1');b.textContent='Segur? Torna a prémer';setTimeout(function(){if(b.isConnected){b.removeAttribute('data-sure');b.textContent='Esborra'}},3500)}
-  }
-});
-
-/* ---------- formulari ---------- */
-function openDlg(d){if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','')}
-function closeDlg(d){if(typeof d.close==='function')d.close();else d.removeAttribute('open')}
-function openForm(f){
-  editingId=f?f.id:null;
-  $('form-title').textContent=f?'Edita la factura':'Nova factura';
-  $('f-client').value=f?f.client:'';
-  $('f-concepte').value=f?f.concepte||'':'';
-  $('f-num').value=f?f.num||'':'';
-  $('f-import').value=f?String(f.import).replace('.',','):'';
-  $('f-emesa').value=f?f.emesa:TODAY;
-  $('f-termini').value=f?diff(f.venciment,f.emesa):30;
-  $('f-venciment').value=f?f.venciment:addDays(TODAY,30);
-  $('f-err').textContent='';
-  openDlg($('dlg-form'));$('f-client').focus();
-}
-function recalc(){
-  var e=$('f-emesa').value,t=parseInt($('f-termini').value,10);
-  if(e&&!isNaN(t)&&t>=0)$('f-venciment').value=addDays(e,t);
-}
-$('f-emesa').addEventListener('change',recalc);
-$('f-termini').addEventListener('input',recalc);
-$('f-venciment').addEventListener('change',function(){
-  var e=$('f-emesa').value,v=$('f-venciment').value;if(e&&v)$('f-termini').value=diff(v,e);
-});
-$('btn-new').addEventListener('click',function(){openForm(null)});
-$('f-cancel').addEventListener('click',function(){closeDlg($('dlg-form'))});
-$('form').addEventListener('submit',function(e){
-  e.preventDefault();
-  var client=$('f-client').value.trim(),
-      txt=$('f-import').value.trim().replace(/\s|€/g,''),
-      emesa=$('f-emesa').value,venc=$('f-venciment').value;
-  if(txt.indexOf(',')>-1)txt=txt.replace(/\./g,'').replace(',','.');
-  var imp=parseFloat(txt);
-  if(!client){$('f-err').textContent='Escriu el nom del client.';$('f-client').focus();return}
-  if(isNaN(imp)||imp<=0){$('f-err').textContent='Escriu l\'import amb xifres, per exemple 605,00.';$('f-import').focus();return}
-  if(!emesa||!venc){$('f-err').textContent='Falten la data d\'emissió o el venciment.';return}
-  if(diff(venc,emesa)<0){$('f-err').textContent='El venciment no pot ser anterior a l\'emissió.';$('f-venciment').focus();return}
-  var data={client:client,concepte:$('f-concepte').value.trim(),num:$('f-num').value.trim(),import:Math.round(imp*100)/100,emesa:emesa,venciment:venc};
-  if(editingId){var f=find(editingId);if(f){for(var k in data)f[k]=data[k];delete f.exemple}}
-  else{data.id=uid();data.cobrada=null;state.invoices.push(data)}
-  closeDlg($('dlg-form'));commit();
-});
-
-/* ---------- recordatoris ---------- */
-var TONES=[['previ','Avís previ'],['amable','Amable'],['ferm','Ferm'],['ultim','Últim avís']];
-function msgText(f,tone){
-  var num=f.num?'la factura '+f.num:'la factura',imp=eur.format(f.import),dv=fmtDate(f.venciment),late=Math.max(0,diff(TODAY,f.venciment));
-  function fi(d){return d.replace(/\.$/,'')}   /* «10 de nov.» + punt de frase: un sol punt */
-  if(tone==='previ')return 'Hola, '+f.client+'.\n\nNomés per recordar-te que '+num+' de '+imp+' venç el '+fi(dv)+'.\n\nGràcies!';
-  if(tone==='amable')return 'Hola, '+f.client+'.\n\nEt recordo que '+num+' de '+imp+', amb venciment el '+dv+', encara em consta com a pendent. Si ja l\'has pagada, no en facis cas.\n\nGràcies!';
-  if(tone==='ferm')return 'Hola, '+f.client+'.\n\n'+num.charAt(0).toUpperCase()+num.slice(1)+' de '+imp+' va vèncer el '+dv+' i fa '+dies(late)+' que està pendent. Et demano que facis el pagament aquesta setmana o que em diguis quin dia el rebré.\n\nGràcies.';
-  return 'Hola, '+f.client+'.\n\n'+num.charAt(0).toUpperCase()+num.slice(1)+' de '+imp+' acumula '+dies(late)+' de retard des del '+fi(dv)+'. Necessito rebre el pagament abans del '+fi(fmtDate(addDays(TODAY,7)))+'. Si hi ha cap problema, parlem-ne avui mateix i busquem una solució.\n\nGràcies.';
-}
-function suggested(f){var late=diff(TODAY,f.venciment);return late<=0?'previ':late<=7?'amable':late<=30?'ferm':'ultim'}
-function drawTones(sel){
-  $('msg-tones').innerHTML=TONES.map(function(t){return '<button class="chip" type="button" data-tone="'+t[0]+'" aria-pressed="'+(t[0]===sel)+'">'+t[1]+'</button>'}).join('');
-}
-function openMsg(f){
-  msgId=f.id;var s=suggested(f);drawTones(s);$('msg-text').value=msgText(f,s);
-  $('msg-hint').textContent='To proposat segons els dies de retard. Pots retocar el text abans de copiar-lo.';
-  openDlg($('dlg-msg'));
-}
-$('msg-tones').addEventListener('click',function(e){
-  var b=e.target.closest('[data-tone]'),f=find(msgId);if(!b||!f)return;
-  var t=b.getAttribute('data-tone');drawTones(t);$('msg-text').value=msgText(f,t);
-});
-$('msg-close').addEventListener('click',function(){closeDlg($('dlg-msg'))});
-function copy(text,ok,ko){
-  try{navigator.clipboard.writeText(text).then(ok,ko)}catch(e){ko()}
-}
-function toast(t){
-  var h=$('dlg-msg').open?$('dlg-msg'):document.body,el=document.createElement('div');
-  el.className='toast';el.setAttribute('role','status');el.textContent='✓ '+t;h.appendChild(el);
-  setTimeout(function(){el.remove()},2400);
-}
-$('msg-copy').addEventListener('click',function(){
-  var ta=$('msg-text');
-  copy(ta.value,function(){
-    $('msg-hint').textContent='Missatge copiat. Enganxa\'l al correu o al xat.';
-    var b=$('msg-copy');b.textContent='Copiat ✓';b.classList.add('done');toast('Missatge copiat');
-    setTimeout(function(){b.textContent='Copia el missatge';b.classList.remove('done')},2400);
-  },
-       function(){ta.focus();ta.select();$('msg-hint').textContent='No s\'ha pogut copiar sol. El text està seleccionat: copia\'l a mà.'});
-});
-$('btn-copy').addEventListener('click',function(){
-  var head=['Client','Número','Concepte','Import','Emesa','Venciment','Estat','Dies de retard','Cobrada'];
-  var lines=sorted().map(function(f){var i=info(f);
-    return [f.client,f.num||'',f.concepte||'',String(f.import).replace('.',','),f.emesa,f.venciment,i.pill,i.late||'',f.cobrada||''].join('\t')});
-  copy([head.join('\t')].concat(lines).join('\n'),
-    function(){setSave('Taula copiada. Enganxa-la en un full de càlcul.');toast('Taula copiada')},
-    function(){setSave('No s\'ha pogut copiar la taula.')});
-});
-
-render();
-})();
-</script>
-<section class="teu" id="teu" aria-labelledby="teu-t">
- <h2 id="teu-t">Fes-te’l teu</h2>
- <p>Baixa el zip, adjunta l’HTML a Claude o a ChatGPT i enganxa-hi aquestes instruccions.</p>
- <p><a class="teu-btn" href="semafor-de-cobraments.zip" download>Baixa el zip amb l’HTML</a></p>
- <div class="teu-box">
-  <div class="teu-cap"><h3>Instruccions per a Claude</h3><button class="teu-copia" type="button" data-copia="teu-claude">Copia</button></div>
-  <p class="teu-txt" id="teu-claude">T'adjunto un fitxer HTML. Crea un artifact HTML amb aquest codi exactament igual, sense canviar, resumir ni millorar res. No hi afegeixis cap explicació.</p>
- </div>
- <div class="teu-box">
-  <div class="teu-cap"><h3>Instruccions per a ChatGPT</h3><button class="teu-copia" type="button" data-copia="teu-gpt">Copia</button></div>
-  <p class="teu-txt" id="teu-gpt">T'adjunto un fitxer HTML. Obre'l al canvas i mostra'n la previsualització. No canviïs, resumeixis ni milloris res del codi.</p>
- </div>
-</section>
-<style>
-.teu{max-width:760px;margin:-28px auto 0;padding:0 16px 64px;display:flex;flex-direction:column;gap:12px}
-.teu h2{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0;padding:0 4px}
-.teu>p{margin:0;padding:0 4px;color:var(--muted);font-size:15px}
-.teu-btn{display:inline-block;background:var(--accent);color:var(--on-accent);border-radius:980px;padding:10px 20px;font-size:15px;font-weight:600;text-decoration:none}
-.teu-box{background:var(--surface);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.teu-cap{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.teu-cap h3{margin:0;font-size:15px;font-weight:600}
-.teu-copia{border:0;background:var(--fill);color:var(--accent);border-radius:980px;padding:6px 13px;font:500 14px var(--body);cursor:pointer;flex:none}
-.teu-txt{margin:0;font-size:15px;line-height:1.4;color:var(--ink);overflow-wrap:anywhere;-webkit-user-select:all;user-select:all}
-</style>
 <script>
 (function(){
   var bs=document.querySelectorAll('[data-copia]');
   for(var i=0;i<bs.length;i++)(function(b){
     b.addEventListener('click',function(){
       var el=document.getElementById(b.getAttribute('data-copia')),t=el.textContent;
-      function fet(){b.textContent='Copiat';setTimeout(function(){b.textContent='Copia'},1600)}
+      function fet(){b.textContent='copiat';setTimeout(function(){b.textContent='copia'},1600)}
       function ama(){try{var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r);if(document.execCommand('copy'))fet()}catch(e){}}
       if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(fet,ama);else ama();
     });
