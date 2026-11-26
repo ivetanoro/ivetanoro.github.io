@@ -9,16 +9,16 @@
 <meta property="og:description" content="Les eines que faig, perquè les provis.">
 <meta property="og:image" content="https://ivetanoro.github.io/img/equilibri.jpg">
 <meta name="theme-color" content="#FBF6D1">
-<link rel="preload" href="fonts/BitroadMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NeueBit-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face { font-family:"Bitroad"; src:url("fonts/Bitroad-Regular.woff2") format("woff2"); font-display:swap; }
-  @font-face { font-family:"BitroadMono"; src:url("fonts/BitroadMono-Regular.woff2") format("woff2"); font-display:swap; }
+  @font-face { font-family:"NeueBit"; src:url("fonts/NeueBit-Regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
+  @font-face { font-family:"NeueBit"; src:url("fonts/NeueBit-Bold.woff2") format("woff2"); font-weight:700; font-display:swap; }
   :root {
     --butter:#FBF6D1; --paper:#FFFDF2; --blue:#ACCAE6; --blue-soft:#CFE0F0; --ox:#4C050C; --esp:#2F1B11;
     --muted:rgba(47,27,17,.74); --line:rgba(47,27,17,.16);
     --sans:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    --mono:"BitroadMono", "SF Mono", ui-monospace, monospace;
-    --display:"Bitroad", "Helvetica Neue", Helvetica, sans-serif;
+    --mono:"NeueBit", "SF Mono", ui-monospace, monospace;
+    --display:"NeueBit", "Helvetica Neue", Helvetica, sans-serif;
     --vora:1.5px solid var(--esp); --ombra:3px 3px 0 var(--esp);
   }
   * { box-sizing:border-box; }
@@ -28,11 +28,11 @@
   a { color:inherit; -webkit-tap-highlight-color:transparent; }
   button { -webkit-tap-highlight-color:transparent; }
   a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline:2px solid var(--ox); outline-offset:3px; }
-  .mono { font-family:var(--mono); text-transform:uppercase; letter-spacing:.03em; }
+  .mono { font-family:var(--mono); text-transform:lowercase; letter-spacing:0; }
 
   /* barra de dalt */
   .bar { display:grid; grid-template-columns:1.3fr 1fr 1fr; border-bottom:2px solid var(--esp);
-         font-family:var(--mono); font-size:11px; letter-spacing:.02em; text-transform:uppercase; padding-top:env(safe-area-inset-top, 0px); }
+         font-family:var(--mono); font-size:16px; letter-spacing:0; text-transform:lowercase; padding-top:env(safe-area-inset-top, 0px); }
   .bar > * { padding:12px 16px; min-height:44px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar > :last-child { border-right:0; text-align:right; }
 
@@ -46,18 +46,18 @@
   .sel::before { left:-1px; } .sel::after { right:-1px; }
   .cursor { position:absolute; right:-.42em; bottom:-.52em; width:.34em; height:auto; }
   .tooltip { position:absolute; right:.3em; top:calc(100% + 4px); white-space:nowrap; background:var(--esp); color:var(--butter);
-             font-family:var(--mono); font-size:11px; letter-spacing:.03em; text-transform:uppercase; padding:5px 8px; border-radius:4px; }
+             font-family:var(--mono); font-size:16px; letter-spacing:0; text-transform:lowercase; padding:5px 8px; border-radius:4px; }
   .lema { margin:34px 0 0; font-size:17px; line-height:1.4; color:var(--muted); max-width:30ch; }
 
   .sec { display:flex; justify-content:space-between; align-items:baseline; margin:36px 0 14px; padding-bottom:8px;
-         border-bottom:2px solid var(--esp); font-family:var(--mono); font-weight:400; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+         border-bottom:2px solid var(--esp); font-family:var(--mono); font-weight:400; font-size:18px; text-transform:lowercase; letter-spacing:0; }
 
   /* les eines: finestretes, totes iguals */
   .graella { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:14px 12px; }
   #eines { scroll-margin-top:12px; }
   .eina { position:relative; display:flex; flex-direction:column; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
   .barra { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--blue-soft); border-bottom:var(--vora);
-           font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+           font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; }
   .punts { display:flex; gap:4px; }
   .punts i { width:8px; height:8px; border-radius:50%; border:1.2px solid var(--esp); background:var(--butter); }
   .punts i:first-child { background:var(--ox); }
@@ -70,7 +70,7 @@
   .capa.fons { background-size:cover; background-position:center; }
   .capa.fons img { width:74%; height:auto; }
   .adhesiu { position:absolute; top:38px; right:-4px; z-index:1; transform:rotate(6deg); background:var(--ox); color:var(--butter);
-             font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:5px 12px 5px 9px; border:var(--vora); }
+             font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; padding:5px 12px 5px 9px; border:var(--vora); }
 
   /* la prova d'animacions, dibuixada com la seva interfície */
   .capa.timeline { background:var(--esp); flex-direction:column; align-items:stretch; gap:12%; padding:12%; }
@@ -86,7 +86,7 @@
   .frase { margin:0; font-size:13.5px; line-height:1.4; color:var(--muted); }
   .fitxa { margin:10px 0 0; border-top:1px solid var(--esp); }
   .fitxa > div { display:flex; gap:8px; align-items:baseline; padding:5px 0; border-bottom:1px solid var(--esp); }
-  .fitxa dt { flex:none; width:2.6em; font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .fitxa dt { flex:none; width:2.6em; font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; color:var(--muted); }
   .fitxa dd { margin:0; font-size:13px; font-weight:700; line-height:1.25; min-width:0; }
   .accions { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin-top:auto; padding-top:12px; }
   .btn { display:inline-flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; width:100%;
@@ -103,14 +103,14 @@
   .eina.soon .visual { background:repeating-linear-gradient(-45deg, transparent 0 7px, rgba(47,27,17,.08) 7px 8px), var(--butter);
                        display:flex; align-items:flex-end; padding:12px; }
   .boira { filter:blur(5px); user-select:none; }
-  .soon .visual h3 { font-family:var(--display); font-weight:400; font-size:clamp(22px, 6vw, 32px); line-height:.9; margin:0; }
+  .soon .visual h3 { font-family:var(--display); font-weight:400; font-size:clamp(32px, 8.8vw, 47px); line-height:.9; margin:0; }
   .soon .barra { background:var(--butter); }
   .eina.soon .visual { aspect-ratio:3/2; }
   /* una d'«aviat» amb llista.dalt: surt a dalt de tot, sencera i sense boira (la llista d'espera a què porta un reel) */
   #espera { margin-top:4px; }
   .eina.dalt { grid-column:1 / -1; }
   .eina.dalt .visual { aspect-ratio:auto; padding:34px 12px 12px; }
-  .eina.dalt .visual h3 { font-size:clamp(30px, 8.5vw, 44px); }
+  .eina.dalt .visual h3 { font-size:clamp(44px, 12.4vw, 64px); }
   .eina.dalt .frase { font-size:15px; max-width:44ch; }
   .eina.dalt .apunta { max-width:420px; }
   /* apuntar-se a una d'«aviat»: el correu va a un formulari de Kit (llista.kit), que envia la confirmació i porta les baixes */
@@ -135,9 +135,9 @@
   .tancat .solapa { transform:scaleY(-1); }
   .segell { position:absolute; top:14px; right:14px; width:52px; height:62px; background:var(--blue); border:var(--vora); border-radius:2px;
             outline:1.5px dashed var(--esp); outline-offset:3px; display:grid; place-items:center;
-            font-family:var(--mono); font-size:9px; text-transform:uppercase; letter-spacing:.06em; writing-mode:vertical-rl; }
+            font-family:var(--mono); font-size:13px; text-transform:lowercase; letter-spacing:0; writing-mode:vertical-rl; }
   .mata { position:absolute; top:44px; right:44px; width:42px; height:42px; border:1.2px solid rgba(47,27,17,.45); border-radius:50%;
-          display:grid; place-items:center; font-family:var(--mono); font-size:9px; color:rgba(47,27,17,.65); transform:rotate(-14deg); }
+          display:grid; place-items:center; font-family:var(--mono); font-size:13px; color:rgba(47,27,17,.65); transform:rotate(-14deg); }
   .sobre .q { display:block; min-height:68px; font-weight:700; font-size:24px; letter-spacing:-.02em; line-height:1.12; margin:0 84px 10px 0; }   /* el segell no tapa mai la primera línia */
   .sobre textarea { display:block; width:100%; min-height:96px; padding:0; border:0; border-radius:0; resize:vertical; color:var(--esp); font:16px/32px var(--sans);
                     background:repeating-linear-gradient(transparent 0 31px, rgba(47,27,17,.28) 31px 32px); background-attachment:local; }
@@ -159,7 +159,7 @@
   #bustia-figura .base .sil { fill:var(--butter); }
 
   footer { max-width:1180px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-left, 0px)) calc(32px + env(safe-area-inset-bottom, 0px));
-           border-top:2px solid var(--esp); display:flex; justify-content:space-between; font-family:var(--mono); font-size:11px; text-transform:uppercase; }
+           border-top:2px solid var(--esp); display:flex; justify-content:space-between; font-family:var(--mono); font-size:16px; text-transform:lowercase; }
   footer a { text-decoration:none; display:inline-flex; align-items:center; min-height:44px; margin:-14px 0; }
 
   @media (min-width: 640px) {

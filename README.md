@@ -5,7 +5,7 @@ L'enllaç de la bio d'Instagram: totes les eines de l'Ivet, perquè la gent les 
 - `index.html` — la pàgina. Llegeix el catàleg de `cataleg.js`.
 - `cataleg.js` — el nom, el lema, les eines (`EINES`) i el que surt difuminat a «aviat» (`AVIAT`).
 - `equilibri/` — la versió pública de l'equilibri (feta a partir de `ivetanoro-estudi/eines/equilibri/v5-404.html`): sense el panell de l'estudi ni les dreceres de gravar, amb el botó «posa-hi la teva cara».
-- `fonts/` — Bitroad i Bitroad Mono (comprades, en .woff2). La Helvetica no es penja: es fa servir la del sistema.
+- `fonts/` — NeueBit Regular i Bold (la lletra de la marca des del 3/11; la pàgina principal la fa servir des del 26/11), i Bitroad i Bitroad Mono (comprades), que encara fan servir el mandala i les altres eines. Tot en .woff2. La Helvetica no es penja: es fa servir la del sistema.
 - `hairline/` — la bústia de baix: una figura de [Hairline](https://hairline.lucasmarkes.com) (llicència MIT, a `hairline/LICENSE`). `kernel.js` és el nucli sense tocar; `bustia.js`, la figura (es fa i es revisa amb la skill `hairline-create` d'`estudi-motion`).
 
 ## Obrir-la
