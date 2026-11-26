@@ -20,6 +20,13 @@ window.PARADETA = {
 window.EINES = [
   {
     etiqueta: "nova",
+    titol: "el creador de marca",
+    frase: "una eina per crear la marca dels teus vídeos: claude et fa opcions damunt del teu vídeo, tu dius sí, potser o no, i al final et baixes el fitxer amb el teu estil.",
+    fitxa: [["cal", "Claude Code"], ["on", "ordinador · votes des del mòbil"]],
+    boto: { text: "crea la teva", url: "personalitza/" },
+    visual: { imatge: "img/creador-de-marca.jpg" },
+  },
+  {
     titol: "el semàfor de cobraments",
     frase: "hi apuntes cada factura i el dia que venç, i et diu qui està fora de termini. també t’escriu el recordatori.",
     fitxa: [["cal", "res"], ["on", "mòbil o ordinador"]],
@@ -51,7 +58,7 @@ window.EINES = [
 
 window.AVIAT = [
   { titol: "el meu sistema d’edició", frase: "edito els reels sense tocar cap timeline ni crear un sol keyframe: jo decideixo i claude executa. l’estic acabant de provar per compartir-lo.",
-    llista: { kit: "10246146", text: "apunta’t", dalt: true, directe: true } },
+    llista: { dalt: true, directe: true, kit: "10246146", text: "apunta’t" } },
   { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
     llista: { kit: "10115030", text: "apunta’t" } },
   { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
