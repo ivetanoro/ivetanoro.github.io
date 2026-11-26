@@ -5,12 +5,13 @@
 // Per vendre-la: preu ("9 €") i stripe (l'enllaç de pagament de Stripe, https://buy.stripe.com/…).
 // A AVIAT, les que encara no hi són: surten difuminades. «llista» hi posa un botó per apuntar-s'hi.
 // Amb llista.dalt (true), la targeta surt a dalt de tot, sencera i llegible: la llista d'espera a què porta un reel.
+// Amb llista.directe (true), el formulari de Kit no envia correu de confirmació i la pàgina diu «ja ets a la llista».
 // La bústia envia les peticions amb Web3Forms: la clau (no el correu) va a bustia.clau. Sense clau, la bústia no surt.
 
 window.PARADETA = {
   nom: "la paradeta",
   lema: "les eines que faig, perquè les provis.",
-  actualitzat: "18.11",
+  actualitzat: "26.11",
   instagram: "https://www.instagram.com/ivetanoro/",
   bustia: { clau: "2d063f5c-0977-426c-98f8-42de75fbe5a1" },   // clau pública de Web3Forms (envia a l’Ivet; no ensenya el correu)
 };
@@ -49,6 +50,8 @@ window.EINES = [
 ];
 
 window.AVIAT = [
+  { titol: "el meu sistema d’edició", frase: "edito els reels sense tocar cap timeline ni crear un sol keyframe: jo decideixo i claude executa. l’estic acabant de provar per compartir-lo.",
+    llista: { kit: "10246146", text: "apunta’t", dalt: true, directe: true } },
   { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
     llista: { kit: "10115030", text: "apunta’t" } },
   { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },

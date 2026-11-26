@@ -290,7 +290,7 @@ document.getElementById("titol-aviat").hidden = document.getElementById("aviat")
 // «apunta't»: amb llista.kit, un camp de correu que apunta la gent a la llista de Kit; sense, un enllaç (llista.url)
 const KIT = id => `https://app.kit.com/forms/${encodeURIComponent(id)}/subscriptions`;
 const apunta = (l, i) => l.kit ? `
-      <form class="apunta" data-kit="${esc(l.kit)}" novalidate>
+      <form class="apunta" data-kit="${esc(l.kit)}"${l.directe ? " data-directe" : ""} novalidate>
         <label class="vh" for="correu-${i}">el teu correu</label>
         <input type="email" id="correu-${i}" name="email_address" required autocomplete="email" placeholder="el teu correu">
         <button class="btn clar" type="submit"><span>${esc(l.text)}</span>${fletxa}</button>
@@ -302,6 +302,7 @@ document.addEventListener("submit", async ev => {
   if (!f.matches(".apunta")) return;
   ev.preventDefault();
   const r = f.querySelector(".resposta"), b = f.querySelector("button"), correu = f.email_address.value.trim();
+  const directe = f.hasAttribute("data-directe");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correu)) { r.textContent = "escriu el teu correu, sisplau."; f.email_address.focus(); return; }
   b.disabled = true; r.textContent = "";
   try {
@@ -310,10 +311,11 @@ document.addEventListener("submit", async ev => {
     if (j.status === "success") {
       f.reset();
       compta(`apuntat · ${f.closest(".eina")?.querySelector("h3")?.textContent.trim() || "aviat"}`);
-      r.textContent = "fet! t’he enviat un correu per confirmar-ho. si no el veus, mira al correu brossa.";
+      // amb llista.directe, el formulari de Kit no envia correu de confirmació: qui s'apunta ja és a la llista
+      r.textContent = directe ? "fet! ja ets a la llista." : "fet! t’he enviat un correu per confirmar-ho. si no el veus, mira al correu brossa.";
     } else if (j.status === "quarantined" && /^https:\/\/app\.kit\.com\//.test(j.url || "")) {
       // Kit demana un control antirobots: la persona l'ha de fer a la seva pàgina (com amb el formulari oficial de Kit)
-      r.innerHTML = `falta un pas: <a href="${esc(j.url)}" target="_blank" rel="noopener">confirma que no ets un robot</a> i t’arribarà el correu (mira també al correu brossa).`;
+      r.innerHTML = `falta un pas: <a href="${esc(j.url)}" target="_blank" rel="noopener">confirma que no ets un robot</a> ${directe ? "i ja seràs a la llista." : "i t’arribarà el correu (mira també al correu brossa)."}`;
     } else throw new Error(j.status || res.status);
   } catch { r.textContent = "no s’ha pogut apuntar. torna-ho a provar d’aquí a una estona."; }
   b.disabled = false;
