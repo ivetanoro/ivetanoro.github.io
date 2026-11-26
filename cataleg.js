@@ -4,6 +4,7 @@
 //   {imatge: "img/…"} · {fons: "img/…", logo: "img/…"} · {ui: "timeline"}
 // Per vendre-la: preu ("9 €") i stripe (l'enllaç de pagament de Stripe, https://buy.stripe.com/…).
 // A AVIAT, les que encara no hi són: surten difuminades. «llista» hi posa un botó per apuntar-s'hi.
+// Amb llista.dalt (true), la targeta surt a dalt de tot, sencera i llegible: la llista d'espera a què porta un reel.
 // La bústia envia les peticions amb Web3Forms: la clau (no el correu) va a bustia.clau. Sense clau, la bústia no surt.
 
 window.PARADETA = {

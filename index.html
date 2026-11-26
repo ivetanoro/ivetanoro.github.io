@@ -105,6 +105,13 @@
   .soon .visual h3 { font-family:var(--display); font-weight:400; font-size:clamp(22px, 6vw, 32px); line-height:.9; margin:0; }
   .soon .barra { background:var(--butter); }
   .eina.soon .visual { aspect-ratio:3/2; }
+  /* una d'«aviat» amb llista.dalt: surt a dalt de tot, sencera i sense boira (la llista d'espera a què porta un reel) */
+  #espera { margin-top:4px; }
+  .eina.dalt { grid-column:1 / -1; }
+  .eina.dalt .visual { aspect-ratio:auto; padding:34px 12px 12px; }
+  .eina.dalt .visual h3 { font-size:clamp(30px, 8.5vw, 44px); }
+  .eina.dalt .frase { font-size:15px; max-width:44ch; }
+  .eina.dalt .apunta { max-width:420px; }
   /* apuntar-se a una d'«aviat»: el correu va a un formulari de Kit (llista.kit), que envia la confirmació i porta les baixes */
   .apunta { display:grid; gap:8px; margin-top:auto; padding-top:12px; }
   .apunta input { width:100%; min-width:0; min-height:44px; padding:10px 12px; border:var(--vora); border-radius:6px; background:var(--paper);
@@ -196,6 +203,8 @@
     <p class="lema" id="lema"></p>
   </section>
 
+  <div class="graella" id="espera" hidden></div>
+
   <h2 class="sec"><span>eines</span><span id="rang"></span></h2>
   <div class="graella" id="eines"></div>
 
@@ -277,7 +286,7 @@ document.getElementById("eines").innerHTML = EINES.map((e, i) => `
   </article>`).join("");
 
 // sense res a «aviat», la secció no surt (ni el títol)
-document.getElementById("titol-aviat").hidden = document.getElementById("aviat").hidden = !AVIAT.length;
+document.getElementById("titol-aviat").hidden = document.getElementById("aviat").hidden = !AVIAT.some(a => !(a.llista && a.llista.dalt));
 // «apunta't»: amb llista.kit, un camp de correu que apunta la gent a la llista de Kit; sense, un enllaç (llista.url)
 const KIT = id => `https://app.kit.com/forms/${encodeURIComponent(id)}/subscriptions`;
 const apunta = (l, i) => l.kit ? `
@@ -288,7 +297,7 @@ const apunta = (l, i) => l.kit ? `
         <p class="avis">t’aviso quan surti, i prou.</p>
         <p class="resposta" role="status" aria-live="polite"></p>
       </form>` : `<div class="accions"><a class="btn clar" href="${esc(l.url)}"><span>${esc(l.text)}</span>${fletxa}</a></div>`;
-document.getElementById("aviat").addEventListener("submit", async ev => {
+document.addEventListener("submit", async ev => {
   const f = ev.target;
   if (!f.matches(".apunta")) return;
   ev.preventDefault();
@@ -309,15 +318,21 @@ document.getElementById("aviat").addEventListener("submit", async ev => {
   } catch { r.textContent = "no s’ha pogut apuntar. torna-ho a provar d’aquí a una estona."; }
   b.disabled = false;
 });
-document.getElementById("aviat").innerHTML = AVIAT.map((a, i) => `
-  <article class="eina soon reveal" style="--i:${i}">
-    ${barra("aviat")}
-    <div class="visual"><h3 class="boira">${esc(a.titol)}</h3></div>
+// una d'«aviat» amb llista.dalt surt a dalt de tot, sencera i sense boira; la resta, a «aviat», difuminades
+const esDalt = a => !!(a.llista && a.llista.dalt);
+const targetaAviat = (a, i) => `
+  <article class="eina soon${esDalt(a) ? " dalt" : ""} reveal" style="--i:${esDalt(a) ? 0 : i}">
+    ${barra(esDalt(a) ? "llista d’espera" : "aviat")}
+    <div class="visual"><h3${esDalt(a) ? "" : ` class="boira"`}>${esc(a.titol)}</h3></div>
     <div class="cos">
-      <p class="frase boira">${esc(a.frase)}</p>
+      <p class="frase${esDalt(a) ? "" : " boira"}">${esc(a.frase)}</p>
       ${a.llista ? apunta(a.llista, i) : ""}
     </div>
-  </article>`).join("");
+  </article>`;
+const ambIndex = AVIAT.map((a, i) => [a, i]);
+document.getElementById("espera").innerHTML = ambIndex.filter(([a]) => esDalt(a)).map(([a, i]) => targetaAviat(a, i)).join("");
+document.getElementById("espera").hidden = !AVIAT.some(esDalt);
+document.getElementById("aviat").innerHTML = ambIndex.filter(([a]) => !esDalt(a)).map(([a, i]) => targetaAviat(a, i)).join("");
 
 if ("IntersectionObserver" in window) {
   const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add("in"); io.unobserve(x.target); } }), { rootMargin:"0px 0px -6% 0px" });
