@@ -57,10 +57,9 @@ window.EINES = [
 ];
 
 window.AVIAT = [
-  { titol: "el meu sistema d’edició", frase: "edito els reels sense tocar cap timeline ni crear un sol keyframe: jo decideixo i claude executa. l’estic acabant de provar per compartir-lo.",
+  { titol: "el meu sistema d’edició", frase: "edito els reels sense tocar cap timeline ni crear un sol keyframe: jo decideixo i claude executa. l’estic acabant de provar en altres ordinadors per compartir-lo.",
     llista: { dalt: true, directe: true, kit: "10246146", text: "apunta’t" } },
   { titol: "app d’estil", frase: "poses un reel que t’agrada i el teu vídeo, i te’l torna editat amb aquell estil.",
     llista: { kit: "10115030", text: "apunta’t" } },
   { titol: "entre línies", frase: "escrius una paraula i les lletres li fan lloc." },
-  { titol: "el mandala", frase: "un objectiu, vuit pilars i seixanta-quatre accions: el teu pla per créixer, en una graella." },
 ];
