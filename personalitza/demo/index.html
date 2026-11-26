@@ -1,0 +1,2145 @@
+<!doctype html><html lang="ca"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style></head><body><script>window.PERSONALITZA_DEMO = {"laboratori": {"nom": "Exemple", "proporcio": "9:16", "pas": "rondes", "encarrec": ["Reels verticals (9:16) per explicar com edito, en català.", "S'han de poder seguir sense so: subtítols d'una paraula, grans i nets.", "Moviment sec, sense rebots, i sons discrets.", "Mai: lletra amb contorn ni emojis a la pantalla.", "Comencem pels subtítols i pel títol del ganxo."]}, "entrevista": {"respostes": {"per_a_que": "Reels on explico com edito els meus vídeos.", "format": "Vertical 9:16, per a Instagram.", "public": "Gent que comença a editar. El primer segon ha d'entendre de què va.", "mai": "Lletra amb contorn negre i emojis a la pantalla.", "moviment": "Sec, sense rebots.", "primer": "Subtítols i el títol del ganxo."}}, "passos": {"entrevista": {"enviat": "2026-12-10T09:00:00Z"}, "referencies": {"enviat": "2026-12-10T09:10:00Z"}, "video": {"enviat": "2026-12-10T09:15:00Z"}}, "referencies": [{"asset": "ref-1.jpg", "tipus": "imatge", "que_magrada": "La frase sencera, amb la paraula que dius encesa.", "ordre": 1}, {"asset": "ref-2.jpg", "tipus": "imatge", "que_magrada": "Un títol curt en una caixa fosca, ben llegible.", "ordre": 2}], "material": {"clip": {"asset": "fons.mp4", "tipus": "video", "text": "Avui t'ensenyo com edito els meus vídeos."}}, "rondes": [{"numero": 1, "titol": "Subtítols i títol del ganxo", "intro": "Dues coses alhora, sempre sobre el mateix tros de vídeo. Dins de cada secció només canvia una cosa.", "canvis": ["És la primera ronda.", "Les opcions es dibuixen al moment damunt del vídeo. A la demo, el vídeo és un fons neutre: puja el teu al pas «El teu vídeo» i les veuràs damunt seu."], "paraules": [{"text": "Avui", "inici": 0.3, "final": 0.6}, {"text": "t’ensenyo", "inici": 0.62, "final": 1.1}, {"text": "com", "inici": 1.15, "final": 1.3}, {"text": "edito", "inici": 1.35, "final": 1.8}, {"text": "els", "inici": 1.85, "final": 1.95}, {"text": "meus", "inici": 2.0, "final": 2.25}, {"text": "vídeos", "inici": 2.3, "final": 2.9}], "seccions": [{"id": "subtitols", "nom": "Com entren els subtítols", "us": "Una paraula cada cop, blanca i en negreta. Només canvia com apareix.", "viva": {"html": "<div id=\"subs\"><\/div>\n", "css": "#subs { position: absolute; left: 110px; right: 110px; top: 1180px; height: 260px; display: grid; place-items: center; }\n.sub { grid-area: 1 / 1; opacity: 0; font: 700 84px/1.1 \"Helvetica Neue\", Helvetica, Arial, sans-serif; letter-spacing: -0.03em;\n       color: #ffffff; text-shadow: 0 2px 22px rgba(0, 0, 0, .35); white-space: nowrap; }\n.masc { grid-area: 1 / 1; overflow: hidden; padding: 0 10px 8px; }\n.masc .sub { display: block; }\n#frase { grid-area: 1 / 1; text-align: center; font: 700 72px/1.18 \"Helvetica Neue\", Helvetica, Arial, sans-serif; letter-spacing: -0.025em;\n         color: rgba(255, 255, 255, .42); text-shadow: 0 2px 22px rgba(0, 0, 0, .3); opacity: 0; }\n", "js": "// Plantilla viva: com entren els subtítols, una paraula cada cop.\n// La pàgina la dibuixa damunt del vídeo de la persona. Variables: entrada = cop · puja · karaoke · maquina.\n// dades.paraules: [{text, inici, final}] en segons, del tros de vídeo.\nwindow.composicio = function (escena, v, gsap, dades) {\n  const P = Array.isArray(dades.paraules) ? dades.paraules : [];\n  const F = 1 / 30;\n  const tl = gsap.timeline({ paused: true });\n  const subs = escena.querySelector(\"#subs\");\n  const fi = (i) => {\n    const p = P[i], s = P[i + 1];\n    return s && s.inici - p.final < 0.35 ? s.inici : p.final + 0.3;\n  };\n  if (v.entrada === \"karaoke\") {\n    // Tota la frase alhora; la paraula que es diu, en blanc\n    const frase = document.createElement(\"div\");\n    frase.id = \"frase\";\n    const tall = Math.ceil(P.length / 2) - 1;\n    const spans = P.map((p, i) => {\n      const s = document.createElement(\"span\");\n      s.textContent = p.text;\n      frase.append(s, i === tall ? document.createElement(\"br\") : \" \");\n      return s;\n    });\n    subs.append(frase);\n    if (P.length) {\n      tl.set(frase, { opacity: 1 }, Math.max(0, P[0].inici - 0.05));\n      P.forEach((p, i) => {\n        tl.set(spans[i], { color: \"#ffffff\" }, p.inici);\n        if (i < P.length - 1) tl.set(spans[i], { color: \"rgba(255, 255, 255, 0.42)\" }, P[i + 1].inici);\n      });\n      tl.set(frase, { opacity: 0 }, P[P.length - 1].final + 0.3);\n    }\n  } else {\n    P.forEach((p, i) => {\n      const el = document.createElement(\"div\");\n      el.className = \"sub\";\n      if (v.entrada === \"puja\") {\n        const masc = document.createElement(\"div\");\n        masc.className = \"masc\";\n        masc.append(el);\n        subs.append(masc);\n        el.textContent = p.text;\n        tl.set(el, { opacity: 1 }, p.inici);\n        tl.fromTo(el, { yPercent: 110 }, { yPercent: 0, duration: 6 * F, ease: \"expo.out\" }, p.inici);\n      } else if (v.entrada === \"maquina\") {\n        subs.append(el);\n        tl.set(el, { opacity: 1 }, p.inici);\n        const lletres = [...p.text].map((c) => {\n          const s = document.createElement(\"span\");\n          s.textContent = c;\n          s.style.opacity = \"0\";\n          el.append(s);\n          return s;\n        });\n        const pas = Math.min(0.045, (p.final - p.inici) / lletres.length);\n        lletres.forEach((s, k) => tl.set(s, { opacity: 1 }, p.inici + k * pas));\n      } else {\n        subs.append(el);\n        el.textContent = p.text;\n        tl.set(el, { opacity: 1 }, p.inici);\n      }\n      tl.set(el, { opacity: 0 }, fi(i));\n    });\n  }\n  tl.set({}, {}, 4);\n  return tl;\n};\n"}, "opcions": [{"id": "a", "etiqueta": "De cop", "descripcio": "La paraula hi és de cop, quan la dius.", "variables": {"entrada": "cop"}}, {"id": "b", "etiqueta": "Puja des de baix", "descripcio": "Cada paraula puja des d'una màscara, en sis fotogrames.", "variables": {"entrada": "puja"}}, {"id": "c", "etiqueta": "Tota la frase", "descripcio": "La frase sencera, i la paraula que dius s'encén.", "variables": {"entrada": "karaoke"}}, {"id": "d", "etiqueta": "A màquina", "descripcio": "Les lletres surten una a una.", "variables": {"entrada": "maquina"}}]}, {"id": "ganxo", "nom": "On va el títol del ganxo", "us": "El mateix títol, en el mateix moment. Només canvia on va.", "viva": {"html": "<div id=\"titol\"><span>3 trucs per editar<br>més ràpid<\/span><\/div>\n", "css": "#titol { position: absolute; left: 110px; right: 110px; display: flex; opacity: 0; }\n#titol span { display: inline-block; background: rgba(15, 17, 20, .72); color: #fff; border-radius: 22px; padding: 26px 34px 30px;\n              font: 700 86px/1.02 \"Helvetica Neue\", Helvetica, Arial, sans-serif; letter-spacing: -0.035em; }\n#titol.dalt { top: 330px; justify-content: center; text-align: center; }\n#titol.mig { top: 760px; justify-content: center; text-align: center; }\n#titol.baix { top: 1180px; justify-content: flex-start; text-align: left; }\n", "js": "// Plantilla viva: on va el títol del ganxo. Variables: lloc = dalt · mig · baix.\nwindow.composicio = function (escena, v, gsap) {\n  const titol = escena.querySelector(\"#titol\");\n  const caixa = titol.firstElementChild;\n  titol.classList.add([\"dalt\", \"mig\", \"baix\"].includes(v.lloc) ? v.lloc : \"dalt\");\n  const tl = gsap.timeline({ paused: true });\n  tl.set(titol, { opacity: 1 }, 0.25);\n  tl.fromTo(caixa, { scale: 0.92, opacity: 0 }, { scale: 1, opacity: 1, duration: 8 / 30, ease: \"expo.out\" }, 0.25);\n  tl.to(caixa, { opacity: 0, duration: 6 / 30, ease: \"power2.in\" }, 3.0);\n  tl.set({}, {}, 4);\n  return tl;\n};\n"}, "opcions": [{"id": "a", "etiqueta": "A dalt", "descripcio": "Centrat, just sota la zona que tapa Instagram.", "variables": {"lloc": "dalt"}}, {"id": "b", "etiqueta": "Al mig", "descripcio": "Al centre de la pantalla, on mira tothom.", "variables": {"lloc": "mig"}}, {"id": "c", "etiqueta": "A baix, a l'esquerra", "descripcio": "On normalment hi ha els subtítols, alineat a l'esquerra.", "variables": {"lloc": "baix"}}]}], "fixat": [], "creada": "2026-12-10"}], "apunts": [{"tipus": "fixat", "text": "Vertical 9:16, amb tot el text dins de les zones segures de Reels.", "ronda": null, "creat": "2026-12-10T10:00"}, {"tipus": "descartat", "text": "Lletra amb contorn negre.", "per_que": "«sembla d'una tele antiga»", "ronda": null, "creat": "2026-12-10T10:01"}, {"tipus": "pregunta", "text": "El títol del ganxo, sempre al mateix lloc o segons el vídeo?", "ronda": null, "creat": "2026-12-10T10:02"}]};</script>
+<title>personalitza</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--
+  personalitza · inventa l'estil dels teus vídeos, votant opcions.
+  Copyright © 2026 Ivet Anoro. Tots els drets reservats.
+  Aquesta pàgina funciona com a artifact de claude.ai, per passos: entrevista, referències, el teu vídeo, rondes i el teu
+  estil. Tot es desa a la base de dades de l'artifact i els fitxers, als seus assets (capacitats db, user, assets
+  i downloads). Per dictar, la persona fa servir el dictat del sistema, que entén el català. Les opcions de les rondes poden ser «vives»: Claude les escriu com a plantilles HTML que la
+  pàgina dibuixa al moment damunt del vídeo de la persona, dins d'un marc aïllat. Fora de claude.ai, només en mode demo.
+-->
+<style>
+/* Disposició: una columna ampla amb els passos a dalt; a les rondes, targetes en graella i una barra de material.
+   Apple design: colors del sistema, molles que es poden girar a mig camí, materials translúcids. Marca neutra. */
+:root {
+  --fons: #f5f5f7;
+  --superficie: #ffffff;
+  --superficie-2: #ececf1;
+  --text: #1d1d1f;
+  --suau: #6e6e73;
+  --terciari: #8e8e93;
+  --separador: rgba(60, 60, 67, .16);
+  --accent: #0066cc;
+  --sobre-accent: #ffffff;
+  --guarda: #248a3d;
+  --potser: #c93400;
+  --fora: #d70015;
+  --sobre-veredicte: #ffffff;
+  --estrella: #d69e00;
+  --material: rgba(245, 245, 247, .74);
+  --scrim: rgba(0, 0, 0, .42);
+  --media: #0d0d0e;
+  --ombra-petita: 0 1px 2px rgba(0, 0, 0, .05), 0 2px 8px rgba(0, 0, 0, .04);
+  --ombra: 0 1px 3px rgba(0, 0, 0, .06), 0 10px 30px rgba(0, 0, 0, .07);
+  --ombra-gran: 0 2px 8px rgba(0, 0, 0, .08), 0 30px 80px rgba(0, 0, 0, .22);
+  --radi: 1.125rem;
+  --lletra: system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --molla: cubic-bezier(.2, .8, .2, 1);
+  --molla-durada: 420ms;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fons: #000000;
+    --superficie: #1c1c1e;
+    --superficie-2: #2c2c2e;
+    --text: #f5f5f7;
+    --suau: rgba(235, 235, 245, .64);
+    --terciari: rgba(235, 235, 245, .42);
+    --separador: rgba(84, 84, 88, .6);
+    --accent: #409cff;
+    --sobre-accent: #000000;
+    --guarda: #30d158;
+    --potser: #ffb340;
+    --fora: #ff6961;
+    --sobre-veredicte: #000000;
+    --estrella: #ffd60a;
+    --material: rgba(22, 22, 24, .74);
+    --scrim: rgba(0, 0, 0, .6);
+    --ombra-petita: 0 1px 2px rgba(0, 0, 0, .5);
+    --ombra: 0 1px 3px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .35);
+    --ombra-gran: 0 2px 8px rgba(0, 0, 0, .5), 0 30px 80px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --fons: #000000;
+  --superficie: #1c1c1e;
+  --superficie-2: #2c2c2e;
+  --text: #f5f5f7;
+  --suau: rgba(235, 235, 245, .64);
+  --terciari: rgba(235, 235, 245, .42);
+  --separador: rgba(84, 84, 88, .6);
+  --accent: #409cff;
+  --sobre-accent: #000000;
+  --guarda: #30d158;
+  --potser: #ffb340;
+  --fora: #ff6961;
+  --sobre-veredicte: #000000;
+  --estrella: #ffd60a;
+  --material: rgba(22, 22, 24, .74);
+  --scrim: rgba(0, 0, 0, .6);
+  --ombra-petita: 0 1px 2px rgba(0, 0, 0, .5);
+  --ombra: 0 1px 3px rgba(0, 0, 0, .5), 0 10px 30px rgba(0, 0, 0, .35);
+  --ombra-gran: 0 2px 8px rgba(0, 0, 0, .5), 0 30px 80px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--fons); color: var(--text);
+  font: 100%/1.47 var(--lletra); font-optical-sizing: auto; -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--material);
+}
+button, input, textarea { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; touch-action: manipulation; cursor: pointer; }
+h1, h2, h3, p { margin: 0; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 60%, transparent); outline-offset: 2px; border-radius: 8px; }
+
+.amplada {
+  max-width: 74rem; margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* --- Tipografia: l'espaiat i l'interlineat canvien amb la mida --- */
+.sobretitol { font: 600 .6875rem/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--suau); }
+h1 { font-size: clamp(1.75rem, 3.6vw, 2.5rem); font-weight: 700; line-height: 1.08; letter-spacing: -.025em; text-wrap: balance; }
+h2 { font-size: 1.375rem; font-weight: 700; line-height: 1.15; letter-spacing: -.015em; text-wrap: balance; }
+h3 { font-size: .9375rem; font-weight: 600; line-height: 1.25; letter-spacing: -.01em; }
+.intro { max-width: 45rem; color: var(--suau); font-size: 1.0625rem; line-height: 1.45; }
+
+/* --- Capçalera i passos --- */
+.capcalera { padding-block: 2rem 1rem; }
+.capcalera .amplada { display: grid; gap: .75rem; }
+.passos-nav { display: flex; gap: .375rem; overflow-x: auto; scrollbar-width: none; margin-inline: -4px; padding: 4px 4px 8px; }
+.passos-nav::-webkit-scrollbar { display: none; }
+.pas-boto {
+  flex: none; display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; padding: .3125rem .875rem .3125rem .3125rem;
+  background: var(--superficie); box-shadow: var(--ombra-petita); font-size: .8125rem; font-weight: 600; color: var(--text); text-decoration: none;
+  transition: transform 100ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.pas-boto:active { transform: scale(.96); }
+.pas-boto .n {
+  display: grid; place-items: center; width: 1.5rem; height: 1.5rem; border-radius: 50%;
+  background: var(--superficie-2); color: var(--suau); font: 600 .75rem/1 var(--mono);
+}
+.pas-boto[data-estat="fet"] .n { background: var(--guarda); color: var(--sobre-veredicte); }
+.pas-boto[data-estat="ara"] .n { background: var(--accent); color: var(--sobre-accent); }
+.pas-boto[aria-current="page"] { background: var(--text); color: var(--fons); }
+/* Pantalles estretes: cinc cercles que hi caben sencers; el nom del pas ja és al títol */
+@media (max-width: 560px) {
+  .passos-nav { overflow: visible; flex-wrap: nowrap; justify-content: flex-start; gap: .5rem; }
+  .pas-boto { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .pas-boto .pas-nom { display: none; }
+  .pas-boto .n { width: 100%; height: 100%; background: transparent; }
+  .pas-boto[data-estat="fet"] { background: var(--guarda); }
+  .pas-boto[data-estat="fet"] .n { background: transparent; }
+  .pas-boto[data-estat="ara"] { background: var(--accent); }
+  .pas-boto[data-estat="ara"] .n { background: transparent; color: var(--sobre-accent); }
+  .pas-boto[aria-current="page"] { box-shadow: 0 0 0 2px var(--fons), 0 0 0 4px var(--text); }
+  .pas-boto[aria-current="page"]:not([data-estat="fet"]):not([data-estat="ara"]) .n { color: var(--fons); }
+}
+
+.nota-cap {
+  max-width: 45rem; padding: .875rem 1.125rem; border-radius: .875rem; font-size: .9375rem; line-height: 1.45;
+  background: color-mix(in srgb, var(--accent) 9%, var(--superficie)); color: var(--suau);
+}
+.nota-cap strong, .nota-cap em { color: var(--text); font-weight: 600; font-style: normal; }
+.canvis {
+  margin: 0; padding: .875rem 1.125rem .875rem 2.25rem; max-width: 45rem;
+  background: var(--superficie); border-radius: .875rem; box-shadow: var(--ombra-petita); color: var(--suau); font-size: .9375rem;
+}
+.canvis li + li { margin-top: .25rem; }
+
+/* Control segmentat (com els d'iOS): una peça que llisca fins a l'opció triada */
+.segmentat {
+  position: relative; display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr;
+  padding: 2px; border-radius: .625rem; background: var(--superficie-2); isolation: isolate;
+}
+.segmentat > button {
+  border: 0; background: none; border-radius: .5rem; padding: .375rem .875rem; font-size: .8125rem; font-weight: 600;
+  color: var(--text); transition: color 200ms ease, transform 100ms ease-out; white-space: nowrap;
+}
+.segmentat > button:active { transform: scale(.95); }
+.segmentat > .indicador {
+  position: absolute; z-index: -1; top: 2px; bottom: 2px; left: 2px; border-radius: .5rem;
+  background: var(--superficie); box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 3px 8px rgba(0, 0, 0, .06);
+  width: calc((100% - 4px) / var(--n, 2)); transform: translateX(calc(100% * var(--i, 0)));
+  transition: transform var(--molla-durada) var(--molla), opacity 160ms ease, background-color 200ms ease;
+}
+
+.rondes-nav { display: flex; flex-wrap: wrap; gap: .375rem; align-items: center; }
+.rondes-nav span { font-size: .8125rem; color: var(--suau); margin-right: .25rem; }
+.pindola {
+  border: 0; font-size: .8125rem; font-weight: 500; padding: .3125rem .875rem; border-radius: 999px; color: var(--text);
+  background: var(--superficie); box-shadow: var(--ombra-petita); text-decoration: none; font-variant-numeric: tabular-nums;
+  transition: transform 100ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.pindola[aria-current="true"] { background: var(--text); color: var(--fons); }
+.pindola:active { transform: scale(.96); }
+
+/* --- Barra de les rondes: material translúcid que flota damunt del contingut --- */
+.barra {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; margin-top: 1rem;
+  background: var(--material); -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  transition: box-shadow 200ms ease;
+}
+.barra.amb-contingut { box-shadow: 0 1px 0 var(--separador), 0 8px 24px rgba(0, 0, 0, .06); }
+.barra-dins { display: flex; flex-wrap: wrap; gap: .625rem 1.25rem; align-items: center; justify-content: space-between; padding-block: .75rem; }
+.progres { display: flex; align-items: center; gap: .75rem; font: 500 .8125rem/1 var(--mono); color: var(--suau); font-variant-numeric: tabular-nums; }
+.pista { width: 8.75rem; height: .25rem; border-radius: 1rem; background: var(--separador); overflow: hidden; }
+.pista-ple { display: block; height: 100%; background: var(--accent); border-radius: inherit; transform-origin: left; transform: scaleX(0); transition: transform var(--molla-durada) var(--molla); }
+.controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.interruptor, .boto-secundari {
+  border: 0; background: var(--superficie-2); border-radius: 999px; padding: .4375rem .9375rem; font-size: .8125rem; font-weight: 500;
+  transition: transform 100ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.interruptor[aria-pressed="true"] { background: var(--accent); color: var(--sobre-accent); }
+.interruptor:active, .boto-secundari:active, .boto-principal:active { transform: scale(.96); }
+.boto-secundari:disabled { opacity: .4; cursor: default; transform: none; }
+.compte { display: flex; align-items: center; gap: .5rem; font-size: .8125rem; color: var(--suau); }
+.compte input { width: 10rem; max-width: 40vw; padding: .4375rem .875rem; border: 0; border-radius: 999px; background: var(--superficie-2); }
+.compte input:focus, textarea:focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent); }
+
+.index-seccions { display: flex; flex-wrap: wrap; gap: .5rem; padding-top: 1.25rem; }
+
+/* --- Seccions i targetes --- */
+.seccio { padding: 2rem 0 .5rem; scroll-margin-top: calc(5rem + env(safe-area-inset-top, 0px)); }
+.seccio-cap { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.seccio-cap span { font: .75rem var(--mono); color: var(--terciari); white-space: nowrap; }
+.seccio-us { color: var(--suau); margin: .25rem 0 1.125rem; max-width: 45rem; }
+.graella { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: 1.25rem; }
+
+.targeta {
+  position: relative; min-width: 0; background: var(--superficie); border-radius: var(--radi); box-shadow: var(--ombra);
+  overflow: hidden; display: flex; flex-direction: column; transition: box-shadow 250ms ease, opacity 250ms ease;
+}
+.targeta::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  box-shadow: inset 0 0 0 2.5px transparent; transition: box-shadow 200ms ease;
+}
+.targeta[data-veredicte="guarda"]::after { box-shadow: inset 0 0 0 2.5px var(--guarda); }
+.targeta[data-veredicte="potser"]::after { box-shadow: inset 0 0 0 2.5px var(--potser); }
+.targeta[data-veredicte="fora"]::after { box-shadow: inset 0 0 0 2.5px var(--fora); }
+.targeta[data-veredicte="fora"] .previa { opacity: .55; }
+.targeta.oberta { visibility: hidden; }
+
+.previa {
+  position: relative; display: block; width: 100%; max-width: 100%; aspect-ratio: var(--proporcio, 9 / 16);
+  background: var(--media); cursor: zoom-in; overflow: hidden; border: 0; padding: 0; transition: opacity 250ms ease;
+}
+.previa > video, .previa > img, .previa > .viu { transition: transform 120ms ease-out; }
+.previa:active > video, .previa:active > img, .previa:active > .viu { transform: scale(.975); }
+.previa video, .previa img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.so-icona { position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255, 255, 255, .85); font-size: .8125rem; text-align: center; }
+.so-icona b { display: block; font-size: 2.125rem; line-height: 1; font-weight: 400; margin-bottom: .5rem; }
+
+/* Opcions vives: el vídeo a sota i l'opció dibuixada al moment a sobre, en un marc aïllat */
+.viu { position: absolute; inset: 0; }
+.viu video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.viu .fons-neutre { width: 100%; height: 100%; background: linear-gradient(160deg, #8e8e93, #48484a); }
+.viu iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; background: transparent; color-scheme: light; }
+.viu-error { position: absolute; left: .5rem; right: .5rem; bottom: .5rem; padding: .375rem .5rem; border-radius: .5rem; background: rgba(0, 0, 0, .6); color: #fff; font-size: .6875rem; }
+
+.estrella {
+  position: absolute; top: .5rem; right: .5rem; z-index: 2; width: 2.25rem; height: 2.25rem; border: 0; border-radius: 50%;
+  display: grid; place-items: center; color: #fff; background: rgba(0, 0, 0, .38);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); transition: transform 100ms ease-out, background-color 200ms ease;
+}
+.estrella:active { transform: scale(.88); }
+.estrella svg { width: 1.125rem; height: 1.125rem; }
+.estrella[aria-pressed="true"] { background: var(--estrella); color: #000; }
+.estrella:disabled { display: none; }
+
+.targeta-cos { padding: .875rem 1rem 1rem; display: flex; flex-direction: column; gap: .625rem; flex: 1; min-width: 0; container-type: inline-size; }
+.targeta-cos > p { color: var(--suau); font-size: .8125rem; line-height: 1.4; }
+.etiqueta-petita { font: 600 .6875rem var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+.etiqueta-preferida { color: var(--estrella); }
+.targeta-so { font: .6875rem var(--mono); color: var(--terciari); overflow-wrap: anywhere; }
+
+.veredictes { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; }
+.veredictes > button { padding: .375rem 0; font-size: .75rem; }
+.veredictes > .indicador { opacity: 0; transform: translateX(0) scale(.92); width: calc((100% - 4px) / 3); }
+.veredictes[data-sel="guarda"] > .indicador { opacity: 1; transform: translateX(0); background: var(--guarda); }
+.veredictes[data-sel="potser"] > .indicador { opacity: 1; transform: translateX(100%); background: var(--potser); }
+.veredictes[data-sel="fora"] > .indicador { opacity: 1; transform: translateX(200%); background: var(--fora); }
+.veredictes > button[aria-pressed="true"] { color: var(--sobre-veredicte); }
+
+.abast { display: grid; gap: .375rem; }
+.abast p { font-size: .75rem; color: var(--suau); }
+.abast .segmentat { width: 100%; }
+.abast .segmentat > button { font-size: .75rem; padding: .3125rem 0; }
+.abast .segmentat:not([data-sel]) > .indicador { opacity: 0; }
+
+/* A les targetes estretes, els botons van un sota l'altre i la peça llisca de dalt a baix */
+@container (max-width: 15rem) {
+  .veredictes { grid-template-columns: 1fr; grid-auto-flow: row; }
+  .veredictes > .indicador { width: calc(100% - 4px); bottom: auto; height: calc((100% - 4px) / 3); }
+  .veredictes[data-sel="potser"] > .indicador { transform: translateY(100%); }
+  .veredictes[data-sel="fora"] > .indicador { transform: translateY(200%); }
+  .veredictes > button { padding: .4375rem 0; }
+  .abast .segmentat { grid-auto-flow: row; grid-auto-rows: 1fr; }
+  .abast .segmentat > .indicador { width: calc(100% - 4px); bottom: auto; height: calc((100% - 4px) / 2); transform: translateY(calc(100% * var(--i, 0))); }
+  .targeta-cos > .xips, .targeta-cos > .camp { display: none; }
+  .targeta-cos > .nota-boto { display: -webkit-box; }
+}
+
+/* Les notes ràpides van en línies (mai tallades); a les targetes estretes, només a la vista gran */
+.xips { display: flex; flex-wrap: wrap; gap: .375rem; }
+.nota-boto {
+  display: none; width: 100%; border: 0; border-radius: .75rem; background: var(--superficie-2); color: var(--suau);
+  text-align: left; font-size: .8125rem; line-height: 1.35; padding: .625rem .75rem; min-height: 2.75rem;
+  overflow: hidden; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow-wrap: anywhere;
+  transition: transform 100ms ease-out;
+}
+.nota-boto.amb-nota { color: var(--text); }
+.nota-boto:active { transform: scale(.98); }
+.xip {
+  flex: none; border: 0; border-radius: 999px; padding: .3125rem .6875rem; font-size: .75rem; font-weight: 500;
+  background: var(--superficie-2); color: var(--text); transition: transform 100ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.xip:active { transform: scale(.94); }
+.xip[aria-pressed="true"] { background: var(--text); color: var(--fons); }
+
+textarea {
+  width: 100%; resize: vertical; border: 0; border-radius: .75rem; background: var(--superficie-2);
+  padding: .5625rem .75rem; font-size: .8125rem; line-height: 1.4;
+}
+.targeta textarea { min-height: 3.25rem; }
+textarea::placeholder, input::placeholder { color: var(--terciari); }
+button:disabled, textarea:disabled { cursor: not-allowed; }
+.segmentat:has(> button:disabled), textarea:disabled, .xip:disabled { opacity: .55; }
+
+/* Camp de text */
+.camp { position: relative; }
+
+/* Zones segures d'Instagram Reels, damunt de cada vista prèvia (només 9:16) */
+.zones { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.zones .tapat { fill: rgba(0, 0, 0, .45); }
+.zones .limit { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 14 10; opacity: .8; }
+.zones .ui { fill: #fff; }
+.zones .ui-linia { fill: none; stroke: #fff; stroke-width: 6; }
+.zones text { font: 600 34px var(--lletra); }
+.zones .text-suau { font-weight: 400; font-size: 30px; opacity: .85; }
+
+.buit { padding: 4rem 0; text-align: center; color: var(--suau); display: grid; gap: .5rem; justify-items: center; }
+.buit p { max-width: 32rem; }
+.buit-petit { color: var(--terciari); font-size: .9375rem; }
+
+/* --- Peu de les rondes --- */
+.peu { padding-block: 2.5rem 6rem; }
+.peu .amplada { display: grid; gap: 1.25rem; }
+.nota-general { display: grid; gap: .5rem; color: var(--suau); font-size: .9375rem; }
+.nota-general em { color: var(--terciari); font-style: normal; }
+#nota-general { font-size: .9375rem; background: var(--superficie); box-shadow: var(--ombra-petita); }
+.enviament, .acabar { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: .875rem; }
+.enviament p, .acabar p { margin-right: auto; color: var(--suau); font-size: .9375rem; flex: 1 1 18rem; }
+.boto-principal {
+  background: var(--accent); color: var(--sobre-accent); border: 0; border-radius: 999px; padding: .75rem 1.375rem;
+  font-size: .9375rem; font-weight: 600; transition: transform 100ms ease-out, opacity 200ms ease;
+}
+.boto-principal:disabled { opacity: .45; cursor: default; }
+
+/* --- Passos amb formulari: entrevista, referències i el teu vídeo --- */
+.pas { display: grid; gap: 1rem; padding-block: .5rem 6rem; }
+.pas > * { max-width: 52rem; }
+.pregunta { display: grid; gap: .5rem; background: var(--superficie); border-radius: var(--radi); box-shadow: var(--ombra-petita); padding: 1rem 1.125rem 1.125rem; min-width: 0; }
+.pregunta label { font-weight: 600; font-size: 1.0625rem; letter-spacing: -.01em; line-height: 1.3; }
+.pregunta .ajuda { color: var(--suau); font-size: .875rem; }
+.pregunta .num { font: .6875rem var(--mono); color: var(--terciari); letter-spacing: .06em; text-transform: uppercase; }
+.pregunta textarea { font-size: .9375rem; min-height: 4.5rem; }
+.adjunts { display: grid; gap: .5rem; justify-items: start; }
+.adjunts-llista { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; width: 100%; }
+.adjunts-llista li { display: flex; align-items: center; gap: .75rem; padding: .375rem .75rem; border-radius: .625rem; background: var(--superficie-2); font-size: .875rem; min-width: 0; }
+.adjunt-nom { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.boto-adjunta { display: inline-flex; align-items: center; gap: .375rem; }
+.subtitols-estat { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; font-size: .875rem; color: var(--suau); }
+.afegir { display: flex; flex-wrap: wrap; gap: .625rem; align-items: center; }
+.afegir input[type="url"] {
+  flex: 1 1 14rem; min-width: 0; padding: .625rem .875rem; border: 0; border-radius: .75rem; background: var(--superficie); box-shadow: var(--ombra-petita);
+}
+.afegir input[type="url"]:focus { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 45%, transparent); }
+.pujant { color: var(--suau); font-size: .875rem; }
+.refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr)); gap: 1rem; }
+.ref { background: var(--superficie); border-radius: var(--radi); box-shadow: var(--ombra-petita); overflow: hidden; display: grid; align-content: start; min-width: 0; }
+.ref-media { aspect-ratio: 4 / 5; background: var(--media); overflow: hidden; display: grid; place-items: center; color: rgba(255, 255, 255, .8); font-size: .8125rem; }
+.ref-media img, .ref-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ref-enllac { aspect-ratio: auto; min-height: 5rem; padding: 1rem; background: var(--superficie-2); color: var(--accent); overflow-wrap: anywhere; text-align: center; text-decoration: none; }
+.ref-cos { padding: .75rem; display: grid; gap: .5rem; }
+.boto-treu { justify-self: start; border: 0; background: none; color: var(--fora); font-size: .8125rem; font-weight: 600; padding: .25rem 0; }
+.clip { display: grid; gap: 1rem; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr); align-items: start; }
+.clip-media, .puja-zona { aspect-ratio: var(--proporcio, 9 / 16); max-width: 100%; border-radius: var(--radi); overflow: hidden; }
+.clip-media { background: var(--media); }
+.clip-media video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.puja-zona {
+  display: grid; place-content: center; justify-items: center; gap: .75rem; text-align: center; padding: 1rem;
+  border: 2px dashed var(--separador); color: var(--suau); background: var(--superficie);
+}
+
+/* --- El teu estil --- */
+.estil { display: grid; gap: 2.25rem; padding-block: 1rem 6rem; }
+.estil section { display: grid; gap: .875rem; }
+.estil .cap { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem; }
+.llista { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; max-width: 52rem; }
+.llista li { background: var(--superficie); border-radius: .875rem; box-shadow: var(--ombra-petita); padding: .75rem 1rem; display: grid; gap: .25rem; min-width: 0; }
+.llista .per-que { color: var(--suau); font-size: .875rem; }
+.llista .ronda-de { font: .6875rem var(--mono); color: var(--terciari); }
+.cinc-linies { margin: 0; padding-left: 1.25rem; max-width: 45rem; font-size: 1.0625rem; display: grid; gap: .25rem; }
+.respostes { max-width: 52rem; }
+.respostes summary { cursor: pointer; font-weight: 600; padding: .25rem 0; }
+.respostes dl { display: grid; gap: .875rem; margin: .75rem 0 0; }
+.respostes dt { font: 600 .6875rem var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--suau); }
+.respostes dd { margin: .25rem 0 0; white-space: pre-wrap; }
+
+/* --- Vista gran: una tasca que demana atenció, amb el fons enfosquit --- */
+.modal { position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 1.25rem; }
+.modal-fons { position: absolute; inset: 0; background: var(--scrim); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+/* L'alçada del vídeo surt de l'espai que hi ha, i l'amplada, de la proporció: així no es deforma mai */
+.modal-caixa {
+  --alt-media: min(80vh, 47.5rem, calc((100vw - 6.5rem - 16rem) / var(--ample-alt, .5625)));
+  position: relative; display: grid; grid-template-columns: calc(var(--alt-media) * var(--ample-alt, .5625)) minmax(16rem, 22rem); gap: 1.5rem;
+  max-height: calc(100vh - 2.5rem); max-width: 100%; background: var(--superficie); border-radius: 1.5rem; padding: 1.25rem;
+  box-shadow: var(--ombra-gran); will-change: transform;
+}
+.agafador { display: none; }
+.modal-tanca {
+  position: absolute; top: .75rem; right: .75rem; z-index: 2; width: 1.875rem; height: 1.875rem; border: 0; border-radius: 50%;
+  background: var(--superficie-2); color: var(--suau); font-size: 1.125rem; line-height: 1; display: grid; place-items: center;
+  transition: transform 100ms ease-out;
+}
+.modal-tanca:active { transform: scale(.9); }
+.modal-media {
+  position: relative; width: 100%; height: var(--alt-media);
+  background: var(--media); border-radius: 1rem; overflow: hidden;
+}
+.modal-media > video, .modal-media > img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.modal-media audio { position: absolute; left: 1rem; bottom: 40%; width: calc(100% - 2rem); }
+.modal-info { display: flex; flex-direction: column; gap: .75rem; padding-top: 1.75rem; overflow: auto; min-width: 0; }
+.modal-info h2 { font-size: 1.5rem; letter-spacing: -.02em; }
+.modal-desc { color: var(--suau); font-size: .9375rem; }
+.modal-info .veredictes > button { padding: .5rem 0; font-size: .8125rem; }
+.boto-estrella {
+  display: inline-flex; align-items: center; gap: .5rem; align-self: flex-start; border: 0; border-radius: 999px;
+  padding: .4375rem .9375rem; font-size: .8125rem; font-weight: 600; background: var(--superficie-2);
+  transition: transform 100ms ease-out, background-color 200ms ease, color 200ms ease;
+}
+.boto-estrella svg { width: 1rem; height: 1rem; color: var(--estrella); }
+.boto-estrella[aria-pressed="true"] { background: var(--estrella); color: #000; }
+.boto-estrella[aria-pressed="true"] svg { color: #000; }
+.boto-estrella:active { transform: scale(.96); }
+.modal-navega { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: auto; padding-top: .5rem; }
+.modal-navega .boto-secundari { flex: none; white-space: nowrap; }
+.dreceres { flex: 1; min-width: 0; font-size: .6875rem; color: var(--terciari); text-align: center; }
+
+.avis {
+  position: fixed; bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px)); left: 50%; z-index: 30; translate: -50% 0;
+  max-width: calc(100vw - 2rem); background: color-mix(in srgb, var(--text) 88%, transparent); color: var(--fons);
+  -webkit-backdrop-filter: blur(20px) saturate(180%); backdrop-filter: blur(20px) saturate(180%);
+  padding: .625rem 1.125rem; border-radius: 999px; font-size: .875rem; font-weight: 500; box-shadow: var(--ombra); text-align: center;
+}
+
+/* --- Mòbil: la vista gran és un full que puja des de baix i s'arrossega avall per tancar-lo --- */
+@media (max-width: 760px) {
+  .capcalera { padding-top: 1.25rem; }
+  .graella { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+  .targeta-cos { padding: .75rem; }
+  .clip { grid-template-columns: 1fr; }
+  .refs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+  .clip-media, .puja-zona { width: min(14rem, 100%); }
+  .modal { padding: 0; place-items: end stretch; }
+  .modal-caixa {
+    grid-template-columns: 1fr; grid-auto-rows: max-content; align-content: start; border-radius: 1.25rem 1.25rem 0 0; width: 100%; max-height: none;
+    height: calc(100% - 1.5rem - env(safe-area-inset-top, 0px)); overflow: auto; overscroll-behavior: contain;
+    padding: 0 max(16px, env(safe-area-inset-right, 0px)) calc(1rem + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+    gap: 1rem;
+  }
+  .modal-caixa::after { content: ""; position: absolute; left: 0; right: 0; top: 100%; height: 30vh; background: var(--superficie); }
+  .agafador { display: grid; place-items: center; position: sticky; top: 0; z-index: 1; height: 1.75rem; margin-inline: -16px; background: var(--superficie); touch-action: none; cursor: grab; }
+  .agafador span { width: 2.25rem; height: .3125rem; border-radius: 1rem; background: var(--separador); }
+  .modal-tanca { top: .875rem; }
+  .modal-media { height: min(56vh, calc((100vw - 32px) / var(--ample-alt, .5625))); width: auto; aspect-ratio: var(--proporcio, 9 / 16); max-width: 100%; margin: 0 auto; touch-action: none; }
+  .modal-info { padding-top: 0; overflow: visible; }
+  .dreceres { display: none; }
+}
+
+/* --- Pantalles tàctils: tot el que es toca fa com a mínim 44 px, i els camps 16 px (perquè l'iPhone no s'hi apropi) --- */
+@media (max-width: 760px), (pointer: coarse) {
+  .pas-boto, .pindola, .interruptor, .boto-secundari, .boto-principal, .boto-estrella, .boto-treu, .xip, .segmentat > button { min-height: 44px; }
+  .pas-boto, .pindola { display: inline-flex; align-items: center; }
+  .pas-boto .n { width: 1.75rem; height: 1.75rem; }
+  .estrella, .modal-tanca { width: 44px; height: 44px; }
+  .compte input { min-height: 44px; }
+  textarea, input, .pregunta textarea, #nota-general { font-size: 1rem; }
+  .targeta textarea { min-height: 3.75rem; }
+  .boto-treu { padding-inline: .25rem; }
+}
+
+/* --- Accessibilitat --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; }
+  .segmentat > .indicador, .pista-ple { transition-duration: 160ms; transition-timing-function: ease; }
+  .veredictes > .indicador { transition-property: opacity, background-color; }
+  .interruptor:active, .boto-secundari:active, .boto-principal:active, .pindola:active, .pas-boto:active, .xip:active, .estrella:active,
+  .segmentat > button:active, .previa:active > *, .modal-tanca:active, .boto-estrella:active { transform: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .barra, body::before { background: var(--fons); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .modal-fons { background: rgba(0, 0, 0, .72); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .avis { background: var(--text); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .estrella { background: rgba(0, 0, 0, .7); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+@media (prefers-contrast: more) {
+  :root { --separador: rgba(60, 60, 67, .5); }
+  .barra { background: var(--fons); border-bottom: 1px solid var(--text); }
+  .targeta, .canvis, .llista li, .ref, .pregunta, .pas-boto, .nota-general textarea { box-shadow: 0 0 0 1px var(--text); }
+  .interruptor, .boto-secundari, .segmentat, .compte input, textarea, .xip { box-shadow: inset 0 0 0 1px var(--suau); }
+}
+</style>
+
+<header class="capcalera">
+  <div class="amplada">
+    <p class="sobretitol" id="sobretitol">personalitza</p>
+    <nav class="passos-nav" id="passos-nav" aria-label="Passos" hidden></nav>
+    <h1 id="titol">personalitza</h1>
+    <p class="intro" id="intro">Carregant el teu laboratori d'estil…</p>
+    <p class="nota-cap" id="avis-demo" hidden>
+      <strong>Això és una demo.</strong> El que hi facis només es queda en aquest navegador. A la de debò, Claude t'acompanya a
+      cada pas i, quan prems «Fet», llegeix el que hi has posat.
+    </p>
+    <p class="nota-cap" id="avis-lectura" hidden>
+      <strong>Aquesta pàgina només la pots mirar.</strong> Qui l'ha compartit amb tu és qui hi respon i hi valora les opcions.
+    </p>
+  </div>
+</header>
+
+<section id="vista-entrevista" hidden><div class="amplada pas" id="pas-entrevista"></div></section>
+<section id="vista-referencies" hidden><div class="amplada pas" id="pas-referencies"></div></section>
+<section id="vista-video" hidden><div class="amplada pas" id="pas-video"></div></section>
+
+<section id="vista-rondes">
+  <div class="amplada" style="display: grid; gap: .75rem;">
+    <nav class="rondes-nav" id="rondes-nav" aria-label="Rondes" hidden></nav>
+    <ul class="canvis" id="canvis" hidden></ul>
+    <p class="nota-cap" id="com-funciona" hidden>
+      <strong>Te’n pots quedar tantes com vulguis.</strong>
+      Cada secció ensenya maneres diferents de fer el mateix moment del vídeo, perquè les puguis comparar, i el teu estil en pot tenir
+      unes quantes. <em>Sí</em>: m’agrada. <em>Potser</em>: hi ha alguna cosa que no; digues què a la nota.
+      <em>No</em>: no ho vull. Amb l’estrella marques la teva preferida de cada secció.
+    </p>
+    <p class="nota-cap" id="avis-passada" hidden>
+      <strong>Aquesta ronda ja és passada.</strong> La pots mirar, però el que compta és el que valores a l'última.
+    </p>
+  </div>
+
+  <div class="barra" id="barra" hidden>
+    <div class="amplada barra-dins">
+      <div class="progres">
+        <span id="compte-valorades">0 de 0 valorades</span>
+        <span class="pista" aria-hidden="true"><span class="pista-ple" id="pista-ple"></span></span>
+      </div>
+      <div class="controls">
+        <button type="button" class="interruptor" id="boto-zones" aria-pressed="false">Zones segures</button>
+        <button type="button" class="interruptor" id="boto-pendents" aria-pressed="false">Només sense valorar</button>
+        <label class="compte">
+          <span>Previsualitza com a</span>
+          <input type="text" id="camp-compte" placeholder="@el_teu_compte" maxlength="31" autocomplete="off" spellcheck="false">
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="amplada">
+    <nav class="index-seccions" id="index-seccions" aria-label="Seccions" hidden></nav>
+    <main id="seccions"></main>
+    <section class="buit" id="buit" hidden>
+      <h2 id="buit-titol"></h2>
+      <p id="buit-text"></p>
+    </section>
+  </div>
+
+  <footer class="peu" id="peu" hidden>
+    <div class="amplada">
+      <label class="nota-general" for="nota-general">
+        <span>Alguna cosa més sobre aquesta ronda? <em>(opcional)</em></span>
+      </label>
+      <div class="camp" id="camp-general"><textarea id="nota-general" rows="3" placeholder="Per exemple: «m'agrada la direcció, però tot és massa petit»"></textarea></div>
+      <div class="enviament">
+        <p id="missatge-envia"></p>
+        <button type="button" class="boto-principal" id="boto-envia">Envia la valoració</button>
+        <button type="button" class="boto-secundari" id="boto-reobre" hidden>Torna a obrir</button>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<section id="vista-estil" hidden>
+  <div class="amplada estil" id="estil"></div>
+</section>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-titol">
+  <div class="modal-fons" data-tanca></div>
+  <div class="modal-caixa" id="modal-caixa">
+    <div class="agafador" id="agafador" aria-hidden="true"><span></span></div>
+    <button type="button" class="modal-tanca" id="modal-tanca" data-tanca aria-label="Tanca">×</button>
+    <div class="modal-media" id="modal-media"></div>
+    <div class="modal-info" id="modal-info"></div>
+  </div>
+</div>
+
+<div class="avis" id="avis" role="status" aria-live="polite" hidden></div>
+
+<script>
+"use strict";
+// personalitza · la pàgina com a artifact de claude.ai, per passos.
+// Col·leccions de la base de dades:
+//   laboratori/estat     (Claude)  nom, proporcio, pas, encarrec
+//   entrevista/preguntes (Claude)  {llista: [{clau, pregunta, ajuda}]}; si no hi és, les preguntes de sempre
+//   entrevista/respostes (pàgina)  {clau: text}
+//   adjunts/<id>         (pàgina)  {clau, asset, nom, tipus, mida}: fitxers adjunts a una pregunta
+//   referencies/<id>     (pàgina)  {asset | enllac, tipus, que_magrada, ordre}
+//   material/clip        (pàgina)  {asset, tipus, text}: el tros de vídeo
+//   passos/<pas>         (pàgina)  {enviat}: «Fet, envia-ho» de cada pas
+//   rondes/rNN           (Claude)  la ronda; una secció pot ser viva: {viva: {html, css, js}} i opcions amb {variables}
+//   valoracions, preferides, enviaments, preferencies (pàgina) · apunts (Claude)
+// Vegeu SKILL.md.
+
+const NOMS = { guarda: "Sí", potser: "Potser", fora: "No" };  // les mateixes paraules de tallat i matcha (nucli/rondes)
+const XIPS = {
+  guarda: ["exactament això", "per a tot", "només per als ganxos", "més sovint", "m’agrada el ritme"],
+  potser: ["massa gran", "massa petit", "massa ràpid", "massa lent", "costa de llegir", "la lletra no", "el color no", "massa recarregat"],
+  fora: ["no és el meu estil", "massa vist", "costa de llegir", "massa recarregat", "no em representa"],
+};
+const PASSOS = [
+  { id: "entrevista", nom: "Entrevista", titol: "L'entrevista", intro: "Respon com vulguis, escrivint o dictant. Es desa sol: no cal que ho facis tot d'una tirada." },
+  { id: "referencies", nom: "Referències", titol: "Les teves referències", intro: "Puja de 3 a 5 coses que t'encantin (captures, vídeos o enllaços) i digues què t'agrada de cadascuna. Si no en tens, envia-ho igualment: l'estil sortirà de l'entrevista." },
+  { id: "video", nom: "El teu vídeo", titol: "El teu vídeo", intro: "Un tros de 3 a 8 segons, a càmera. Les opcions de les rondes es dibuixaran damunt seu. Si ara no en tens cap, envia-ho igualment: les veuràs damunt d'un fons neutre i el podràs pujar més endavant." },
+  { id: "rondes", nom: "Rondes" },
+  { id: "estil", nom: "El teu estil" },
+];
+// Les preguntes de sempre. A sota de cada una, en gris, uns quants exemples perquè no es quedi en blanc.
+const PREGUNTES = [
+  { clau: "per_a_que", pregunta: "Per a què és aquest estil?",
+    ajuda: "Per exemple: reels, vídeos de YouTube, TikTok, la teva marca, un client…" },
+  { clau: "format", pregunta: "On es veurà, i en quin format?",
+    ajuda: "Vertical 9:16, horitzontal 16:9, quadrat 1:1 o 4:5." },
+  { clau: "public", pregunta: "A quin públic et dirigeixes?",
+    ajuda: "Per exemple: gent jove, famílies, gent que comença, professionals del teu sector, clients que encara no et coneixen…" },
+  { clau: "mai", pregunta: "Hi ha alguna cosa que tinguis clara que no t'agrada?",
+    ajuda: "Per exemple: lletra amb contorn, emojis a la pantalla, massa colors, transicions exagerades, música massa alta…" },
+  { clau: "ja_tens", pregunta: "Tens algun material ja preparat que sempre facis servir?",
+    ajuda: "Unes lletres, uns colors, un logo, un nom, una guia de marca… Si en tens els fitxers, adjunta'ls.", adjunta: true },
+  { clau: "moviment", pregunta: "Com vols que sigui el moviment?",
+    ajuda: "Per exemple: sec, suau, amb rebot, de cinema, amb glitch, ràpid, tranquil…" },
+  { clau: "so", pregunta: "Com vols que soni?",
+    ajuda: "Per exemple: amb música de fons, amb molts efectes, amb pocs efectes, només amb la teva veu…" },
+  { clau: "primer", pregunta: "Per on t'agrada començar?",
+    ajuda: "Subtítols, títol del ganxo, transicions, rètols, gràfics o sons." },
+];
+const MIDES = { "9:16": [1080, 1920], "16:9": [1920, 1080], "1:1": [1080, 1080], "4:5": [1080, 1350] };
+const ID_ASSET = /^[0-9a-f]{32}$/;
+const ID_PECA = /^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$/;
+const ESTRELLA = '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4L2.8 9.5l6.4-.8z"/></svg>';
+const CLIP = '<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M20 11.5l-7.6 7.6a5 5 0 0 1-7.1-7.1l8.1-8.1a3.3 3.3 0 0 1 4.7 4.7l-8 8a1.7 1.7 0 0 1-2.4-2.4l7.2-7.2"/></svg>';
+const $ = (id) => document.getElementById(id);
+const pad = (n) => String(n).padStart(2, "0");
+const ara = () => new Date().toISOString();
+
+// --- moviment -------------------------------------------------------------------------------------
+const MENYS_MOVIMENT = matchMedia("(prefers-reduced-motion: reduce)");
+const MOBIL = matchMedia("(max-width: 760px)");
+const LINEAR_OK = CSS.supports("animation-timing-function", "linear(0, 1)");
+
+function corbaMolla(esmorteiment = 1, resposta = 0.35) {
+  const w = (2 * Math.PI) / resposta;
+  const posicio = (t) => {
+    if (esmorteiment >= 1) return 1 - (1 + w * t) * Math.exp(-w * t);
+    const wd = w * Math.sqrt(1 - esmorteiment ** 2);
+    return 1 - Math.exp(-esmorteiment * w * t) * (Math.cos(wd * t) + ((esmorteiment * w) / wd) * Math.sin(wd * t));
+  };
+  let durada = 0.1;
+  for (let t = 0; t < 3; t += 0.005) if (Math.abs(1 - posicio(t)) > 0.001) durada = t + 0.005;
+  const punts = Array.from({ length: 41 }, (_, i) => (i === 40 ? 1 : +posicio((durada * i) / 40).toFixed(4)));
+  return { easing: LINEAR_OK ? `linear(${punts.join(", ")})` : "cubic-bezier(.2, .8, .2, 1)", duration: Math.round(durada * 1000) };
+}
+const MOLLA = corbaMolla(1, 0.35);
+const MOLLA_VISTA = corbaMolla(1, 0.42);
+document.documentElement.style.setProperty("--molla", MOLLA.easing);
+document.documentElement.style.setProperty("--molla-durada", `${MOLLA.duration}ms`);
+const temps = (m) => (MENYS_MOVIMENT.matches ? { duration: 160, easing: "ease" } : { ...m });
+const fotogrames = (llista) => (MENYS_MOVIMENT.matches ? llista.map((f) => ({ opacity: f.opacity ?? 1, offset: f.offset })) : llista);
+
+// Una molla viva (per al full del mòbil): surt del valor i la velocitat d'ara, i es pot agafar a mig camí.
+function mollaViva({ de, a, velocitat = 0, esmorteiment = 1, resposta = 0.35, pas, fi }) {
+  const k = ((2 * Math.PI) / resposta) ** 2;
+  const c = (4 * Math.PI * esmorteiment) / resposta;
+  let x = de, v = velocitat, abans = performance.now(), viva = true;
+  const frame = (moment) => {
+    if (!viva) return;
+    const dt = Math.min(0.25, Math.max(0, (moment - abans) / 1000));
+    abans = moment;
+    const passos = Math.max(1, Math.ceil(dt / 0.004));
+    for (let i = 0; i < passos; i++) { v += (-k * (x - a) - c * v) * (dt / passos); x += v * (dt / passos); }
+    if (Math.abs(x - a) < 0.5 && Math.abs(v) < 12) { viva = false; pas(a); fi?.(); return; }
+    pas(x);
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+  return { atura() { viva = false; return { x, v }; } };
+}
+const projecta = (velocitat, desacceleracio = 0.998) => ((velocitat / 1000) * desacceleracio) / (1 - desacceleracio);
+
+// --- elements -------------------------------------------------------------------------------------
+function el(etiqueta, atributs = {}, ...fills) {
+  const node = document.createElement(etiqueta);
+  for (const [clau, valor] of Object.entries(atributs)) {
+    if (valor === null || valor === undefined || valor === false) continue;
+    if (clau === "text") node.textContent = valor;
+    else if (clau === "class") node.className = valor;
+    else if (clau === "icona") node.innerHTML = valor; // només per a icones fixes d'aquest fitxer, mai per a dades
+    else if (clau.startsWith("on")) node.addEventListener(clau.slice(2), valor);
+    else if (clau === "muted") { node.muted = true; node.setAttribute("muted", ""); }
+    else node.setAttribute(clau, valor === true ? "" : valor);
+  }
+  for (const fill of fills.flat()) if (fill !== null && fill !== undefined && fill !== false) node.append(fill);
+  return node;
+}
+const SVGNS = "http://www.w3.org/2000/svg";
+function svg(etiqueta, atributs = {}, text) {
+  const node = document.createElementNS(SVGNS, etiqueta);
+  for (const [clau, valor] of Object.entries(atributs)) node.setAttribute(clau, valor);
+  if (text) node.textContent = text;
+  return node;
+}
+
+const ENTRADA_AVIS = [
+  { opacity: 0, transform: "translateY(16px) scale(.96)", filter: "blur(6px)" },
+  { opacity: 1, transform: "none", filter: "blur(0px)" },
+];
+function avisa(text) {
+  const avis = $("avis");
+  avis.textContent = text;
+  clearTimeout(avisa.temps);
+  if (!avisa.anim) {
+    avis.hidden = false;
+    avisa.anim = avis.animate(fotogrames(ENTRADA_AVIS), { ...temps(MOLLA), fill: "both" });
+  } else if (avisa.anim.playbackRate < 0) avisa.anim.reverse();
+  avisa.anim.onfinish = null;
+  avisa.temps = setTimeout(() => {
+    const anim = avisa.anim;
+    anim.reverse();
+    anim.onfinish = () => { if (anim.playbackRate < 0) { avis.hidden = true; anim.cancel(); avisa.anim = null; } };
+  }, 3400);
+}
+
+// --- on es desen les dades --------------------------------------------------------------------------
+// Dues maneres, amb la mateixa forma: la base de dades de l'artifact, o la memòria del navegador (demo).
+function magatzemDb(db) {
+  return {
+    escolta(col, fn, errada) {
+      return db.collection(col).onSnapshot(
+        (snap) => fn(snap.docs.map((d) => ({ id: d.id, ...(d.data() || {}) }))),
+        (e) => errada?.(e),
+      );
+    },
+    async desa(col, id, dades) {
+      const ref = db.collection(col).doc(id);
+      if (dades === null) await ref.delete(); else await ref.set(dades);
+    },
+  };
+}
+
+function magatzemDemo(llavor) {
+  const CLAU = "personalitza-demo-2";
+  const PERSISTENTS = ["valoracions", "preferides", "enviaments", "preferencies", "entrevista", "passos"];
+  const cols = {};
+  const oients = {};
+  const posa = (col, docs) => { cols[col] = new Map(docs.map((d) => [d.id, d])); };
+  const objecte = (o) => Object.entries(o || {}).map(([id, d]) => ({ id, ...d }));
+  posa("laboratori", [{ id: "estat", ...(llavor.laboratori || {}) }]);
+  posa("rondes", (llavor.rondes || []).map((r) => ({ id: `r${pad(r.numero)}`, ...r })));
+  posa("apunts", (llavor.apunts || []).map((a, i) => ({ id: `a${i + 1}`, ...a })));
+  posa("referencies", (llavor.referencies || []).map((r, i) => ({ id: `ref-${i + 1}`, ...r })));
+  posa("material", objecte(llavor.material));
+  posa("entrevista", objecte(llavor.entrevista));
+  posa("passos", objecte(llavor.passos));
+  let desat = {};
+  try { desat = JSON.parse(localStorage.getItem(CLAU) || "{}"); } catch { desat = {}; }
+  for (const col of PERSISTENTS) for (const d of objecte(desat[col])) (cols[col] ||= new Map()).set(d.id, d);
+  const crida = (col) => (oients[col] || []).forEach((fn) => fn([...cols[col].values()]));
+  return {
+    escolta(col, fn) {
+      cols[col] ||= new Map();
+      (oients[col] ||= []).push(fn);
+      queueMicrotask(() => fn([...cols[col].values()]));
+      return () => {};
+    },
+    async desa(col, id, dades) {
+      cols[col] ||= new Map();
+      if (dades === null) cols[col].delete(id); else cols[col].set(id, { id, ...dades });
+      try {
+        const tot = {};
+        for (const c of PERSISTENTS) tot[c] = Object.fromEntries([...(cols[c] || new Map())].map(([k, v]) => { const { id: _, ...resta } = v; return [k, resta]; }));
+        localStorage.setItem(CLAU, JSON.stringify(tot));
+      } catch { /* sense memòria al navegador: la demo continua funcionant fins que es tanqui */ }
+      crida(col);
+    },
+  };
+}
+
+// Les escriptures van d'una en una per document i, si n'arriben de noves mentre una és en camí,
+// només s'envia l'última: així un text vell no trepitja mai un de més nou.
+const enCami = new Map();
+function escriu(col, id, dades) {
+  const clau = `${col}/${id}`;
+  E.rebut.add(clau);
+  const entrada = enCami.get(clau);
+  if (entrada) { entrada.seguent = { dades }; return entrada.promesa; }
+  const nova = { seguent: null, promesa: null };
+  enCami.set(clau, nova);
+  nova.promesa = (async () => {
+    let actual = dades;
+    for (;;) {
+      try { await E.magatzem.desa(col, id, actual); } catch (error) { avisa(missatgeError(error)); }
+      if (!nova.seguent) break;
+      actual = nova.seguent.dades;
+      nova.seguent = null;
+    }
+    enCami.delete(clau);
+    E.rebut.delete(clau);
+  })();
+  return nova.promesa;
+}
+function missatgeError(error) {
+  const codi = error?.code;
+  if (codi === "permission_denied" || codi === "not_granted") return "No tens permís per canviar aquesta pàgina.";
+  if (codi === "quota_exceeded") return "La pàgina és plena. Demana a Claude que esborri rondes velles.";
+  if (codi === "resource_exhausted") return "Massa canvis seguits. Espera un moment i torna-ho a provar.";
+  return "No s'ha pogut desar. Torna-ho a provar d'aquí a una estona.";
+}
+
+// --- l'estat de la pàgina -------------------------------------------------------------------------
+const E = {
+  magatzem: null, assets: null, downloads: null,
+  mode: "carregant", // carregant · claude · demo · sense-dades · fora
+  potEscriure: true,
+  lab: null,
+  preguntes: null,
+  respostes: {},
+  adjunts: [],
+  referencies: [],
+  material: null,
+  passos: new Map(),
+  rondes: [],
+  valoracions: new Map(),
+  preferides: new Map(),
+  enviaments: new Map(),
+  apunts: [],
+  prefs: {},
+  vista: "rondes",
+  rondaVista: null,
+  ordre: [],
+  opcions: new Map(),
+  oberta: null,
+  zones: false,
+  pendents: false,
+  pujant: 0,
+  rebut: new Set(),
+};
+
+const pasActual = () => {
+  const p = E.lab?.pas;
+  if (PASSOS.some((x) => x.id === p)) return p;
+  return E.lab?.fase === "rondes" ? "rondes" : "entrevista";
+};
+const pasEnviat = (id) => Boolean(E.passos.get(id)?.enviat);
+const pasTancat = (id) => pasEnviat(id) || !E.potEscriure;
+const preguntes = () => (Array.isArray(E.preguntes) && E.preguntes.length
+  ? E.preguntes.filter((p) => p && typeof p.clau === "string" && typeof p.pregunta === "string")
+  : PREGUNTES);
+const ultimaRonda = () => E.rondes[E.rondes.length - 1] || null;
+const rondaMirada = () => E.rondes.find((r) => r.numero === E.rondaVista) || ultimaRonda();
+const esUltima = (r) => r && r === ultimaRonda();
+const clauOpcio = (ronda, seccio, opcio) => `r${pad(ronda.numero)}-${seccio.id}-${opcio.id}`;
+const clauSeccio = (ronda, seccio) => `r${pad(ronda.numero)}-${seccio.id}`;
+const valoracio = (clau) => E.valoracions.get(clau) || { veredicte: null, abast: null, nota: "" };
+const enviament = (ronda) => (ronda ? E.enviaments.get(`r${pad(ronda.numero)}`) : null) || { general: "", enviat: null };
+const enviada = (ronda) => Boolean(enviament(ronda).enviat);
+const editable = (ronda) => E.potEscriure && esUltima(ronda) && !enviada(ronda);
+const proporcio = () => (E.lab?.proporcio && MIDES[E.lab.proporcio] ? E.lab.proporcio : "9:16");
+function src(ref) {
+  if (typeof ref !== "string" || !ref) return null;
+  if (ID_ASSET.test(ref)) return `/_blob/${ref}`;
+  if (E.mode === "demo" && (ref.startsWith("blob:") || !/^[a-z]+:/i.test(ref))) return ref; // a la demo, fitxers del costat
+  return null;
+}
+const tipusDe = (opcio, camp = "previa") => opcio.tipus || (/\.(wav|mp3|m4a)$/i.test(opcio[camp] || "") ? "so" : /\.(png|jpe?g|webp|gif)$/i.test(opcio[camp] || "") ? "imatge" : "video");
+
+// Un camp de text que es desa sol (en parar d'escriure i en sortir-ne). El dictat del sistema hi escriu com el teclat.
+function campText({ id, valor = "", placeholder = "", disabled = false, etiqueta, files = 3, desa }) {
+  const t = el("textarea", { id, rows: files, placeholder, disabled, "aria-label": etiqueta });
+  t.value = valor;
+  let rellotge;
+  const fes = () => { clearTimeout(rellotge); desa(t.value.trim()); };
+  t.addEventListener("input", () => { clearTimeout(rellotge); rellotge = setTimeout(fes, 700); });
+  t.addEventListener("blur", fes);
+  t.addEventListener("change", fes);
+  const camp = el("div", { class: "camp" }, t);
+  return camp;
+}
+
+// --- pujar fitxers --------------------------------------------------------------------------------
+async function pujaFitxer(fitxer) {
+  if (E.mode === "demo") return { id: URL.createObjectURL(fitxer) };
+  if (!E.assets) throw Object.assign(new Error("sense assets"), { code: "not_granted" });
+  return E.assets.upload(fitxer);
+}
+function missatgePujada(error) {
+  const c = error?.code;
+  if (c === "too_large") return "És massa gran (màxim 20 MB).";
+  if (c === "quota_or_state") return "No hi cap res més: l'espai de la pàgina és ple.";
+  if (c === "unsupported_type") return "Aquest tipus de fitxer no es pot pujar.";
+  if (c === "not_granted") return "No tens permís per pujar fitxers aquí.";
+  if (c === "rate_limited") return "Massa pujades seguides. Espera un moment.";
+  return "No s'ha pogut pujar. Torna-ho a provar.";
+}
+const potPujar = () => E.mode === "demo" || Boolean(E.assets);
+
+// --- valorar --------------------------------------------------------------------------------------
+function valora(clau, canvis) {
+  const info = E.opcions.get(clau);
+  if (!info || !editable(info.ronda)) return;
+  const nova = { ...valoracio(clau), ...canvis };
+  if (nova.veredicte !== "fora") nova.abast = null;
+  E.valoracions.set(clau, nova);
+  const buida = !nova.veredicte && !nova.nota && !nova.abast;
+  if (nova.veredicte === "fora" && esPreferida(clau)) marcaPreferida(clau, false);
+  escriu("valoracions", clau, buida ? null : {
+    ronda: info.ronda.numero, seccio: info.seccio.id, opcio: info.opcio.id,
+    veredicte: nova.veredicte || null, abast: nova.abast || null, nota: nova.nota || "", actualitzat: ara(),
+  });
+  pintaValoracio(clau);
+}
+
+function marcaPreferida(clau, si) {
+  const info = E.opcions.get(clau);
+  if (!info || !editable(info.ronda)) return;
+  const sc = clauSeccio(info.ronda, info.seccio);
+  if (si) {
+    E.preferides.set(sc, { ronda: info.ronda.numero, seccio: info.seccio.id, opcio: info.opcio.id });
+    if (valoracio(clau).veredicte !== "guarda") valora(clau, { veredicte: "guarda" });
+  } else E.preferides.delete(sc);
+  escriu("preferides", sc, si ? { ...E.preferides.get(sc), actualitzat: ara() } : null);
+  for (const o of info.seccio.opcions) pintaValoracio(clauOpcio(info.ronda, info.seccio, o));
+}
+const esPreferida = (clau) => {
+  const info = E.opcions.get(clau);
+  return Boolean(info && E.preferides.get(clauSeccio(info.ronda, info.seccio))?.opcio === info.opcio.id);
+};
+
+// --- opcions vives --------------------------------------------------------------------------------
+// La secció porta una plantilla (html, css i js amb window.composicio) i cada opció, les seves variables.
+// Es dibuixa dins d'un marc aïllat (sandbox sense accés a la pàgina ni a les dades), damunt del vídeo,
+// i la pàgina li diu a cada moment en quin segon és el vídeo.
+function hostViu() {
+  const escena = document.getElementById("escena");
+  let tl = null, W = 1080, H = 1920;
+  const mida = () => {
+    const s = Math.min(innerWidth / W, innerHeight / H) || 1;
+    escena.style.width = `${W}px`;
+    escena.style.height = `${H}px`;
+    escena.style.transform = `translate(${(innerWidth - W * s) / 2}px, ${(innerHeight - H * s) / 2}px) scale(${s})`;
+  };
+  addEventListener("resize", mida);
+  mida();
+  addEventListener("message", (e) => {
+    if (e.source !== parent) return;
+    const m = e.data || {};
+    if (m.tipus === "inicia") {
+      W = m.amplada || W;
+      H = m.alcada || H;
+      mida();
+      try {
+        if (!window.gsap) throw new Error("no s'ha pogut carregar GSAP");
+        if (typeof window.composicio !== "function") throw new Error("la plantilla no defineix window.composicio");
+        tl = window.composicio(escena, m.variables || {}, window.gsap, m.dades || {});
+        if (tl && typeof tl.pause === "function") tl.pause(0);
+        parent.postMessage({ tipus: "dibuixada" }, "*");
+      } catch (error) {
+        parent.postMessage({ tipus: "error", missatge: String((error && error.message) || error) }, "*");
+      }
+    } else if (m.tipus === "temps" && tl) tl.time(m.t, false);
+  });
+  parent.postMessage({ tipus: "llest" }, "*");
+}
+const HOST_VIU = `(${hostViu.toString()})();`;
+const GSAP = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js";
+function docViu(p) {
+  const neteja = (s, etiqueta) => String(s || "").replace(new RegExp(`</${etiqueta}`, "gi"), `<\\/${etiqueta}`);
+  return "<!doctype html><html><head><meta charset=\"utf-8\"><meta name=\"color-scheme\" content=\"light\">"
+    + "<style>html,body{margin:0;height:100%;overflow:hidden;background:transparent;color-scheme:light}"
+    + `#escena{position:absolute;left:0;top:0;transform-origin:0 0;overflow:hidden}${neteja(p.css, "style")}</style>`
+    + `<script src="${GSAP}"><\/script></head><body><div id="escena">${neteja(p.html, "script")}</div>`
+    + `<script>${neteja(p.js, "script")}<\/script><script>${HOST_VIU}<\/script></body></html>`;
+}
+const plantillaDe = (seccio, opcio) => {
+  const p = opcio?.viva || seccio?.viva;
+  return p && typeof p === "object" && typeof p.js === "string" ? p : null;
+};
+const clipDe = (ronda) => (typeof ronda?.clip === "string" && ronda.clip) || E.material?.asset || null;
+
+const VIVES = new Set();
+addEventListener("message", (e) => {
+  for (const v of VIVES) {
+    if (v.marc.contentWindow !== e.source) continue;
+    const m = e.data || {};
+    if (m.tipus === "llest") e.source.postMessage(v.inici, "*");
+    else if (m.tipus === "dibuixada") { v.llest = true; v.ultim = -1; }
+    else if (m.tipus === "error") {
+      if (!v.caixa.querySelector(".viu-error")) v.caixa.append(el("span", { class: "viu-error", text: "Aquesta opció no s'ha pogut dibuixar." }));
+      console.warn("personalitza: opció viva", m.missatge);
+    }
+    return;
+  }
+});
+let bucleViu = false;
+function engegaVives() {
+  if (bucleViu) return;
+  bucleViu = true;
+  const pas = () => {
+    for (const v of VIVES) {
+      if (!v.caixa.isConnected) { VIVES.delete(v); continue; }
+      if (!v.llest) continue;
+      const t = v.video.currentTime;
+      if (t !== v.ultim) { v.ultim = t; v.marc.contentWindow?.postMessage({ tipus: "temps", t }, "*"); }
+    }
+    if (VIVES.size) requestAnimationFrame(pas); else bucleViu = false;
+  };
+  requestAnimationFrame(pas);
+}
+// Sense el vídeo de la persona: un fons neutre amb un rellotge propi (fa el paper del vídeo per a les opcions vives).
+function fonsNeutre(ronda) {
+  const paraules = Array.isArray(ronda?.paraules) && ronda.paraules.length ? ronda.paraules : Array.isArray(E.material?.paraules) ? E.material.paraules : [];
+  const final = paraules.reduce((m, p) => Math.max(m, Number(p.final) || 0), 0);
+  const durada = Math.max(4, Math.min(12, final ? final + 1 : 6));
+  const fons = el("div", { class: "fons-neutre", "aria-hidden": "true" });
+  const t0 = performance.now();
+  Object.defineProperty(fons, "currentTime", { get: () => ((performance.now() - t0) / 1000) % durada });
+  return fons;
+}
+function mediaViva(ronda, plantilla, opcio, ambSo) {
+  const clip = src(clipDe(ronda));
+  const video = clip
+    ? el("video", { src: clip, muted: !ambSo, loop: true, playsinline: true, preload: "auto", controls: ambSo, autoplay: ambSo })
+    : fonsNeutre(ronda);
+  const marc = el("iframe", { sandbox: "allow-scripts", title: "", tabindex: "-1", "aria-hidden": "true" });
+  marc.srcdoc = docViu(plantilla);
+  const caixa = el("div", { class: "viu" }, video, marc);
+  const [amplada, alcada] = MIDES[proporcio()];
+  VIVES.add({
+    caixa, video, marc, llest: false, ultim: -1,
+    inici: {
+      tipus: "inicia", amplada, alcada,
+      variables: opcio.variables && typeof opcio.variables === "object" ? opcio.variables : {},
+      dades: {
+        paraules: Array.isArray(ronda.paraules) && ronda.paraules.length ? ronda.paraules : Array.isArray(E.material?.paraules) ? E.material.paraules : [],
+        text: E.material?.text || "",
+      },
+    },
+  });
+  engegaVives();
+  return caixa;
+}
+
+// --- peces de les rondes --------------------------------------------------------------------------
+function zonesSegures() {
+  const compte = (E.prefs.compte || "").replace(/^@/, "");
+  const z = svg("svg", { class: "zones", viewBox: "0 0 1080 1920", preserveAspectRatio: "xMidYMid slice", "aria-hidden": "true" });
+  for (const [x, y, w, h] of [[0, 0, 1080, 250], [0, 1535, 1080, 385], [0, 250, 70, 1285], [1025, 250, 55, 610], [887, 860, 193, 675]]) {
+    z.append(svg("rect", { class: "tapat", x, y, width: w, height: h }));
+  }
+  z.append(svg("polygon", { class: "limit", points: "70,250 1025,250 1025,860 887,860 887,1535 70,1535" }));
+  z.append(svg("text", { class: "ui", x: 60, y: 160 }, "Reels"));
+  z.append(svg("rect", { class: "ui-linia", x: 950, y: 120, width: 64, height: 50, rx: 12 }));
+  for (let i = 0; i < 4; i++) {
+    const y = 1180 + i * 130;
+    if (i === 3) for (const dx of [-22, 0, 22]) z.append(svg("circle", { class: "ui", cx: 984 + dx, cy: y, r: 6 }));
+    else z.append(svg("circle", { class: "ui-linia", cx: 984, cy: y, r: 30 }));
+  }
+  z.append(svg("circle", { class: "ui-linia", cx: 100, cy: 1690, r: 38 }));
+  z.append(svg("text", { class: "ui", x: 158, y: 1702 }, compte || "el_teu_compte"));
+  z.append(svg("text", { class: "ui text-suau", x: 60, y: 1780 }, "El text del reel va aquí…"));
+  z.append(svg("text", { class: "ui text-suau", x: 60, y: 1850 }, "♫ Àudio original"));
+  return z;
+}
+const mostraZones = () => E.zones && proporcio() === "9:16";
+
+function mediaPrevia(ronda, seccio, opcio) {
+  const plantilla = plantillaDe(seccio, opcio);
+  if (plantilla) return mediaViva(ronda, plantilla, opcio, false);  // sense vídeo, damunt d'un fons neutre
+  const tipus = tipusDe(opcio);
+  const url = src(opcio.previa);
+  if (tipus === "so" || !url) {
+    return el("div", { class: "so-icona" }, el("span", {}, el("b", { text: tipus === "so" ? "♪" : "…" }),
+      tipus === "so" ? "Toca per escoltar" : plantilla ? "Falta el teu vídeo" : "Sense vista prèvia"));
+  }
+  if (tipus === "imatge") return el("img", { src: url, alt: "", loading: "lazy" });
+  return el("video", { src: url, muted: true, loop: true, playsinline: true, preload: "metadata", "aria-hidden": "true" });
+}
+
+function botonsVeredicte(clau) {
+  const info = E.opcions.get(clau);
+  const pot = editable(info.ronda);
+  const caixa = el("div", { class: "segmentat veredictes", role: "group", "aria-label": "Valoració" },
+    el("span", { class: "indicador", "aria-hidden": "true" }));
+  // Es veu enfonsat en prémer (CSS :active) i es decideix en deixar anar: així fer scroll amb el dit no vota.
+  for (const v of ["guarda", "potser", "fora"]) {
+    caixa.append(el("button", {
+      type: "button", "data-v": v, text: NOMS[v], disabled: !pot,
+      onclick: () => valora(clau, { veredicte: valoracio(clau).veredicte === v ? null : v }),
+    }));
+  }
+  return caixa;
+}
+
+function botonsAbast(clau) {
+  const info = E.opcions.get(clau);
+  const pot = editable(info.ronda);
+  const grup = el("div", { class: "segmentat", role: "group", "aria-label": "Fins quan és que no", style: "--n: 2" },
+    el("span", { class: "indicador", "aria-hidden": "true" }));
+  for (const [v, text] of [["sempre", "Per sempre"], ["aqui", "Només aquí"]]) {
+    grup.append(el("button", { type: "button", "data-a": v, text, disabled: !pot, onclick: () => valora(clau, { abast: valoracio(clau).abast === v ? null : v }) }));
+  }
+  return el("div", { class: "abast" }, el("p", { text: "No per sempre, o només en aquest vídeo?" }), grup);
+}
+
+const segments = (nota) => (nota || "").split(/\s*;\s*/).map((s) => s.trim()).filter(Boolean);
+function xips(clau) {
+  const info = E.opcions.get(clau);
+  const pot = editable(info.ronda);
+  return el("div", { class: "xips", role: "group", "aria-label": "Notes ràpides" },
+    ...["guarda", "potser", "fora"].flatMap((v) => XIPS[v].map((text) => el("button", {
+      type: "button", class: "xip", "data-per": v, text, disabled: !pot,
+      onclick: () => {
+        const llista = segments(valoracio(clau).nota);
+        const i = llista.findIndex((s) => s.toLowerCase() === text.toLowerCase());
+        if (i >= 0) llista.splice(i, 1); else llista.push(text);
+        const nota = llista.join("; ");
+        valora(clau, { nota });
+        document.querySelectorAll(`textarea[data-nota="${clau}"]`).forEach((t) => { t.value = nota; });
+      },
+    }))));
+}
+
+const temporitzadors = new Map();
+function campNota(clau, extra = {}) {
+  const info = E.opcions.get(clau);
+  const pot = editable(info.ronda);
+  const camp = el("textarea", { rows: 2, placeholder: "Una nota: què canviaries?", disabled: !pot, "data-nota": clau, "aria-label": "Nota", ...extra });
+  camp.value = valoracio(clau).nota || "";
+  const desa = () => {
+    clearTimeout(temporitzadors.get(clau));
+    if ((valoracio(clau).nota || "") !== camp.value.trim()) valora(clau, { nota: camp.value.trim() });
+  };
+  camp.addEventListener("input", () => { clearTimeout(temporitzadors.get(clau)); temporitzadors.set(clau, setTimeout(desa, 700)); });
+  camp.addEventListener("blur", desa);
+  camp.addEventListener("change", desa);
+  const caixa = el("div", { class: "camp" }, camp);
+  return caixa;
+}
+
+function targeta(ronda, seccio, opcio) {
+  const clau = clauOpcio(ronda, seccio, opcio);
+  const previa = el("button", { type: "button", class: "previa", "aria-label": `Mira «${opcio.etiqueta}» en gran`, onclick: () => obre(clau) }, mediaPrevia(ronda, seccio, opcio));
+  if (mostraZones() && tipusDe(opcio) !== "so") previa.append(zonesSegures());
+  return el("article", { class: "targeta", "data-clau": clau },
+    previa,
+    el("button", {
+      type: "button", class: "estrella", "aria-label": "La meva preferida d'aquesta secció", "aria-pressed": "false",
+      icona: ESTRELLA, disabled: !editable(ronda), onclick: () => marcaPreferida(clau, !esPreferida(clau)),
+    }),
+    el("div", { class: "targeta-cos" },
+      el("span", { class: "etiqueta-petita etiqueta-preferida", text: "La preferida", hidden: true }),
+      el("h3", { text: opcio.etiqueta || opcio.id }),
+      opcio.descripcio ? el("p", { text: opcio.descripcio }) : null,
+      opcio.so ? el("span", { class: "targeta-so", text: `so: ${opcio.so}` }) : null,
+      botonsVeredicte(clau),
+      botonsAbast(clau),
+      xips(clau),
+      campNota(clau),
+      el("button", { type: "button", class: "nota-boto", onclick: () => obre(clau) })));
+}
+
+function targetaFixada(ronda, opcio, i) {
+  const clau = `r${pad(ronda.numero)}-fixat-${i + 1}`;
+  const seccio = { id: "fixat", nom: "Fixat", opcions: [] };
+  E.opcions.set(clau, { opcio, seccio, ronda, fixat: true });
+  const previa = el("button", { type: "button", class: "previa", "aria-label": `Mira «${opcio.etiqueta}» en gran`, onclick: () => obre(clau) }, mediaPrevia(ronda, seccio, opcio));
+  if (mostraZones() && tipusDe(opcio) !== "so") previa.append(zonesSegures());
+  return el("article", { class: "targeta", "data-clau": clau },
+    previa,
+    el("div", { class: "targeta-cos" },
+      el("span", { class: "etiqueta-petita", style: "color: var(--guarda)", text: "Fixat" }),
+      el("h3", { text: opcio.etiqueta || "" }),
+      opcio.descripcio ? el("p", { text: opcio.descripcio }) : null));
+}
+
+// --- pintar ---------------------------------------------------------------------------------------
+function pinta() {
+  // Si s'està escrivint en un camp amb id, hi torna després de repintar
+  const actiu = document.activeElement;
+  const idActiu = actiu?.id && actiu.closest(".pas") ? actiu.id : null;
+  const seleccio = idActiu ? [actiu.selectionStart, actiu.selectionEnd] : null;
+
+  document.documentElement.style.setProperty("--proporcio", proporcio().replace(":", " / "));
+  const [amp, alt] = proporcio().split(":").map(Number);
+  document.documentElement.style.setProperty("--ample-alt", String(amp / alt));
+  $("sobretitol").textContent = E.lab?.nom ? `personalitza · ${E.lab.nom}` : "personalitza";
+  $("avis-demo").hidden = E.mode !== "demo";
+  $("avis-lectura").hidden = E.mode !== "claude" || E.potEscriure;
+  const vista = E.lab ? E.vista : "rondes";
+  for (const p of PASSOS) $(`vista-${p.id}`).hidden = p.id !== vista;
+  pintaPassos(vista);
+  if (vista === "entrevista") pintaEntrevista();
+  else if (vista === "referencies") pintaReferencies();
+  else if (vista === "video") pintaVideo();
+  else if (vista === "estil") pintaEstil();
+  else pintaRonda();
+
+  if (idActiu) {
+    const node = document.getElementById(idActiu);
+    if (node && node !== document.activeElement) {
+      node.focus({ preventScroll: true });
+      try { node.setSelectionRange(...seleccio); } catch { /* no és un camp de text */ }
+    }
+  }
+}
+
+function pintaPassos(vista) {
+  const nav = $("passos-nav");
+  nav.hidden = !E.lab;
+  if (!E.lab) return;
+  const actual = pasActual();
+  nav.replaceChildren(...PASSOS.map((p, i) => {
+    const fet = pasEnviat(p.id) && p.id !== actual;
+    return el("a", {
+      class: "pas-boto", href: `#${p.id}`, "data-estat": fet ? "fet" : p.id === actual ? "ara" : "pendent",
+      "aria-current": p.id === vista ? "page" : null,
+      "aria-label": `Pas ${i + 1}: ${p.nom}${fet ? " (fet)" : p.id === actual ? " (ara)" : ""}`,
+    }, el("span", { class: "n", text: fet ? "✓" : String(i + 1), "aria-hidden": "true" }), el("span", { class: "pas-nom", text: p.nom, "aria-hidden": "true" }));
+  }));
+  // Al mòbil la fila llisca: el pas que es mira, sempre a la vista
+  const triat = nav.querySelector('[aria-current="page"]');
+  if (triat && nav.scrollWidth > nav.clientWidth) {
+    const a = triat.getBoundingClientRect(), b = nav.getBoundingClientRect();
+    if (a.left < b.left || a.right > b.right) nav.scrollLeft += a.left - b.left - 8;
+  }
+}
+
+function capcalera(titol, intro) {
+  document.title = `${titol} · ${E.lab?.nom || "personalitza"}`;
+  $("titol").textContent = titol;
+  $("intro").textContent = intro || "";
+  $("intro").hidden = !intro;
+}
+
+// El peu de cada pas: «Fet, envia-ho» i «Torna a obrir».
+function peuPas(id) {
+  const enviat = pasEnviat(id);
+  const text = !E.potEscriure ? "Només ho pots mirar."
+    : enviat ? (E.mode === "demo" ? "Enviat. A la de debò, ara li diries «fet» a Claude." : "Enviat. Ara digues «fet» a Claude i et portarà al pas següent.")
+    : "Es desa sol. Quan acabis, envia-ho i digues «fet» a Claude.";
+  return el("div", { class: "acabar" }, el("p", { text }),
+    E.potEscriure && !enviat ? el("button", { type: "button", class: "boto-principal", text: "Fet, envia-ho", onclick: () => enviaPas(id, true) }) : null,
+    E.potEscriure && enviat ? el("button", { type: "button", class: "boto-secundari", text: "Torna a obrir", onclick: () => enviaPas(id, false) }) : null);
+}
+async function enviaPas(id, si) {
+  document.activeElement?.blur?.();
+  const nou = { enviat: si ? ara() : null };
+  E.passos.set(id, nou);
+  pinta();
+  scrollTo({ top: 0 });
+  await escriu("passos", id, nou);
+  if (si) avisa(E.mode === "demo" ? "Enviat." : "Enviat. Ara digues «fet» a Claude.");
+}
+
+function pintaEntrevista() {
+  const p = PASSOS[0];
+  capcalera(p.titol, p.intro);
+  const tancat = pasTancat("entrevista");
+  const llista = preguntes();
+  $("pas-entrevista").replaceChildren(
+    ...(tancat ? [] : [notaDictat()]),
+    ...llista.map((q, i) => {
+      const camp = campText({ id: `resposta-${q.clau}`, valor: E.respostes[q.clau] || "", disabled: tancat, etiqueta: q.pregunta, desa: (text) => desaResposta(q.clau, text) });
+      return el("div", { class: "pregunta" },
+        el("span", { class: "num", text: `${i + 1} de ${llista.length}` }),
+        el("label", { for: `resposta-${q.clau}`, text: q.pregunta }),
+        q.ajuda ? el("p", { class: "ajuda", text: q.ajuda }) : null,
+        camp,
+        q.adjunta ? adjuntsDe(q.clau, tancat) : null);
+    }),
+    peuPas("entrevista"));
+}
+
+// Per dictar: el dictat del sistema escriu a la caixa on hi ha el cursor, i entén el català.
+function notaDictat() {
+  return el("p", { class: "nota-cap" },
+    el("strong", { text: "Vols dictar en lloc d'escriure?" }),
+    " Fes servir el dictat del teu ordinador o del mòbil, que entén el català. Toca la caixa on vols escriure i: al Mac, prem dues vegades la tecla Fn (o la del micròfon); a Windows, Windows + H; al mòbil, el micròfon del teclat.");
+}
+
+// Els fitxers que la persona adjunta a una pregunta (lletres, logo, guia de marca…).
+function adjuntsDe(clau, tancat) {
+  const llista = E.adjunts.filter((a) => a.clau === clau);
+  const fitxer = el("input", {
+    type: "file", multiple: true, hidden: true,
+    accept: "image/*,application/pdf,.svg,.otf,.ttf,.woff,.woff2,.txt,.md,.json,.csv",
+    onchange: (e) => { const f = [...e.target.files]; e.target.value = ""; pujaAdjunts(clau, f); },
+  });
+  return el("div", { class: "adjunts" },
+    llista.length ? el("ul", { class: "adjunts-llista" }, llista.map((a) => el("li", {},
+      el("span", { class: "adjunt-nom", text: a.nom || "fitxer" }),
+      tancat ? null : botoTreuAdjunt(a)))) : null,
+    tancat || !potPujar() ? null : el("button", { type: "button", class: "boto-secundari boto-adjunta", onclick: () => fitxer.click() },
+      el("span", { icona: CLIP, style: "display: contents" }), E.pujant ? "Pujant…" : "Adjunta fitxers"),
+    fitxer);
+}
+async function pujaAdjunts(clau, fitxers) {
+  for (const f of fitxers) {
+    if (f.size > 20 * 2 ** 20) { avisa(`${f.name} és massa gran (màxim 20 MB).`); continue; }
+    E.pujant++;
+    pinta();
+    try {
+      const r = await pujaFitxer(f);
+      const id = `adj-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+      const doc = { clau, asset: r.id, nom: f.name.slice(0, 120), tipus: f.type || "", mida: f.size, creat: ara() };
+      E.adjunts = [...E.adjunts, { id, ...doc }];
+      await escriu("adjunts", id, doc);
+    } catch (error) { avisa(missatgePujada(error)); }
+    finally { E.pujant--; pinta(); }
+  }
+}
+function botoTreuAdjunt(a) {
+  return el("button", {
+    type: "button", class: "boto-treu", text: "Treu", "aria-label": `Treu ${a.nom || "el fitxer"}`,
+    onclick: async () => {
+      E.adjunts = E.adjunts.filter((x) => x.id !== a.id);
+      pinta();
+      await escriu("adjunts", a.id, null);
+      if (E.assets && ID_ASSET.test(a.asset || "")) E.assets.delete(a.asset).catch(() => {});
+    },
+  });
+}
+function desaResposta(clau, text) {
+  if ((E.respostes[clau] || "") === text) return;
+  E.respostes = { ...E.respostes, [clau]: text };
+  escriu("entrevista", "respostes", { ...E.respostes, actualitzat: ara() });
+}
+
+function pintaReferencies() {
+  const p = PASSOS[1];
+  capcalera(p.titol, p.intro);
+  const tancat = pasTancat("referencies");
+  const refs = E.referencies;
+  const fills = [];
+  if (refs.length) {
+    fills.push(el("div", { class: "refs" }, refs.map((r) => {
+      const url = src(r.asset);
+      const enllac = typeof r.enllac === "string" && /^https:\/\/\S+$/.test(r.enllac) ? r.enllac : null;
+      const media = url
+        ? el("div", { class: "ref-media" }, r.tipus === "video"
+          ? el("video", { src: url, muted: true, loop: true, playsinline: true, autoplay: true, preload: "metadata" })
+          : el("img", { src: url, alt: "", loading: "lazy" }))
+        : el("a", { class: "ref-media ref-enllac", href: enllac || "#", target: "_blank", rel: "noopener noreferrer", text: enllac ? enllac.replace(/^https:\/\//, "") : "Sense vista prèvia" });
+      return el("article", { class: "ref" }, media, el("div", { class: "ref-cos" },
+        campText({ id: `ref-${r.id}`, valor: r.que_magrada || "", placeholder: "Què t'agrada d'aquesta?", disabled: tancat, etiqueta: "Què t'agrada d'aquesta referència", files: 2, desa: (text) => desaRef(r.id, { que_magrada: text }) }),
+        tancat ? null : botoTreu(r)));
+    })));
+  } else fills.push(el("p", { class: "buit-petit", text: "Encara no n'hi ha cap. Comença per la que t'agradi més." }));
+  if (!tancat) fills.push(afegirRefs());
+  fills.push(el("p", { class: "buit-petit", text: refs.length === 1 ? "1 referència. En calen de 3 a 5." : `${refs.length} referències. En calen de 3 a 5.` }));
+  fills.push(peuPas("referencies"));
+  $("pas-referencies").replaceChildren(...fills);
+}
+function afegirRefs() {
+  const fitxer = el("input", { type: "file", accept: "image/*,video/*", multiple: true, hidden: true, onchange: (e) => { const f = [...e.target.files]; e.target.value = ""; pujaRefs(f); } });
+  const url = el("input", { type: "url", id: "nou-enllac", placeholder: "O enganxa un enllaç (Instagram, TikTok, YouTube…)", autocomplete: "off", "aria-label": "Enllaç d'una referència" });
+  const afegeix = () => {
+    const v = url.value.trim();
+    if (!/^https:\/\/\S+$/.test(v)) { avisa("L'enllaç ha de començar per https://"); return; }
+    url.value = "";
+    nouRef({ enllac: v });
+  };
+  url.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); afegeix(); } });
+  return el("div", { class: "afegir" },
+    potPujar() ? el("button", { type: "button", class: "boto-principal", text: "Puja imatges o vídeos", onclick: () => fitxer.click() }) : null,
+    fitxer, url,
+    el("button", { type: "button", class: "boto-secundari", text: "Afegeix l'enllaç", onclick: afegeix }),
+    E.pujant ? el("span", { class: "pujant", text: E.pujant === 1 ? "Pujant…" : `Pujant ${E.pujant} fitxers…` }) : null);
+}
+async function pujaRefs(fitxers) {
+  for (const f of fitxers) {
+    if (!/^(image|video)\//.test(f.type)) { avisa(`${f.name}: només imatges o vídeos.`); continue; }
+    if (f.size > 20 * 2 ** 20) { avisa(`${f.name} és massa gran (màxim 20 MB).`); continue; }
+    E.pujant++;
+    pinta();
+    try {
+      const r = await pujaFitxer(f);
+      await nouRef({ asset: r.id, tipus: f.type.startsWith("video/") ? "video" : "imatge" });
+    } catch (error) { avisa(missatgePujada(error)); }
+    finally { E.pujant--; pinta(); }
+  }
+}
+async function nouRef(dades) {
+  const id = `ref-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
+  const doc = { que_magrada: "", ordre: E.referencies.length + 1, creat: ara(), ...dades };
+  E.referencies = [...E.referencies, { id, ...doc }];
+  pinta();
+  await escriu("referencies", id, doc);
+}
+function desaRef(id, canvis) {
+  const r = E.referencies.find((x) => x.id === id);
+  if (!r || Object.entries(canvis).every(([k, v]) => r[k] === v)) return;
+  Object.assign(r, canvis);
+  const { id: _, ...doc } = r;
+  escriu("referencies", id, doc);
+}
+function botoTreu(r) {
+  let segur = false, rellotge;
+  const boto = el("button", {
+    type: "button", class: "boto-treu", text: "Treu-la",
+    onclick: async () => {
+      if (!segur) {
+        segur = true;
+        boto.textContent = "Segur? Toca per treure-la";
+        rellotge = setTimeout(() => { segur = false; boto.textContent = "Treu-la"; }, 3000);
+        return;
+      }
+      clearTimeout(rellotge);
+      E.referencies = E.referencies.filter((x) => x.id !== r.id);
+      pinta();
+      await escriu("referencies", r.id, null);
+      if (E.assets && ID_ASSET.test(r.asset || "")) E.assets.delete(r.asset).catch(() => {});
+    },
+  });
+  return boto;
+}
+
+function pintaVideo() {
+  const p = PASSOS[2];
+  capcalera(p.titol, p.intro);
+  const tancat = pasTancat("video");
+  const clip = E.material;
+  const url = src(clip?.asset);
+  const fitxer = el("input", { type: "file", accept: "video/*", hidden: true, onchange: (e) => { const f = e.target.files[0]; e.target.value = ""; if (f) pujaClip(f); } });
+  const media = url
+    ? el("div", { class: "clip-media" }, el("video", { src: url, controls: true, playsinline: true, preload: "metadata" }))
+    : el("div", { class: "puja-zona" },
+      el("p", { text: E.pujant ? "Pujant el vídeo…" : "Encara no hi ha cap vídeo." }),
+      !tancat && potPujar() && !E.pujant ? el("button", { type: "button", class: "boto-principal", text: "Puja el vídeo", onclick: () => fitxer.click() }) : null);
+  $("pas-video").replaceChildren(
+    el("div", { class: "clip" }, media, el("div", { class: "pregunta" },
+      el("label", { for: "text-clip", text: "Què dius en aquest tros?" }),
+      el("p", { class: "ajuda", text: "Paraula per paraula, tal com ho dius. Serveix per posar-hi els subtítols." }),
+      campText({ id: "text-clip", valor: clip?.text || "", disabled: tancat, etiqueta: "Què dius en aquest tros", desa: (text) => desaClip({ text }) }),
+      url && !tancat && potPujar() ? el("button", { type: "button", class: "boto-secundari", text: E.pujant ? "Pujant…" : "Canvia el vídeo", disabled: Boolean(E.pujant), onclick: () => fitxer.click() }) : null)),
+    blocSubtitols(clip, tancat),
+    fitxer, peuPas("video"));
+}
+
+// Els subtítols del tros (.srt, .vtt o .json): donen el temps de cada paraula, i les opcions van clavades a la veu.
+function blocSubtitols(clip, tancat) {
+  const paraules = Array.isArray(clip?.paraules) ? clip.paraules : [];
+  const fitxer = el("input", {
+    type: "file", accept: ".srt,.vtt,.json,application/json,text/vtt", hidden: true,
+    onchange: async (e) => {
+      const f = e.target.files[0];
+      e.target.value = "";
+      if (!f) return;
+      if (f.size > 2 * 2 ** 20) { avisa("El fitxer de subtítols és massa gran."); return; }
+      try {
+        const { paraules: llista, aproximat } = llegeixSubtitols(await f.text(), f.name);
+        const canvis = { paraules: llista, subtitols: { nom: f.name.slice(0, 120), aproximat } };
+        if (!E.material?.text) canvis.text = llista.map((p) => p.text).join(" ");
+        desaClip(canvis);
+        pinta();
+        avisa(`${llista.length} paraules llegides.`);
+      } catch (error) { avisa(error.message || "No he sabut llegir aquest fitxer."); }
+    },
+  });
+  const durada = paraules.length ? `${paraules[0].inici.toFixed(1).replace(".", ",")} s – ${paraules[paraules.length - 1].final.toFixed(1).replace(".", ",")} s` : "";
+  return el("div", { class: "pregunta" },
+    el("h2", { class: "label-com", text: "Tens els subtítols d'aquest tros?", style: "font-size: 1.0625rem" }),
+    el("p", { class: "ajuda", text: "Si els tens en un fitxer .srt, .vtt o .json (per exemple, el que treu tallat o un transcriptor), puja'l: així les opcions aniran clavades a la teva veu. Si no, ja ho farà Claude." }),
+    paraules.length ? el("div", { class: "subtitols-estat" },
+      el("span", { text: `${clip.subtitols?.nom || "Subtítols"} · ${paraules.length} paraules · ${durada}${clip.subtitols?.aproximat ? " · temps aproximat de cada paraula" : ""}` }),
+      tancat ? null : el("button", { type: "button", class: "boto-treu", text: "Treu-los", onclick: () => { desaClip({ paraules: [], subtitols: null }); pinta(); } })) : null,
+    tancat ? null : el("button", { type: "button", class: "boto-secundari", style: "justify-self: start", text: paraules.length ? "Puja'n uns altres" : "Puja el fitxer de subtítols", onclick: () => fitxer.click() }),
+    fitxer);
+}
+
+// Llegeix .srt, .vtt o .json i en treu [{text, inici, final}] en segons. Amb .srt i .vtt només hi ha el temps
+// de cada línia: es reparteix entre les paraules segons la llargada (aproximat).
+function llegeixSubtitols(text, nom) {
+  const net = (s) => String(s ?? "").replace(/<[^>]*>/g, "").trim();
+  const numero = (v) => (typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : NaN);
+  let trossos = [], aproximat = false;
+  const esJson = /\.json$/i.test(nom) || /^\s*[[{]/.test(text);
+  if (esJson) {
+    let dades;
+    try { dades = JSON.parse(text); } catch { throw new Error("Aquest .json no es pot llegir."); }
+    const llistaDe = (d) => (Array.isArray(d) ? d : Array.isArray(d?.words) ? d.words : Array.isArray(d?.paraules) ? d.paraules
+      : Array.isArray(d?.segments) ? d.segments.flatMap((s) => (Array.isArray(s.words) && s.words.length ? s.words : [s])) : []);
+    trossos = llistaDe(dades).map((p) => ({
+      text: net(p.text ?? p.word ?? p.paraula ?? p.punctuated_word),
+      inici: numero(p.start ?? p.inici ?? p.begin ?? p.from),
+      final: numero(p.end ?? p.final ?? p.to),
+    })).filter((p) => p.text && Number.isFinite(p.inici) && Number.isFinite(p.final));
+    const maxim = Math.max(0, ...trossos.map((p) => p.final));
+    if (maxim > 600) trossos = trossos.map((p) => ({ ...p, inici: p.inici / 1000, final: p.final / 1000 })); // en mil·lisegons
+    // si són frases senceres i no paraules, es reparteixen
+    if (trossos.some((p) => /\s/.test(p.text))) { aproximat = true; trossos = reparteix(trossos); }
+  } else {
+    const temps = (h, m, s, ms) => Number(h || 0) * 3600 + Number(m) * 60 + Number(s) + Number((ms || "0").padEnd(3, "0")) / 1000;
+    const re = /(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[,.](\d{1,3})\s*-->\s*(?:(\d{1,2}):)?(\d{1,2}):(\d{2})[,.](\d{1,3})[^\n]*\n([\s\S]*?)(?=\n\s*\n|$)/g;
+    for (const m of text.replace(/\r/g, "").matchAll(re)) {
+      const linia = net(m[9].split("\n").join(" "));
+      if (linia) trossos.push({ text: linia, inici: temps(m[1], m[2], m[3], m[4]), final: temps(m[5], m[6], m[7], m[8]) });
+    }
+    aproximat = true;
+    trossos = reparteix(trossos);
+  }
+  trossos = trossos.filter((p) => p.final >= p.inici).sort((a, b) => a.inici - b.inici).slice(0, 600)
+    .map((p) => ({ text: p.text.slice(0, 60), inici: +p.inici.toFixed(3), final: +p.final.toFixed(3) }));
+  if (!trossos.length) throw new Error("No hi he trobat cap paraula amb temps.");
+  return { paraules: trossos, aproximat };
+}
+function reparteix(linies) {
+  return linies.flatMap((l) => {
+    const paraules = l.text.split(/\s+/).filter(Boolean);
+    const total = paraules.reduce((s, p) => s + p.length + 1, 0) || 1;
+    let t = l.inici;
+    return paraules.map((p) => {
+      const d = ((l.final - l.inici) * (p.length + 1)) / total;
+      const tros = { text: p, inici: t, final: t + d * 0.9 };
+      t += d;
+      return tros;
+    });
+  });
+}
+async function pujaClip(f) {
+  if (!f.type.startsWith("video/")) { avisa("Ha de ser un vídeo."); return; }
+  if (f.size > 20 * 2 ** 20) { avisa("És massa gran (màxim 20 MB). Retalla'l a un tros de 3 a 8 segons."); return; }
+  E.pujant++;
+  pinta();
+  try {
+    const r = await pujaFitxer(f);
+    await desaClip({ asset: r.id, tipus: "video" });
+  } catch (error) { avisa(missatgePujada(error)); }
+  finally { E.pujant--; pinta(); }
+}
+function desaClip(canvis) {
+  if (E.material && Object.entries(canvis).every(([k, v]) => E.material[k] === v)) return null;
+  const { id: _, ...actual } = E.material || {};
+  E.material = { ...actual, ...canvis };
+  return escriu("material", "clip", { ...E.material, actualitzat: ara() });
+}
+
+function buit(titol, text, intro) {
+  capcalera(titol, intro);
+  for (const id of ["rondes-nav", "canvis", "com-funciona", "avis-passada", "barra", "index-seccions", "peu"]) $(id).hidden = true;
+  $("seccions").replaceChildren();
+  $("buit-titol").textContent = text[0];
+  $("buit-text").textContent = text[1];
+  $("buit").hidden = false;
+}
+
+function pintaRonda() {
+  if (E.mode === "carregant") return;
+  if (E.mode === "fora") return buit("personalitza", ["Aquesta pàgina viu a claude.ai", "Per fer-la servir, segueix les instruccions de personalitza: Claude la publica al teu compte i et dona l'enllaç."], "Troba l'estil dels teus vídeos, ronda a ronda.");
+  if (E.mode === "sense-dades") return buit("personalitza", ["No puc llegir el teu laboratori", "Obre aquesta pàgina a claude.ai amb la teva sessió iniciada. Si ja ho està, torna-la a carregar d'aquí a una estona."]);
+  if (!E.lab) return buit("Encara no hi ha res", ["El teu laboratori d'estil és buit", "Digues a Claude «comencem personalitza» i t'obrirà el primer pas."], "Troba l'estil dels teus vídeos, ronda a ronda.");
+  const ronda = rondaMirada();
+  if (!ronda) {
+    return buit("Rondes", ["Encara no hi ha cap ronda", pasActual() === "rondes"
+      ? "Demana a Claude la primera ronda d'opcions: sortirà aquí sola."
+      : "Primer, els passos d'abans. Quan els acabis, Claude et prepararà la primera ronda aquí."]);
+  }
+  $("buit").hidden = true;
+  capcalera(ronda.titol || `Ronda ${ronda.numero}`, ronda.intro || "");
+  document.title = `Ronda ${ronda.numero} · ${E.lab.nom || "personalitza"}`;
+
+  const nav = $("rondes-nav");
+  nav.replaceChildren(el("span", { text: "Rondes" }), ...E.rondes.map((r) => el("a", {
+    class: "pindola", href: `#r${pad(r.numero)}`, text: String(r.numero), "aria-label": `Ronda ${r.numero}`, "aria-current": String(r === ronda),
+  })));
+  nav.hidden = E.rondes.length < 2;
+  const llistaCanvis = Array.isArray(ronda.canvis) ? ronda.canvis.filter((c) => typeof c === "string" && c) : [];
+  $("canvis").replaceChildren(...llistaCanvis.map((c) => el("li", { text: c })));
+  $("canvis").hidden = !llistaCanvis.length;
+  $("com-funciona").hidden = !esUltima(ronda);
+  $("avis-passada").hidden = esUltima(ronda);
+  $("barra").hidden = false;
+  $("peu").hidden = false;
+  $("boto-zones").hidden = proporcio() !== "9:16";
+  $("camp-compte").closest(".compte").hidden = proporcio() !== "9:16";
+  if (document.activeElement !== $("camp-compte")) $("camp-compte").value = E.prefs.compte ? `@${String(E.prefs.compte).replace(/^@/, "")}` : "";
+
+  E.ordre = [];
+  E.opcions.clear();
+  const index = $("index-seccions");
+  index.replaceChildren();
+  const seccions = [];
+  for (const seccio of Array.isArray(ronda.seccions) ? ronda.seccions : []) {
+    if (!seccio || !ID_PECA.test(seccio.id || "") || !Array.isArray(seccio.opcions)) continue;
+    const graella = el("div", { class: "graella" });
+    for (const opcio of seccio.opcions) {
+      if (!opcio || !ID_PECA.test(opcio.id || "")) continue;
+      const clau = clauOpcio(ronda, seccio, opcio);
+      E.ordre.push(clau);
+      E.opcions.set(clau, { opcio, seccio, ronda });
+      graella.append(targeta(ronda, seccio, opcio));
+    }
+    index.append(el("a", { class: "pindola", href: `#seccio-${seccio.id}`, text: seccio.nom || seccio.id }));
+    seccions.push(el("section", { class: "seccio", id: `seccio-${seccio.id}` },
+      el("div", { class: "seccio-cap" }, el("h2", { text: seccio.nom || seccio.id }), el("span", { text: `${seccio.opcions.length} opcions` })),
+      seccio.us ? el("p", { class: "seccio-us", text: seccio.us }) : null,
+      graella));
+  }
+  const fixats = Array.isArray(ronda.fixat) ? ronda.fixat.filter(Boolean) : [];
+  if (fixats.length) {
+    index.append(el("a", { class: "pindola", href: "#seccio-fixat", text: "Fixat" }));
+    seccions.push(el("section", { class: "seccio", id: "seccio-fixat" },
+      el("div", { class: "seccio-cap" }, el("h2", { text: "Fixat" }), el("span", { text: "ja decidit" })),
+      el("p", { class: "seccio-us", text: "El que ja forma part del teu estil. Aquí no es valora: és perquè ho tinguis tot en un lloc." }),
+      el("div", { class: "graella" }, fixats.map((o, i) => targetaFixada(ronda, o, i)))));
+  }
+  $("seccions").replaceChildren(...seccions);
+  index.hidden = seccions.length < 2;
+  const general = $("nota-general");
+  if (document.activeElement !== general) general.value = enviament(ronda).general || "";
+  for (const clau of E.ordre) pintaValoracio(clau);
+  pintaEnviament();
+  observaVideos();
+}
+
+function pintaValoracio(clau) {
+  const info = E.opcions.get(clau);
+  if (!info || info.fixat) return;
+  const v = valoracio(clau);
+  const preferida = esPreferida(clau);
+  for (const caixa of document.querySelectorAll(`[data-clau="${clau}"]`)) {
+    if (caixa.classList.contains("targeta")) {
+      if (v.veredicte) caixa.dataset.veredicte = v.veredicte; else delete caixa.dataset.veredicte;
+      caixa.hidden = E.pendents && Boolean(v.veredicte) && E.oberta !== clau;
+    }
+    caixa.querySelectorAll(".veredictes").forEach((g) => { if (v.veredicte) g.dataset.sel = v.veredicte; else delete g.dataset.sel; });
+    caixa.querySelectorAll(".veredictes > button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v.veredicte)));
+    caixa.querySelectorAll(".abast").forEach((a) => {
+      a.hidden = v.veredicte !== "fora";
+      const g = a.querySelector(".segmentat");
+      if (v.abast) { g.dataset.sel = v.abast; g.style.setProperty("--i", v.abast === "aqui" ? 1 : 0); } else delete g.dataset.sel;
+      g.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.a === v.abast)));
+    });
+    const llista = segments(v.nota).map((s) => s.toLowerCase());
+    caixa.querySelectorAll(".xips").forEach((x) => {
+      x.hidden = !v.veredicte;
+      x.querySelectorAll(".xip").forEach((b) => {
+        const posat = llista.includes(b.textContent.toLowerCase());
+        b.hidden = b.dataset.per !== v.veredicte && !posat;
+        b.setAttribute("aria-pressed", String(posat));
+      });
+    });
+    caixa.querySelectorAll("textarea[data-nota]").forEach((t) => { if (document.activeElement !== t) t.value = v.nota || ""; });
+    caixa.querySelectorAll(".nota-boto").forEach((b) => {
+      b.textContent = v.nota || (editable(info.ronda) ? "Afegeix una nota…" : "Sense nota");
+      b.classList.toggle("amb-nota", Boolean(v.nota));
+      b.setAttribute("aria-label", v.nota ? `Nota: ${v.nota}. Obre-la en gran per canviar-la` : "Afegeix una nota a la vista gran");
+    });
+    caixa.querySelectorAll(".estrella, .boto-estrella").forEach((b) => b.setAttribute("aria-pressed", String(preferida)));
+    caixa.querySelectorAll(".etiqueta-preferida").forEach((s) => { s.hidden = !preferida; });
+  }
+  pintaProgres();
+}
+
+function pintaProgres() {
+  const ronda = rondaMirada();
+  const valorades = E.ordre.filter((c) => valoracio(c).veredicte).length;
+  $("compte-valorades").textContent = `${valorades} de ${E.ordre.length} valorades`;
+  $("pista-ple").style.transform = `scaleX(${E.ordre.length ? valorades / E.ordre.length : 0})`;
+  if (ronda && !enviada(ronda) && esUltima(ronda)) {
+    const falten = E.ordre.length - valorades;
+    $("missatge-envia").textContent = !E.potEscriure ? "Només la pots mirar." : falten
+      ? `En falten ${falten} per valorar. Pots enviar igualment: les que no valoris no compten.`
+      : "Totes valorades. Quan vulguis, envia-ho i digues «fet» a Claude.";
+  }
+}
+
+function pintaEnviament() {
+  const ronda = rondaMirada();
+  if (!ronda) return;
+  const env = enviament(ronda);
+  const ultima = esUltima(ronda);
+  $("boto-envia").hidden = Boolean(env.enviat) || !ultima || !E.potEscriure;
+  $("boto-reobre").hidden = !env.enviat || !ultima || !E.potEscriure;
+  $("nota-general").disabled = !editable(ronda);
+  if (!ultima) $("missatge-envia").textContent = env.enviat ? `Enviada el ${dataLlegible(env.enviat)}.` : "Aquesta ronda no es va enviar.";
+  else if (env.enviat) $("missatge-envia").textContent = E.mode === "demo"
+    ? "Enviada. A la de debò, ara diries «fet» a Claude i et faria la ronda següent."
+    : `Enviada el ${dataLlegible(env.enviat)}. Ara digues «fet» a Claude i farà la ronda següent.`;
+  else pintaProgres();
+}
+
+function dataLlegible(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return String(iso);
+  return d.toLocaleString("ca", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+
+// Només es reprodueixen les vistes prèvies que es veuen.
+let observador;
+function observaVideos() {
+  observador?.disconnect();
+  observador = new IntersectionObserver((entrades) => {
+    for (const e of entrades) { if (e.isIntersecting && $("modal").hidden) e.target.play().catch(() => {}); else e.target.pause(); }
+  }, { rootMargin: "120px" });
+  document.querySelectorAll(".previa video").forEach((v) => observador.observe(v));
+}
+
+// --- el teu estil ---------------------------------------------------------------------------------
+function titolsRespostes() {
+  const titols = new Map(preguntes().map((q) => [q.clau, q.pregunta]));
+  titols.set("referencies", "Referències");
+  return titols;
+}
+function totesRespostes() {
+  const r = { ...(E.lab?.respostes && typeof E.lab.respostes === "object" ? E.lab.respostes : {}), ...E.respostes };
+  return Object.entries(r).filter(([, v]) => typeof v === "string" && v.trim());
+}
+
+function pintaEstil() {
+  capcalera(E.lab?.nom || "El teu estil", "El que ja està decidit, el que has descartat i el que encara està obert. Ho escriu Claude cada cop que dius «fet».");
+  document.title = `El teu estil · ${E.lab?.nom || "personalitza"}`;
+  const lab = E.lab || {};
+  const llistaApunts = (tipus, buitText) => {
+    const items = E.apunts.filter((a) => a.tipus === tipus);
+    if (!items.length) return el("p", { class: "buit-petit", text: buitText });
+    return el("ul", { class: "llista" }, items.map((a) => el("li", {},
+      el("span", { text: a.text || "" }),
+      a.per_que ? el("span", { class: "per-que", text: `Per què: ${a.per_que}` }) : null,
+      a.ronda ? el("span", { class: "ronda-de", text: `ronda ${a.ronda}` }) : null)));
+  };
+  const encarrec = Array.isArray(lab.encarrec) ? lab.encarrec.filter((l) => typeof l === "string" && l) : [];
+  const respostes = totesRespostes();
+  const titols = titolsRespostes();
+  const blocs = [
+    el("section", {},
+      el("div", { class: "cap" }, el("h2", { text: "En cinc línies" }), E.downloads || E.mode === "demo" ? el("button", { type: "button", class: "boto-secundari", text: "Baixa ESTIL.md", onclick: baixaEstil }) : null),
+      encarrec.length ? el("ol", { class: "cinc-linies" }, encarrec.map((l) => el("li", { text: l })))
+        : el("p", { class: "buit-petit", text: "Quan acabis l'entrevista, Claude resumirà aquí el teu encàrrec." })),
+    el("section", {}, el("h2", { text: "Fixat" }), llistaApunts("fixat", "Encara no hi ha res fixat. Sortirà aquí el que et quedis a les rondes.")),
+    el("section", {}, el("h2", { text: "Descartat" }), llistaApunts("descartat", "Res descartat, de moment.")),
+    el("section", {}, el("h2", { text: "Preguntes obertes" }), llistaApunts("pregunta", "Cap pregunta oberta.")),
+  ];
+  if (respostes.length) {
+    blocs.push(el("details", { class: "respostes" }, el("summary", { text: "Les respostes de l'entrevista" }),
+      el("dl", {}, respostes.flatMap(([clau, text]) => [el("dt", { text: titols.get(clau) || clau }), el("dd", { text })]))));
+  }
+  $("estil").replaceChildren(...blocs);
+}
+
+function estilEnText() {
+  const lab = E.lab || {};
+  const linies = [`# ${lab.nom || "El meu estil"}`, "", "_Fet amb personalitza, ronda a ronda._", ""];
+  const encarrec = Array.isArray(lab.encarrec) ? lab.encarrec : [];
+  if (encarrec.length) linies.push("## En cinc línies", "", ...encarrec.map((l) => `- ${l}`), "");
+  for (const [tipus, titol] of [["fixat", "Fixat"], ["descartat", "Descartat"], ["pregunta", "Preguntes obertes"]]) {
+    const items = E.apunts.filter((a) => a.tipus === tipus);
+    linies.push(`## ${titol}`, "");
+    if (!items.length) linies.push("_(res)_");
+    for (const a of items) linies.push(`- ${a.text}${a.per_que ? ` — per què: ${a.per_que}` : ""}${a.ronda ? ` _(ronda ${a.ronda})_` : ""}`);
+    linies.push("");
+  }
+  const respostes = totesRespostes();
+  const titols = titolsRespostes();
+  if (respostes.length) {
+    linies.push("## L'encàrrec", "");
+    for (const [clau, text] of respostes) linies.push(`### ${titols.get(clau) || clau}`, "", text, "");
+  }
+  return linies.join("\n");
+}
+
+async function baixaEstil() {
+  const text = estilEnText();
+  if (E.downloads) {
+    try { await E.downloads.save({ filename: "ESTIL.md", data: text }); }
+    catch (error) { if (error?.code !== "declined" && error?.code !== "dismissed") avisa("No s'ha pogut baixar. Demana-li a Claude: també el té."); }
+    return;
+  }
+  try { await navigator.clipboard.writeText(text); avisa("A la demo, l'ESTIL.md es copia: enganxa'l on vulguis."); }
+  catch { avisa("No s'ha pogut copiar."); }
+}
+
+// --- vista gran -----------------------------------------------------------------------------------
+// A l'ordinador s'obre des de la targeta i hi torna pel mateix camí. Al mòbil és un full que puja des de baix
+// i es pot arrossegar avall per tancar-lo. Tot es pot girar a mig camí.
+let animVista = null, animFons = null, objectiu = "tancada", full = null;
+
+function omple(clau) {
+  const { opcio, seccio, ronda, fixat } = E.opcions.get(clau);
+  document.querySelector(".targeta.oberta")?.classList.remove("oberta");
+  if (!MOBIL.matches) document.querySelector(`.targeta[data-clau="${clau}"]`)?.classList.add("oberta");
+  E.oberta = clau;
+  const lloc = $("modal-media");
+  lloc.replaceChildren();
+  const plantilla = plantillaDe(seccio, opcio);
+  const tipus = tipusDe(opcio, opcio.gran ? "gran" : "previa");
+  const url = src(opcio.gran) || src(opcio.previa);
+  if (plantilla && src(clipDe(ronda))) lloc.append(mediaViva(ronda, plantilla, opcio, true));
+  else if (url && tipus === "so") lloc.append(el("div", { class: "so-icona" }, el("span", {}, el("b", { text: "♪" }))), el("audio", { src: url, controls: true, autoplay: true }));
+  else if (url && tipus === "imatge") lloc.append(el("img", { src: url, alt: opcio.etiqueta || "" }));
+  else if (url) lloc.append(el("video", { src: url, controls: true, autoplay: true, loop: true, playsinline: true }));
+  if (mostraZones() && tipus !== "so") lloc.append(zonesSegures());
+  const pos = E.ordre.indexOf(clau);
+  const info = $("modal-info");
+  info.replaceChildren(...[
+    el("p", { class: "sobretitol", text: fixat ? "Fixat" : `${seccio.nom || seccio.id} · ronda ${ronda.numero}` }),
+    el("h2", { id: "modal-titol", text: opcio.etiqueta || opcio.id }),
+    opcio.descripcio ? el("p", { class: "modal-desc", text: opcio.descripcio }) : null,
+    opcio.so ? el("p", { class: "targeta-so", text: `so: ${opcio.so}` }) : null,
+    fixat ? null : botonsVeredicte(clau),
+    fixat ? null : botonsAbast(clau),
+    fixat ? null : xips(clau),
+    fixat ? null : campNota(clau, { rows: 4, placeholder: "Per què? Com més concret, millor serà la ronda següent." }),
+    fixat || !editable(ronda) ? null : el("button", {
+      type: "button", class: "boto-estrella", "aria-pressed": "false", onclick: () => marcaPreferida(clau, !esPreferida(clau)),
+    }, el("span", { icona: ESTRELLA, style: "display: contents" }), "La preferida de la secció"),
+    fixat ? null : el("div", { class: "modal-navega" },
+      el("button", { type: "button", class: "boto-secundari", text: "← Anterior", disabled: pos <= 0, onclick: () => mou(-1) }),
+      el("span", { class: "dreceres", text: "1 sí · 2 potser · 3 no · P preferida · Esc tanca" }),
+      el("button", { type: "button", class: "boto-secundari", text: "Següent →", disabled: pos < 0 || pos >= E.ordre.length - 1, onclick: () => mou(1) })),
+  ].filter(Boolean));
+  info.dataset.clau = clau;
+  pintaValoracio(clau);
+}
+
+function cami(clau) {
+  const caixa = $("modal-caixa");
+  const origen = document.querySelector(`.targeta[data-clau="${clau}"] .previa`);
+  const a = origen?.getBoundingClientRect();
+  const b = caixa.getBoundingClientRect();
+  if (!a?.width || !b.width) return [{ opacity: 0, transform: "scale(.96)" }, { opacity: 1, transform: "none" }];
+  const dx = a.left + a.width / 2 - (b.left + b.width / 2);
+  const dy = a.top + a.height / 2 - (b.top + b.height / 2);
+  const escala = Math.min(1, Math.max(0.15, a.height / b.height));
+  return [
+    { opacity: 0, transform: `translate(${dx}px, ${dy}px) scale(${escala})`, filter: "blur(8px)" },
+    { opacity: 1, offset: 0.3 },
+    { opacity: 1, transform: "none", filter: "blur(0px)" },
+  ];
+}
+
+function acabaDeTancar() {
+  animVista?.cancel(); animFons?.cancel(); animVista = animFons = null;
+  full?.molla?.atura(); full = null;
+  $("modal").hidden = true;
+  $("modal-caixa").style.transform = "";
+  $("modal").querySelector(".modal-fons").style.opacity = "";
+  $("modal-media").replaceChildren();
+  document.querySelector(".targeta.oberta")?.classList.remove("oberta");
+  const clau = E.oberta;
+  E.oberta = null;
+  objectiu = "tancada";
+  if (clau) { pintaValoracio(clau); document.querySelector(`.targeta[data-clau="${clau}"] .previa`)?.focus({ preventScroll: true }); }
+  observaVideos();
+}
+
+function obre(clau) {
+  if (!E.opcions.has(clau)) return;
+  if (objectiu === "tancada" && (animVista || full) && E.oberta === clau) {
+    objectiu = "oberta";
+    if (full) return mouFull(0, 0);
+    animVista.reverse(); animFons?.reverse();
+    return;
+  }
+  if (animVista || full) acabaDeTancar();
+  omple(clau);
+  objectiu = "oberta";
+  $("modal").hidden = false;
+  document.querySelectorAll(".previa video").forEach((v) => v.pause());
+  if (MOBIL.matches && !MENYS_MOVIMENT.matches) {
+    full = { y: alcadaFull(), v: 0 };
+    posaFull(full.y);
+    mouFull(0, 0);
+  } else {
+    animVista = $("modal-caixa").animate(fotogrames(cami(clau)), { ...temps(MOLLA_VISTA), fill: "both" });
+    animFons = $("modal").querySelector(".modal-fons").animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: "ease-out", fill: "both" });
+    animVista.onfinish = () => { if (objectiu === "tancada") acabaDeTancar(); };
+  }
+  $("modal-tanca").focus({ preventScroll: true });
+}
+
+function tanca() {
+  if ($("modal").hidden || objectiu === "tancada") return;
+  document.activeElement?.blur?.();
+  objectiu = "tancada";
+  if (full) return mouFull(alcadaFull(), full.v || 0);
+  if (animVista && animVista.playState === "running") { animVista.reverse(); animFons?.reverse(); return; }
+  animVista?.cancel();
+  const enrere = cami(E.oberta).reverse().map((f) => ({ ...f, offset: f.offset === undefined ? undefined : 1 - f.offset }));
+  animVista = $("modal-caixa").animate(fotogrames(enrere), { ...temps(MOLLA_VISTA), fill: "both" });
+  animFons?.cancel();
+  animFons = $("modal").querySelector(".modal-fons").animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: "ease-in", fill: "both" });
+  animVista.onfinish = () => { if (objectiu === "tancada") acabaDeTancar(); };
+}
+
+const alcadaFull = () => $("modal-caixa").getBoundingClientRect().height || innerHeight;
+function posaFull(y) {
+  $("modal-caixa").style.transform = `translateY(${y}px)`;
+  $("modal").querySelector(".modal-fons").style.opacity = String(Math.max(0, Math.min(1, 1 - y / alcadaFull())));
+}
+function mouFull(desti, velocitat) {
+  if (!full) return;
+  full.molla?.atura();
+  full.molla = mollaViva({
+    de: full.y, a: desti, velocitat, esmorteiment: desti > 0 ? 1 : 0.86, resposta: 0.32,
+    pas: (y) => { full.y = y; posaFull(y); },
+    fi: () => { if (objectiu === "tancada") acabaDeTancar(); },
+  });
+}
+function arrossegaFull(e) {
+  if (!full || e.button !== 0) return;
+  const parat = full.molla?.atura();
+  if (parat) { full.y = parat.x; full.v = parat.v; }
+  const inici = e.clientY - full.y;
+  const historia = [{ y: e.clientY, t: e.timeStamp }];
+  let actiu = false;
+  const moure = (m) => {
+    if (!actiu && Math.abs(m.clientY - historia[0].y) < 8) return;
+    actiu = true;
+    const dy = m.clientY - inici;
+    full.y = dy >= 0 ? dy : -12 * Math.log1p(-dy / 12); // amunt, s'hi resisteix
+    posaFull(full.y);
+    historia.push({ y: m.clientY, t: m.timeStamp });
+    if (historia.length > 6) historia.shift();
+  };
+  const deixa = () => {
+    removeEventListener("pointermove", moure);
+    removeEventListener("pointerup", deixa);
+    removeEventListener("pointercancel", deixa);
+    if (!actiu) return;
+    const a = historia[0], b = historia[historia.length - 1];
+    const v = b.t > a.t ? ((b.y - a.y) / (b.t - a.t)) * 1000 : 0;
+    full.v = v;
+    if (full.y + projecta(v, 0.99) > alcadaFull() * 0.4) { objectiu = "tancada"; mouFull(alcadaFull(), v); }
+    else { objectiu = "oberta"; mouFull(0, v); }
+  };
+  addEventListener("pointermove", moure);
+  addEventListener("pointerup", deixa);
+  addEventListener("pointercancel", deixa);
+}
+
+function mou(pas) {
+  const pos = E.ordre.indexOf(E.oberta) + pas;
+  if (pos < 0 || pos >= E.ordre.length) return;
+  document.activeElement?.blur?.();
+  omple(E.ordre[pos]);
+  for (const node of [$("modal-media"), $("modal-info")]) {
+    node.animate(fotogrames([{ opacity: 0, transform: `translateX(${pas * 28}px)` }, { opacity: 1, transform: "none" }]), temps(MOLLA));
+  }
+}
+
+// --- controls -------------------------------------------------------------------------------------
+function connecta() {
+  $("modal").addEventListener("click", (e) => { if (e.target.closest("[data-tanca]")) tanca(); });
+  $("agafador").addEventListener("pointerdown", arrossegaFull);
+  $("modal-media").addEventListener("pointerdown", (e) => { if (MOBIL.matches && e.target.tagName !== "AUDIO") arrossegaFull(e); });
+  document.addEventListener("keydown", (e) => {
+    if ($("modal").hidden) return;
+    if (e.key === "Escape") return tanca();
+    if (e.target instanceof Element && e.target.matches("textarea, input")) return;
+    const info = E.opcions.get(E.oberta);
+    if (e.key === "ArrowLeft") mou(-1);
+    else if (e.key === "ArrowRight") mou(1);
+    else if (info && !info.fixat && editable(info.ronda)) {
+      if (["1", "2", "3"].includes(e.key)) {
+        const v = ["guarda", "potser", "fora"][Number(e.key) - 1];
+        valora(E.oberta, { veredicte: valoracio(E.oberta).veredicte === v ? null : v });
+      } else if (e.key.toLowerCase() === "p") marcaPreferida(E.oberta, !esPreferida(E.oberta));
+    }
+  });
+  addEventListener("hashchange", llegeixHash);
+  $("boto-zones").addEventListener("click", (e) => { E.zones = !E.zones; e.currentTarget.setAttribute("aria-pressed", String(E.zones)); pintaRonda(); });
+  $("boto-pendents").addEventListener("click", (e) => { E.pendents = !E.pendents; e.currentTarget.setAttribute("aria-pressed", String(E.pendents)); E.ordre.forEach(pintaValoracio); });
+  const compte = $("camp-compte");
+  compte.addEventListener("change", () => {
+    const nou = compte.value.trim().replace(/^@/, "").slice(0, 30);
+    if (nou === (E.prefs.compte || "")) return;
+    E.prefs = { ...E.prefs, compte: nou };
+    if (E.potEscriure) escriu("preferencies", "pagina", { ...E.prefs });
+    if (E.zones) pintaRonda();
+  });
+  compte.addEventListener("keydown", (e) => { if (e.key === "Enter") compte.blur(); });
+  const general = $("nota-general");
+  let tempsGeneral;
+  const desaGeneral = () => {
+    clearTimeout(tempsGeneral);
+    const ronda = rondaMirada();
+    if (!ronda || !editable(ronda)) return null;
+    const env = enviament(ronda);
+    if (general.value.trim() === (env.general || "")) return null;
+    const nou = { ronda: ronda.numero, general: general.value.trim(), enviat: env.enviat || null };
+    E.enviaments.set(`r${pad(ronda.numero)}`, nou);
+    return escriu("enviaments", `r${pad(ronda.numero)}`, nou);
+  };
+  general.addEventListener("input", () => { clearTimeout(tempsGeneral); tempsGeneral = setTimeout(desaGeneral, 700); });
+  general.addEventListener("blur", desaGeneral);
+  general.addEventListener("change", desaGeneral);
+  const posaEnviat = async (enviat) => {
+    const ronda = rondaMirada();
+    if (!ronda || !esUltima(ronda) || !E.potEscriure) return;
+    document.activeElement?.blur?.();
+    for (const t of temporitzadors.values()) clearTimeout(t);
+    document.querySelectorAll("textarea[data-nota]").forEach((t) => { const c = t.dataset.nota; if ((valoracio(c).nota || "") !== t.value.trim()) valora(c, { nota: t.value.trim() }); });
+    const nou = { ronda: ronda.numero, general: general.value.trim(), enviat };
+    E.enviaments.set(`r${pad(ronda.numero)}`, nou);
+    pintaRonda();
+    await escriu("enviaments", `r${pad(ronda.numero)}`, nou);
+    if (enviat) avisa(E.mode === "demo" ? "Enviada. Això és tot a la demo." : "Enviada. Ara digues «fet» a Claude.");
+  };
+  $("boto-envia").addEventListener("click", () => posaEnviat(ara()));
+  $("boto-reobre").addEventListener("click", () => posaEnviat(null));
+  const barra = $("barra");
+  const vora = () => barra.classList.toggle("amb-contingut", scrollY > 0 && barra.getBoundingClientRect().top <= parseFloat(getComputedStyle(barra).top || "0") + 1);
+  addEventListener("scroll", vora, { passive: true });
+}
+
+function llegeixHash() {
+  const h = location.hash.slice(1);
+  if (PASSOS.some((p) => p.id === h)) { E.vista = h; if (h === "rondes") E.rondaVista = null; }
+  else if (/^r\d{2,3}$/.test(h)) { E.vista = "rondes"; E.rondaVista = Number(h.slice(1)); if (esUltima(rondaMirada())) E.rondaVista = null; }
+  else if (h.startsWith("seccio-")) return;
+  else { E.vista = E.lab ? pasActual() : "rondes"; E.rondaVista = null; }
+  if (!$("modal").hidden) acabaDeTancar();
+  pinta();
+  scrollTo({ top: 0 });
+}
+
+// --- dades que arriben ----------------------------------------------------------------------------
+// El que encara s'està desant (E.rebut) mana sobre el que arriba: així no hi ha salts mentre escrius.
+function fusiona(col, docs, actual) {
+  const nous = new Map(docs.map((d) => [d.id, d]));
+  const resultat = [];
+  for (const d of actual) if (E.rebut.has(`${col}/${d.id}`)) resultat.push(d);
+  for (const [id, d] of nous) if (!E.rebut.has(`${col}/${id}`)) resultat.push(d);
+  return resultat;
+}
+
+function rep(col, docs) {
+  const vistaAbans = E.vista;
+  if (col === "laboratori") {
+    const pasAbans = E.lab ? pasActual() : null;
+    E.lab = docs.find((d) => d.id === "estat") || null;
+    // Quan Claude obre el pas següent, la pàgina hi va sola
+    if (E.lab && pasAbans && pasActual() !== pasAbans && E.mode !== "carregant") { E.vista = pasActual(); E.rondaVista = null; }
+  } else if (col === "entrevista") {
+    const p = docs.find((d) => d.id === "preguntes");
+    E.preguntes = Array.isArray(p?.llista) ? p.llista : null;
+    if (!E.rebut.has("entrevista/respostes")) {
+      const r = docs.find((d) => d.id === "respostes") || {};
+      E.respostes = Object.fromEntries(Object.entries(r).filter(([k, v]) => k !== "id" && k !== "actualitzat" && typeof v === "string"));
+    }
+    if (E.mode !== "carregant" && E.vista !== "entrevista" && E.vista !== "estil") return;
+  } else if (col === "adjunts") {
+    E.adjunts = fusiona(col, docs, E.adjunts).filter((d) => d && typeof d.clau === "string")
+      .sort((a, b) => String(a.creat || "").localeCompare(String(b.creat || "")));
+    if (E.mode !== "carregant" && E.vista !== "entrevista") return;
+  } else if (col === "material") {
+    if (!E.rebut.has("material/clip")) {
+      const c = docs.find((d) => d.id === "clip");
+      E.material = c ? { ...c } : null;
+    }
+  } else if (col === "referencies") {
+    E.referencies = fusiona(col, docs, E.referencies).filter((d) => d && typeof d === "object")
+      .sort((a, b) => (a.ordre ?? 0) - (b.ordre ?? 0) || String(a.creat || "").localeCompare(String(b.creat || "")));
+    if (E.mode !== "carregant" && E.vista !== "referencies") return;
+  } else if (col === "preferencies") {
+    const p = docs.find((d) => d.id === "pagina");
+    if (p && !E.rebut.has("preferencies/pagina")) E.prefs = { compte: typeof p.compte === "string" ? p.compte : "" };
+  } else if (col === "apunts") {
+    E.apunts = docs.filter((d) => ["fixat", "descartat", "pregunta"].includes(d.tipus) && typeof d.text === "string")
+      .sort((a, b) => String(a.creat || "").localeCompare(String(b.creat || "")) || (a.ordre ?? 0) - (b.ordre ?? 0));
+  } else if (col === "rondes") {
+    E.rondes = docs.filter((d) => Number.isInteger(d.numero) && d.numero > 0).sort((a, b) => a.numero - b.numero);
+  } else if (["valoracions", "preferides", "enviaments", "passos"].includes(col)) {
+    const abans = enviada(rondaMirada());
+    const mapa = E[col];
+    const nous = new Map(docs.map((d) => [d.id, d]));
+    for (const [id, d] of nous) if (!E.rebut.has(`${col}/${id}`)) mapa.set(id, d);
+    for (const id of [...mapa.keys()]) if (!nous.has(id) && !E.rebut.has(`${col}/${id}`)) mapa.delete(id);
+    if (E.mode === "carregant") return;
+    if (col === "valoracions" || col === "preferides") {
+      if (E.vista === "rondes") { E.ordre.forEach(pintaValoracio); if (E.oberta) pintaValoracio(E.oberta); }
+      return;
+    }
+    if (col === "enviaments") {
+      if (E.vista !== "rondes") return;
+      if (abans === enviada(rondaMirada())) { pintaEnviament(); return; }
+    }
+  }
+  if (E.mode === "carregant") return;
+  if (!$("modal").hidden && (col === "laboratori" || col === "rondes" || col === "material")) acabaDeTancar();
+  pinta();
+  if (vistaAbans !== E.vista) scrollTo({ top: 0 });
+}
+
+const COLS = ["laboratori", "entrevista", "adjunts", "referencies", "material", "passos", "rondes", "valoracions", "preferides", "enviaments", "apunts", "preferencies"];
+async function connectaDades(magatzem) {
+  E.magatzem = magatzem;
+  const arribades = new Set();
+  await new Promise((resol) => {
+    const rellotge = setTimeout(resol, 10000);
+    const compta = (col) => { arribades.add(col); if (arribades.size === COLS.length) { clearTimeout(rellotge); resol(); } };
+    for (const col of COLS) {
+      magatzem.escolta(col, (docs) => { rep(col, docs); compta(col); }, (error) => {
+        if (error?.code !== "unavailable") console.warn("personalitza:", col, error?.code);
+        compta(col);
+      });
+    }
+  });
+}
+
+async function inicia() {
+  connecta();
+  const dinsClaude = typeof window.claude?.use === "function";
+  const demo = window.PERSONALITZA_DEMO;
+  if (!dinsClaude) {
+    if (demo && typeof demo === "object") {
+      E.mode = "demo";
+      await connectaDades(magatzemDemo(demo));
+    } else E.mode = "fora";
+    llegeixHash();
+    return;
+  }
+  pinta();
+  const [db, user, downloads, assets] = await Promise.all(["db", "user", "downloads", "assets"].map((n) => claude.use(n)));
+  E.downloads = downloads;
+  E.assets = assets;
+  if (!db) { E.mode = "sense-dades"; llegeixHash(); return; }
+  if (user) {
+    try { const pot = await user.can("data.write"); E.potEscriure = pot !== false; } catch { E.potEscriure = true; }
+  }
+  E.mode = "carregant";
+  await connectaDades(magatzemDb(db));
+  E.mode = "claude";
+  llegeixHash();
+}
+
+inicia();
+</script>
+
+</body></html>
