@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>personalitza · la paradeta</title>
+<title>el creador de marca · personalitza</title>
 <meta name="description" content="personalitza: troba l'estil dels teus vídeos, ronda a ronda, amb Claude. Un regal de l'Ivet Anoro (@ivetanoro), a la paradeta.">
-<meta property="og:title" content="personalitza · la paradeta">
+<meta property="og:title" content="el creador de marca · personalitza">
 <meta property="og:description" content="troba l'estil dels teus vídeos, ronda a ronda.">
 <meta name="theme-color" content="#FBF6D1">
 <link rel="preload" href="../fonts/BitroadMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
@@ -40,7 +40,8 @@
   .sel { position:relative; background:var(--blue); padding:0 .04em; margin:0 .01em 0 -.04em; }
   .sel::before, .sel::after { content:""; position:absolute; width:2px; background:var(--esp); top:-.06em; bottom:-.08em; }
   .sel::before { left:-1px; } .sel::after { right:-1px; }
-  .lema { margin:30px 0 0; font-size:17px; line-height:1.45; color:var(--muted); max-width:36ch; }
+  .sobrenom { margin:18px 0 0; font-family:var(--mono); font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .lema { margin:24px 0 0; font-size:17px; line-height:1.45; color:var(--muted); max-width:36ch; }
 
   .btn { display:inline-flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; width:100%;
          background:var(--ox); color:var(--butter); text-decoration:none; font:700 15px/1.1 var(--sans); border:0;
@@ -117,6 +118,7 @@
 <main class="wrap">
   <section class="hero">
     <h1><span class="sel">personal</span>itza</h1>
+    <p class="sobrenom">el creador de marca de la paradeta</p>
     <p class="lema">troba l’estil dels teus vídeos, ronda a ronda. claude et fa unes quantes versions de la mateixa cosa damunt del teu vídeo, tu dius sí, potser o no, i a cada ronda s’hi acosta més.</p>
     <div class="cta">
       <a class="btn" href="personalitza.zip" download>baixa personalitza.zip
