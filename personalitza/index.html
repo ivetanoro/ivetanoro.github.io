@@ -8,14 +8,14 @@
 <meta property="og:title" content="el creador de marca · personalitza">
 <meta property="og:description" content="troba l'estil dels teus vídeos, ronda a ronda.">
 <meta name="theme-color" content="#FBF6D1">
-<link rel="preload" href="../fonts/BitroadMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../fonts/NeueBit-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-  @font-face { font-family:"BitroadMono"; src:url("../fonts/BitroadMono-Regular.woff2") format("woff2"); font-display:swap; }
+  @font-face { font-family:"NeueBit"; src:url("../fonts/NeueBit-Regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
   :root {
     --butter:#FBF6D1; --paper:#FFFDF2; --blue:#ACCAE6; --blue-soft:#CFE0F0; --ox:#4C050C; --esp:#2F1B11;
     --muted:rgba(47,27,17,.74); --line:rgba(47,27,17,.16);
     --sans:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    --mono:"BitroadMono", "SF Mono", ui-monospace, monospace;
+    --mono:"NeueBit", "SF Mono", ui-monospace, monospace;
     --vora:1.5px solid var(--esp); --ombra:3px 3px 0 var(--esp);
   }
   * { box-sizing:border-box; }
@@ -27,7 +27,7 @@
   a:focus-visible, button:focus-visible { outline:2px solid var(--ox); outline-offset:3px; }
 
   .bar { display:grid; grid-template-columns:1.3fr 1fr 1fr; border-bottom:2px solid var(--esp);
-         font-family:var(--mono); font-size:11px; letter-spacing:.02em; text-transform:uppercase; padding-top:env(safe-area-inset-top, 0px); }
+         font-family:var(--mono); font-size:16px; letter-spacing:0; text-transform:lowercase; padding-top:env(safe-area-inset-top, 0px); }
   .bar > * { padding:12px 16px; min-height:44px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar > :last-child { border-right:0; text-align:right; }
   .bar .curt { display:none; }
@@ -40,7 +40,7 @@
   .sel { position:relative; background:var(--blue); padding:0 .04em; margin:0 .01em 0 -.04em; }
   .sel::before, .sel::after { content:""; position:absolute; width:2px; background:var(--esp); top:-.06em; bottom:-.08em; }
   .sel::before { left:-1px; } .sel::after { right:-1px; }
-  .sobrenom { margin:18px 0 0; font-family:var(--mono); font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .sobrenom { margin:18px 0 0; font-family:var(--mono); font-size:19px; text-transform:lowercase; letter-spacing:0; color:var(--muted); }
   .lema { margin:24px 0 0; font-size:17px; line-height:1.45; color:var(--muted); max-width:36ch; }
 
   .btn { display:inline-flex; align-items:center; justify-content:space-between; gap:10px; min-height:44px; width:100%;
@@ -55,7 +55,7 @@
   .cta .petit { margin:2px 0 0; font-size:13px; color:var(--muted); }
 
   .sec { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:44px 0 16px; padding-bottom:8px;
-         border-bottom:2px solid var(--esp); font-family:var(--mono); font-weight:400; font-size:12px; text-transform:uppercase; letter-spacing:.03em; }
+         border-bottom:2px solid var(--esp); font-family:var(--mono); font-weight:400; font-size:18px; text-transform:lowercase; letter-spacing:0; }
 
   /* la demo: la pàgina de debò, dins d'un mòbil */
   .demo { display:grid; gap:24px; align-items:start; grid-template-columns:minmax(0, 1fr); }
@@ -65,26 +65,26 @@
   .demo-text { display:grid; gap:12px; max-width:36rem; font-size:16px; }
   .demo-text p { margin:0; }
   .valoracions { display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none; }
-  .valoracions li { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; padding:4px 9px;
+  .valoracions li { font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; padding:4px 9px;
                     border:1.2px solid var(--esp); border-radius:999px; background:var(--paper); }
   .nota { margin:0; font-size:13px; color:var(--muted); }
 
   .passos { margin:0; padding:0; list-style:none; display:grid; gap:10px; counter-reset:pas; max-width:46rem; }
   .passos li { counter-increment:pas; display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:baseline;
                padding:14px 16px; border:var(--vora); border-radius:8px; background:var(--paper); }
-  .passos li::before { content:counter(pas, decimal-leading-zero); font-family:var(--mono); font-size:12px; }
+  .passos li::before { content:counter(pas, decimal-leading-zero); font-family:var(--mono); font-size:18px; }
   .passos strong { display:block; font-size:17px; letter-spacing:-.01em; }
   .passos span { color:var(--muted); font-size:15px; }
 
   .prompt { position:relative; max-width:46rem; border:var(--vora); border-radius:10px; background:var(--paper); box-shadow:var(--ombra); overflow:hidden; }
   .prompt-barra { display:flex; align-items:center; gap:8px; padding:4px 4px 4px 10px; background:var(--blue-soft); border-bottom:var(--vora);
-                  font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+                  font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; }
   .punts { display:flex; gap:4px; }
   .punts i { width:8px; height:8px; border-radius:50%; border:1.2px solid var(--esp); background:var(--butter); }
   .punts i:first-child { background:var(--ox); }
   .punts i:nth-child(2) { background:var(--blue); }
   .copia { margin-left:auto; min-height:44px; padding:0 12px; border:1.2px solid var(--esp); border-radius:6px; background:var(--paper);
-           font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; cursor:pointer; }
+           font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; cursor:pointer; }
   .copia:hover { background:var(--blue); }
   .prompt p { margin:0; padding:16px 18px 18px; font-size:16px; line-height:1.5; user-select:all; -webkit-user-select:all; }
 
@@ -93,7 +93,7 @@
   .text + .text { margin-top:10px; }
 
   footer { max-width:1180px; margin:0 auto; padding:16px max(16px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-           border-top:2px solid var(--esp); display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:space-between; font-family:var(--mono); font-size:11px; text-transform:uppercase; }
+           border-top:2px solid var(--esp); display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:space-between; font-family:var(--mono); font-size:16px; text-transform:lowercase; }
   footer a { text-decoration:none; }
 
   @media (min-width: 860px) {

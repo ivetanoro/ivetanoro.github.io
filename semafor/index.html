@@ -10,12 +10,12 @@
 <meta property="og:image" content="https://ivetanoro.github.io/img/semafor.jpg">
 <meta name="theme-color" content="#FBF6D1">
 <style>
-  @font-face { font-family:"BitroadMono"; src:url("../fonts/BitroadMono-Regular.woff2") format("woff2"); font-display:swap; }
+  @font-face { font-family:"NeueBit"; src:url("../fonts/NeueBit-Regular.woff2") format("woff2"); font-weight:400; font-display:swap; }
   :root {
     --butter:#FBF6D1; --paper:#FFFDF2; --blue:#ACCAE6; --blue-soft:#CFE0F0; --ox:#4C050C; --esp:#2F1B11;
     --muted:rgba(47,27,17,.74);
     --sans:"Helvetica Neue", Helvetica, Arial, sans-serif;
-    --mono:"BitroadMono", "SF Mono", ui-monospace, monospace;
+    --mono:"NeueBit", "SF Mono", ui-monospace, monospace;
     --vora:1.5px solid var(--esp); --ombra:3px 3px 0 var(--esp);
   }
   * { box-sizing:border-box; }
@@ -26,7 +26,7 @@
   a:focus-visible, button:focus-visible { outline:2px solid var(--ox); outline-offset:3px; }
 
   .bar { display:grid; grid-template-columns:1.3fr 1fr 1fr; border-bottom:2px solid var(--esp);
-         font-family:var(--mono); font-size:11px; letter-spacing:.02em; text-transform:uppercase; padding-top:env(safe-area-inset-top, 0px); }
+         font-family:var(--mono); font-size:16px; letter-spacing:0; text-transform:lowercase; padding-top:env(safe-area-inset-top, 0px); }
   .bar > * { padding:12px 16px; min-height:44px; border-right:1px solid var(--esp); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .bar > :last-child { border-right:0; text-align:right; }
 
@@ -40,11 +40,11 @@
 
   .opcions { display:flex; justify-content:space-between; align-items:baseline; gap:12px; margin:0 0 16px; padding-bottom:8px; border-bottom:2px solid var(--esp);
              font:700 clamp(24px, 6.6vw, 34px)/1.05 var(--sans); letter-spacing:-.035em; }
-  .opcions span { font:400 12px/1 var(--mono); text-transform:uppercase; letter-spacing:.03em; }
+  .opcions span { font:400 18px/1 var(--mono); text-transform:lowercase; letter-spacing:0; }
   .dos { display:grid; gap:16px; align-items:start; }
   .eina { display:flex; flex-direction:column; min-width:0; background:var(--paper); border:var(--vora); border-radius:10px; box-shadow:var(--ombra); overflow:hidden; }
   .barra { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--blue-soft); border-bottom:var(--vora);
-           font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+           font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; }
   .punts { display:flex; gap:4px; }
   .punts i { width:8px; height:8px; border-radius:50%; border:1.2px solid var(--esp); background:var(--butter); }
   .punts i:first-child { background:var(--ox); }
@@ -62,7 +62,7 @@
 
   .ins { margin-top:14px; border-top:1px solid var(--esp); padding-top:10px; }
   .ins-cap { display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .ins-cap span { font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .ins-cap span { font-family:var(--mono); font-size:16px; text-transform:lowercase; letter-spacing:0; color:var(--muted); }
   .copia { flex:none; min-height:32px; padding:4px 12px; background:var(--butter); color:var(--esp); border:var(--vora); border-radius:6px;
            font:700 13px/1 var(--sans); cursor:pointer; }
   .copia:hover { background:var(--blue-soft); }
